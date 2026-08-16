@@ -1,0 +1,29 @@
+{
+  "updated_et": "Seed snapshot — automated refresh begins next NYSE trading session",
+  "market_state": "CLOSED",
+  "tickers": [
+    {"ticker":"SOXL","price":140.79,"change_pct":-3.14},
+    {"ticker":"LITE","price":912.00,"change_pct":3.60},
+    {"ticker":"AAOI","price":147.99,"change_pct":13.80},
+    {"ticker":"MRVL","price":219.30,"change_pct":-1.30},
+    {"ticker":"SMH","price":583.28,"change_pct":-0.99}
+  ],
+  "ranking": [
+    {"ticker":"SOXL","price":140.79,"change_pct":-3.14,"decision":"WAIT","contract":"Sep 18 $105P","premium":6.40,"breakeven":98.60,"key_support":139.35,"score":72},
+    {"ticker":"MRVL","price":219.30,"change_pct":-1.30,"decision":"WAIT","contract":"Pre-earnings $200P","premium":null,"breakeven":null,"key_support":215.22,"score":68},
+    {"ticker":"AAOI","price":147.99,"change_pct":13.80,"decision":"WAIT","contract":"Sep 18 $110P","premium":null,"breakeven":null,"key_support":135.13,"score":60},
+    {"ticker":"LITE","price":912.00,"change_pct":3.60,"decision":"WAIT","contract":"Sep 18 ~$780P","premium":null,"breakeven":null,"key_support":878.86,"score":56}
+  ],
+  "analysis": [
+    {"ticker":"SOXL","decision":"WAIT","note":"Seeded from the latest reviewed session; automation will recalculate.","fib":{"23.6%":139.35,"38.2%":130.21,"50%":122.81,"61.8%":115.42,"78.6%":104.90},"preferred":"Second Sep 18 $105P only with richer premium","trigger":"SOXL near support with $105P premium preferably $8–9+ and sector support intact.","risk":"3x daily leverage and volatility drag."},
+    {"ticker":"AAOI","decision":"WAIT","note":"Wait for pullback rather than selling premium after a vertical rally.","fib":{"23.6%":135.13,"38.2%":123.83,"50%":114.70,"61.8%":105.57,"78.6%":92.57},"preferred":"Sep 18 $110P","trigger":"AAOI ~$135–138, stabilizing, with ~$6+ premium.","risk":"High gap risk and very high realized volatility."},
+    {"ticker":"LITE","decision":"WAIT","note":"Strong trend; avoid chasing after large upside moves.","fib":{"23.6%":878.86,"38.2%":824.59,"50%":780.72,"61.8%":736.85,"78.6%":674.40},"preferred":"Put strike near $780–825 after pullback","trigger":"Prefer underlying closer to $875–890 or lower support with richer IV.","risk":"Large cash-secured notional per contract."},
+    {"ticker":"MRVL","decision":"WAIT","note":"Use expiration selection to control earnings risk.","fib":{"23.6%":215.22,"38.2%":205.22,"50%":197.14,"61.8%":189.06,"78.6%":177.55},"preferred":"Strike near $195–200 with event-aware expiration","trigger":"Prefer support test near $215/$205 and avoid carrying unwanted earnings binary risk.","risk":"Earnings/event risk can dominate option pricing."}
+  ],
+  "smh":{"price":583.28,"entries":[
+    {"zone":"$581–584","allocation":20,"label":"starter only"},
+    {"zone":"$570–575","allocation":30,"label":"preferred first support"},
+    {"zone":"$556–560","allocation":30,"label":"strong support"},
+    {"zone":"$545–550","allocation":20,"label":"major accumulation"}
+  ]}
+}
