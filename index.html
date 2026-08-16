@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Option Trading Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">SYSTEMATIC PUT-SELLING MONITOR</p>
+        <h1>Option Trading Dashboard</h1>
+        <p class="sub">SOXL · LITE · AAOI · MRVL · SMH — support, Fibonacci structure, put premium and entry discipline.</p>
+      </div>
+      <div class="status-card">
+        <span id="marketDot" class="dot"></span>
+        <div>
+          <strong id="marketState">Loading…</strong>
+          <small id="updatedAt">Waiting for data</small>
+        </div>
+      </div>
+    </header>
+
+    <section class="summary-grid" id="summaryGrid"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">PUT-SELLING RANKING</p>
+          <h2>Current opportunities</h2>
+        </div>
+        <div class="legend"><span class="pill sell">SELL</span><span class="pill wait">WAIT</span><span class="pill avoid">AVOID</span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Rank</th><th>Ticker</th><th>Price</th><th>Trend</th><th>Decision</th><th>Preferred put</th><th>Premium</th><th>Breakeven</th><th>Support</th><th>Score</th></tr>
+          </thead>
+          <tbody id="rankingBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cards" id="tickerCards"></section>
+
+    <section class="panel smh-panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">CORE SEMICONDUCTOR EXPOSURE</p><h2>SMH staged entry plan</h2></div>
+        <div class="price-block"><span>SMH</span><strong id="smhPrice">—</strong></div>
+      </div>
+      <div id="smhPlan" class="entry-grid"></div>
+    </section>
+
+    <section class="panel methodology">
+      <div>
+        <p class="eyebrow">FRAMEWORK</p>
+        <h2>How the signal is generated</h2>
+      </div>
+      <div class="method-grid">
+        <article><strong>1</strong><h3>Price structure</h3><p>Short puts are favored on pullbacks into support, not after vertical rallies.</p></article>
+        <article><strong>2</strong><h3>Fibonacci confluence</h3><p>23.6%, 38.2%, 50%, 61.8% and 78.6% retracements are calculated from the recent swing low to swing high.</p></article>
+        <article><strong>3</strong><h3>Premium quality</h3><p>Credit, breakeven cushion, annualized cash yield and bid/ask quality determine whether the option is worth selling.</p></article>
+        <article><strong>4</strong><h3>Event control</h3><p>Earnings and major semiconductor catalysts reduce the score unless the expiration avoids the binary event.</p></article>
+      </div>
+    </section>
+
+    <footer>
+      <span>Refresh schedule: 10:30 AM · 1:00 PM · 2:30 PM ET on NYSE trading days</span>
+      <span>Research dashboard — not an order-entry system.</span>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
