@@ -8,8 +8,8 @@ import yfinance as yf
 import pandas_market_calendars as mcal
 
 ET=ZoneInfo('America/New_York')
-TICKERS=['SOXL','LITE','AAOI','MRVL','SMH']
-PUT_NAMES=['SOXL','LITE','AAOI','MRVL']
+TICKERS=['SOXL','LITE','AAOI','MRVL','MU','SMH']
+PUT_NAMES=['SOXL','LITE','AAOI','MRVL','MU']
 TARGET_DTE=(28,45)
 
 
@@ -38,7 +38,7 @@ def option_pick(ticker, price, fib, expiry):
     if not expiry:return None
     t=yf.Ticker(ticker); puts=t.option_chain(expiry).puts.copy()
     if puts.empty:return None
-    target={'SOXL':fib['78.6%'],'AAOI':fib['61.8%'],'LITE':fib['50%'],'MRVL':fib['50%']}[ticker]
+    target={'SOXL':fib['78.6%'],'AAOI':fib['61.8%'],'LITE':fib['50%'],'MRVL':fib['50%'],'MU':fib['50%']}[ticker]
     otm=puts[puts.strike < price].copy()
     if otm.empty:return None
     otm['dist']=(otm.strike-target).abs(); row=otm.sort_values('dist').iloc[0]
