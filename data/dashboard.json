@@ -1,98 +1,76 @@
 {
-  "updated_et": "2026-08-17 01:30 PM ET",
+  "updated_et": "2026-08-17 02:53 PM ET",
   "market_state": "OPEN",
   "tickers": [
     {
       "ticker": "SOXL",
-      "price": 152.98,
-      "change_pct": 5.54
+      "price": 154.18,
+      "change_pct": 6.36
     },
     {
       "ticker": "LITE",
-      "price": 984.98,
-      "change_pct": 6.35
+      "price": 980.73,
+      "change_pct": 5.89
     },
     {
       "ticker": "AAOI",
-      "price": 160.41,
-      "change_pct": 6.74
+      "price": 157.65,
+      "change_pct": 4.9
     },
     {
       "ticker": "MRVL",
-      "price": 235.55,
-      "change_pct": 6.09
+      "price": 236.81,
+      "change_pct": 6.66
     },
     {
       "ticker": "MU",
-      "price": 1019.4,
-      "change_pct": 4.91
+      "price": 1016.48,
+      "change_pct": 4.61
     },
     {
       "ticker": "AVGO",
-      "price": 396.59,
-      "change_pct": 0.92
+      "price": 394.25,
+      "change_pct": 0.32
     },
     {
       "ticker": "SMH",
-      "price": 595.48,
-      "change_pct": 1.3
+      "price": 597.05,
+      "change_pct": 1.57
     }
   ],
   "ranking": [
     {
       "ticker": "MU",
-      "price": 1019.4,
-      "change_pct": 4.91,
-      "decision": "WAIT",
-      "score": 67,
+      "price": 1016.48,
+      "change_pct": 4.61,
+      "decision": "SELL",
+      "score": 79,
       "contract": "2026-09-18 $1000P",
-      "premium": 62.7,
-      "breakeven": 937.3,
-      "key_support": 1132.96,
+      "premium": 66.42,
+      "breakeven": 933.58,
+      "key_support": 996.34,
       "fib": {
-        "23.6%": 1132.96,
-        "38.2%": 1057.46,
-        "50%": 996.44,
-        "61.8%": 935.42,
-        "78.6%": 848.54
+        "23.6%": 1132.81,
+        "38.2%": 1057.34,
+        "50%": 996.34,
+        "61.8%": 935.35,
+        "78.6%": 848.5
       },
-      "preferred": "2026-09-18 $1000P near $62.70 midpoint",
-      "trigger": "Favor entry near $1132.96 first support; require stable tape and ~6.3% credit/strike or better.",
+      "preferred": "2026-09-18 $1000P near $66.42 midpoint",
+      "trigger": "Favor entry near $996.34 nearest support; require stable tape and ~6.6% credit/strike or better.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "45-day swing $737.88 \u2192 $1255.00; EMA20 $915.42"
-    },
-    {
-      "ticker": "SOXL",
-      "price": 152.98,
-      "change_pct": 5.54,
-      "decision": "WAIT",
-      "score": 59,
-      "contract": "2026-09-18 $135P",
-      "premium": 13.23,
-      "breakeven": 121.78,
-      "key_support": 252.32,
-      "fib": {
-        "23.6%": 252.32,
-        "38.2%": 221.59,
-        "50%": 196.75,
-        "61.8%": 171.91,
-        "78.6%": 136.55
-      },
-      "preferred": "2026-09-18 $135P near $13.23 midpoint",
-      "trigger": "Favor entry near $252.32 first support; require stable tape and ~9.8% credit/strike or better.",
-      "risk": "3x daily leverage and volatility drag.",
-      "note": "45-day swing $91.50 \u2192 $302.00; EMA20 $142.74"
+      "note": "Adjusted 45-day swing $737.88 \u2192 $1254.81; EMA20 $915.14"
     },
     {
       "ticker": "AVGO",
-      "price": 396.59,
-      "change_pct": 0.92,
+      "price": 394.25,
+      "change_pct": 0.32,
       "decision": "WAIT",
-      "score": 49,
+      "score": 61,
       "contract": "2026-09-18 $390P",
-      "premium": 18.65,
-      "breakeven": 371.35,
-      "key_support": 414.72,
+      "premium": 19.98,
+      "breakeven": 370.02,
+      "key_support": 385.58,
       "fib": {
         "23.6%": 414.72,
         "38.2%": 403.58,
@@ -100,20 +78,20 @@
         "61.8%": 385.58,
         "78.6%": 372.76
       },
-      "preferred": "2026-09-18 $390P near $18.65 midpoint",
-      "trigger": "Favor entry near $414.72 first support; require stable tape and ~4.8% credit/strike or better.",
+      "preferred": "2026-09-18 $390P near $19.98 midpoint",
+      "trigger": "Favor entry near $385.58 nearest support; require stable tape and ~5.1% credit/strike or better.",
       "risk": "Earnings/event risk may dominate option pricing.",
-      "note": "45-day swing $356.43 \u2192 $432.73; EMA20 $402.48"
+      "note": "Adjusted 45-day swing $356.43 \u2192 $432.73; EMA20 $402.24"
     },
     {
       "ticker": "LITE",
-      "price": 984.98,
-      "change_pct": 6.35,
+      "price": 980.73,
+      "change_pct": 5.89,
       "decision": "WAIT",
-      "score": 37,
+      "score": 55,
       "contract": "2026-09-18 $800P",
-      "premium": 23.8,
-      "breakeven": 776.2,
+      "premium": 24.35,
+      "breakeven": 775.65,
       "key_support": 904.13,
       "fib": {
         "23.6%": 904.13,
@@ -122,21 +100,21 @@
         "61.8%": 749.49,
         "78.6%": 681.47
       },
-      "preferred": "2026-09-18 $800P near $23.80 midpoint",
-      "trigger": "Favor entry near $904.13 first support; require stable tape and ~3.0% credit/strike or better.",
+      "preferred": "2026-09-18 $800P near $24.35 midpoint",
+      "trigger": "Favor entry near $904.13 nearest support; require stable tape and ~3.0% credit/strike or better.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "45-day swing $594.84 \u2192 $999.67; EMA20 $837.70"
+      "note": "Adjusted 45-day swing $594.84 \u2192 $999.67; EMA20 $837.29"
     },
     {
       "ticker": "AAOI",
-      "price": 160.41,
-      "change_pct": 6.74,
+      "price": 157.65,
+      "change_pct": 4.9,
       "decision": "WAIT",
-      "score": 37,
+      "score": 55,
       "contract": "2026-09-18 $120P",
-      "premium": 4.75,
-      "breakeven": 115.25,
-      "key_support": 168.06,
+      "premium": 4.8,
+      "breakeven": 115.2,
+      "key_support": 150.47,
       "fib": {
         "23.6%": 168.06,
         "38.2%": 150.47,
@@ -144,66 +122,88 @@
         "61.8%": 122.04,
         "78.6%": 101.79
       },
-      "preferred": "2026-09-18 $120P near $4.75 midpoint",
-      "trigger": "Favor entry near $168.06 first support; require stable tape and ~4.0% credit/strike or better.",
+      "preferred": "2026-09-18 $120P near $4.80 midpoint",
+      "trigger": "Favor entry near $150.47 nearest support; require stable tape and ~4.0% credit/strike or better.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "45-day swing $76.01 \u2192 $196.50; EMA20 $127.78"
+      "note": "Adjusted 45-day swing $76.01 \u2192 $196.50; EMA20 $127.52"
+    },
+    {
+      "ticker": "SOXL",
+      "price": 154.18,
+      "change_pct": 6.36,
+      "decision": "WAIT",
+      "score": 53,
+      "contract": "2026-09-18 $125P",
+      "premium": 10.05,
+      "breakeven": 114.95,
+      "key_support": 153.19,
+      "fib": {
+        "23.6%": 214.87,
+        "38.2%": 191.29,
+        "50%": 172.24,
+        "61.8%": 153.19,
+        "78.6%": 126.06
+      },
+      "preferred": "2026-09-18 $125P near $10.05 midpoint",
+      "trigger": "Favor entry near $153.19 nearest support; require stable tape and ~8.0% credit/strike or better.",
+      "risk": "3x daily leverage and volatility drag.",
+      "note": "Adjusted 45-day swing $91.50 \u2192 $252.98; EMA20 $142.86"
     },
     {
       "ticker": "MRVL",
-      "price": 235.55,
-      "change_pct": 6.09,
+      "price": 236.81,
+      "change_pct": 6.66,
       "decision": "WAIT",
       "score": 31,
       "contract": "2026-09-18 $230P",
-      "premium": 18.33,
-      "breakeven": 211.68,
-      "key_support": 290.47,
+      "premium": 19.0,
+      "breakeven": 211.0,
+      "key_support": 226.66,
       "fib": {
-        "23.6%": 290.47,
-        "38.2%": 266.09,
-        "50%": 246.39,
-        "61.8%": 226.69,
-        "78.6%": 198.63
+        "23.6%": 290.41,
+        "38.2%": 266.04,
+        "50%": 246.35,
+        "61.8%": 226.66,
+        "78.6%": 198.62
       },
-      "preferred": "2026-09-18 $230P near $18.33 midpoint",
-      "trigger": "Favor entry near $290.47 first support; require stable tape and ~8.0% credit/strike or better.",
+      "preferred": "2026-09-18 $230P near $19.00 midpoint",
+      "trigger": "Favor entry near $226.66 nearest support; require stable tape and ~8.3% credit/strike or better.",
       "risk": "Earnings/event risk may dominate option pricing.",
-      "note": "45-day swing $162.90 \u2192 $329.88; EMA20 $213.93"
+      "note": "Adjusted 45-day swing $162.90 \u2192 $329.80; EMA20 $214.05"
     }
   ],
   "analysis": [
     {
       "ticker": "SOXL",
-      "price": 152.98,
-      "change_pct": 5.54,
+      "price": 154.18,
+      "change_pct": 6.36,
       "decision": "WAIT",
-      "score": 59,
-      "contract": "2026-09-18 $135P",
-      "premium": 13.23,
-      "breakeven": 121.78,
-      "key_support": 252.32,
+      "score": 53,
+      "contract": "2026-09-18 $125P",
+      "premium": 10.05,
+      "breakeven": 114.95,
+      "key_support": 153.19,
       "fib": {
-        "23.6%": 252.32,
-        "38.2%": 221.59,
-        "50%": 196.75,
-        "61.8%": 171.91,
-        "78.6%": 136.55
+        "23.6%": 214.87,
+        "38.2%": 191.29,
+        "50%": 172.24,
+        "61.8%": 153.19,
+        "78.6%": 126.06
       },
-      "preferred": "2026-09-18 $135P near $13.23 midpoint",
-      "trigger": "Favor entry near $252.32 first support; require stable tape and ~9.8% credit/strike or better.",
+      "preferred": "2026-09-18 $125P near $10.05 midpoint",
+      "trigger": "Favor entry near $153.19 nearest support; require stable tape and ~8.0% credit/strike or better.",
       "risk": "3x daily leverage and volatility drag.",
-      "note": "45-day swing $91.50 \u2192 $302.00; EMA20 $142.74"
+      "note": "Adjusted 45-day swing $91.50 \u2192 $252.98; EMA20 $142.86"
     },
     {
       "ticker": "LITE",
-      "price": 984.98,
-      "change_pct": 6.35,
+      "price": 980.73,
+      "change_pct": 5.89,
       "decision": "WAIT",
-      "score": 37,
+      "score": 55,
       "contract": "2026-09-18 $800P",
-      "premium": 23.8,
-      "breakeven": 776.2,
+      "premium": 24.35,
+      "breakeven": 775.65,
       "key_support": 904.13,
       "fib": {
         "23.6%": 904.13,
@@ -212,21 +212,21 @@
         "61.8%": 749.49,
         "78.6%": 681.47
       },
-      "preferred": "2026-09-18 $800P near $23.80 midpoint",
-      "trigger": "Favor entry near $904.13 first support; require stable tape and ~3.0% credit/strike or better.",
+      "preferred": "2026-09-18 $800P near $24.35 midpoint",
+      "trigger": "Favor entry near $904.13 nearest support; require stable tape and ~3.0% credit/strike or better.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "45-day swing $594.84 \u2192 $999.67; EMA20 $837.70"
+      "note": "Adjusted 45-day swing $594.84 \u2192 $999.67; EMA20 $837.29"
     },
     {
       "ticker": "AAOI",
-      "price": 160.41,
-      "change_pct": 6.74,
+      "price": 157.65,
+      "change_pct": 4.9,
       "decision": "WAIT",
-      "score": 37,
+      "score": 55,
       "contract": "2026-09-18 $120P",
-      "premium": 4.75,
-      "breakeven": 115.25,
-      "key_support": 168.06,
+      "premium": 4.8,
+      "breakeven": 115.2,
+      "key_support": 150.47,
       "fib": {
         "23.6%": 168.06,
         "38.2%": 150.47,
@@ -234,65 +234,65 @@
         "61.8%": 122.04,
         "78.6%": 101.79
       },
-      "preferred": "2026-09-18 $120P near $4.75 midpoint",
-      "trigger": "Favor entry near $168.06 first support; require stable tape and ~4.0% credit/strike or better.",
+      "preferred": "2026-09-18 $120P near $4.80 midpoint",
+      "trigger": "Favor entry near $150.47 nearest support; require stable tape and ~4.0% credit/strike or better.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "45-day swing $76.01 \u2192 $196.50; EMA20 $127.78"
+      "note": "Adjusted 45-day swing $76.01 \u2192 $196.50; EMA20 $127.52"
     },
     {
       "ticker": "MRVL",
-      "price": 235.55,
-      "change_pct": 6.09,
+      "price": 236.81,
+      "change_pct": 6.66,
       "decision": "WAIT",
       "score": 31,
       "contract": "2026-09-18 $230P",
-      "premium": 18.33,
-      "breakeven": 211.68,
-      "key_support": 290.47,
+      "premium": 19.0,
+      "breakeven": 211.0,
+      "key_support": 226.66,
       "fib": {
-        "23.6%": 290.47,
-        "38.2%": 266.09,
-        "50%": 246.39,
-        "61.8%": 226.69,
-        "78.6%": 198.63
+        "23.6%": 290.41,
+        "38.2%": 266.04,
+        "50%": 246.35,
+        "61.8%": 226.66,
+        "78.6%": 198.62
       },
-      "preferred": "2026-09-18 $230P near $18.33 midpoint",
-      "trigger": "Favor entry near $290.47 first support; require stable tape and ~8.0% credit/strike or better.",
+      "preferred": "2026-09-18 $230P near $19.00 midpoint",
+      "trigger": "Favor entry near $226.66 nearest support; require stable tape and ~8.3% credit/strike or better.",
       "risk": "Earnings/event risk may dominate option pricing.",
-      "note": "45-day swing $162.90 \u2192 $329.88; EMA20 $213.93"
+      "note": "Adjusted 45-day swing $162.90 \u2192 $329.80; EMA20 $214.05"
     },
     {
       "ticker": "MU",
-      "price": 1019.4,
-      "change_pct": 4.91,
-      "decision": "WAIT",
-      "score": 67,
+      "price": 1016.48,
+      "change_pct": 4.61,
+      "decision": "SELL",
+      "score": 79,
       "contract": "2026-09-18 $1000P",
-      "premium": 62.7,
-      "breakeven": 937.3,
-      "key_support": 1132.96,
+      "premium": 66.42,
+      "breakeven": 933.58,
+      "key_support": 996.34,
       "fib": {
-        "23.6%": 1132.96,
-        "38.2%": 1057.46,
-        "50%": 996.44,
-        "61.8%": 935.42,
-        "78.6%": 848.54
+        "23.6%": 1132.81,
+        "38.2%": 1057.34,
+        "50%": 996.34,
+        "61.8%": 935.35,
+        "78.6%": 848.5
       },
-      "preferred": "2026-09-18 $1000P near $62.70 midpoint",
-      "trigger": "Favor entry near $1132.96 first support; require stable tape and ~6.3% credit/strike or better.",
+      "preferred": "2026-09-18 $1000P near $66.42 midpoint",
+      "trigger": "Favor entry near $996.34 nearest support; require stable tape and ~6.6% credit/strike or better.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "45-day swing $737.88 \u2192 $1255.00; EMA20 $915.42"
+      "note": "Adjusted 45-day swing $737.88 \u2192 $1254.81; EMA20 $915.14"
     },
     {
       "ticker": "AVGO",
-      "price": 396.59,
-      "change_pct": 0.92,
+      "price": 394.25,
+      "change_pct": 0.32,
       "decision": "WAIT",
-      "score": 49,
+      "score": 61,
       "contract": "2026-09-18 $390P",
-      "premium": 18.65,
-      "breakeven": 371.35,
-      "key_support": 414.72,
+      "premium": 19.98,
+      "breakeven": 370.02,
+      "key_support": 385.58,
       "fib": {
         "23.6%": 414.72,
         "38.2%": 403.58,
@@ -300,32 +300,32 @@
         "61.8%": 385.58,
         "78.6%": 372.76
       },
-      "preferred": "2026-09-18 $390P near $18.65 midpoint",
-      "trigger": "Favor entry near $414.72 first support; require stable tape and ~4.8% credit/strike or better.",
+      "preferred": "2026-09-18 $390P near $19.98 midpoint",
+      "trigger": "Favor entry near $385.58 nearest support; require stable tape and ~5.1% credit/strike or better.",
       "risk": "Earnings/event risk may dominate option pricing.",
-      "note": "45-day swing $356.43 \u2192 $432.73; EMA20 $402.48"
+      "note": "Adjusted 45-day swing $356.43 \u2192 $432.73; EMA20 $402.24"
     }
   ],
   "smh": {
-    "price": 595.48,
+    "price": 597.05,
     "entries": [
       {
-        "zone": "$593\u2013$598",
+        "zone": "$594\u2013$600",
         "allocation": 20,
         "label": "starter only"
       },
       {
-        "zone": "$629\u2013$635",
+        "zone": "$585\u2013$591",
         "allocation": 30,
         "label": "first support"
       },
       {
-        "zone": "$605\u2013$611",
+        "zone": "$565\u2013$571",
         "allocation": 30,
         "label": "strong support"
       },
       {
-        "zone": "$585\u2013$591",
+        "zone": "$537\u2013$543",
         "allocation": 20,
         "label": "major accumulation"
       }
