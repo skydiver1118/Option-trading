@@ -1,4 +1,5 @@
 name: Refresh option dashboard
+# Manual refresh trigger requested 2026-08-17
 
 on:
   workflow_dispatch:
