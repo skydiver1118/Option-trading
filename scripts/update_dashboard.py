@@ -55,10 +55,19 @@ def market_open_now(now):
     return o<=now<=c
 
 def should_run(now):
-    if os.getenv('GITHUB_EVENT_NAME')=='workflow_dispatch':return True
+    if os.getenv('GITHUB_EVENT_NAME')=='workflow_dispatch': return True
     cal=mcal.get_calendar('NYSE'); sched=cal.schedule(start_date=now.date(),end_date=now.date())
     if sched.empty:return False
-    return (now.hour,now.minute) in {(10,30),(13,0),(14,30)}
+
+    # GitHub scheduled workflows are not guaranteed to start at the exact cron minute.
+    # Decide from the cron that triggered the run, not the wall-clock start time.
+    cron=os.getenv('GITHUB_EVENT_SCHEDULE','').strip()
+    utc_offset=now.utcoffset().total_seconds()/3600
+    if utc_offset == -4:  # EDT: 10:30, 13:00, 14:30 ET
+        valid={'30 14 * * 1-5','0 17 * * 1-5','30 18 * * 1-5'}
+    else:                 # EST: 10:30, 13:00, 14:30 ET
+        valid={'30 15 * * 1-5','0 18 * * 1-5','30 19 * * 1-5'}
+    return cron in valid
 
 def main():
     now=datetime.now(ET)
