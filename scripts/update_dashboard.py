@@ -10,6 +10,7 @@ ET=ZoneInfo('America/New_York')
 TICKERS=['SOXL','LITE','AAOI','MRVL','MU','AVGO','SMH']
 PUT_NAMES=['SOXL','LITE','AAOI','MRVL','MU','AVGO']
 TARGET_DTE=(28,45)
+RISK_FREE=0.04
 
 
 def f(x):
@@ -21,17 +22,11 @@ def f(x):
 
 def fibs(low,high):
     r=high-low
-    return {
-        '23.6%':high-.236*r,
-        '38.2%':high-.382*r,
-        '50%':high-.5*r,
-        '61.8%':high-.618*r,
-        '78.6%':high-.786*r,
-    }
+    return {'23.6%':high-.236*r,'38.2%':high-.382*r,'50%':high-.5*r,'61.8%':high-.618*r,'78.6%':high-.786*r}
 
 
 def support_below(price, fib):
-    vals=[float(v) for v in fib.values() if v is not None and float(v) <= price]
+    vals=[float(v) for v in fib.values() if v is not None and float(v)<=price]
     return max(vals) if vals else float(fib['78.6%'])
 
 
@@ -47,33 +42,58 @@ def nearest_expiry(t):
     return min(candidates)[2] if candidates else None
 
 
-def option_pick(ticker, price, fib, expiry):
-    if not expiry:return None
-    t=yf.Ticker(ticker); puts=t.option_chain(expiry).puts.copy()
-    if puts.empty:return None
-    target={
-        'SOXL':fib['78.6%'],
-        'AAOI':fib['61.8%'],
-        'LITE':fib['50%'],
-        'MRVL':fib['50%'],
-        'MU':fib['50%'],
-        'AVGO':fib['61.8%'],
-    }[ticker]
-    otm=puts[puts.strike < price].copy()
-    if otm.empty:return None
-    otm['dist']=(otm.strike-target).abs(); row=otm.sort_values('dist').iloc[0]
-    bid=float(row.bid or 0); ask=float(row.ask or 0); mid=(bid+ask)/2 if bid>0 and ask>0 else max(bid,ask)
-    strike=float(row.strike); be=strike-mid; cushion=(price-be)/price*100 if price else 0
-    cash_yield=mid/strike*100 if strike else 0
-    iv=float(row.impliedVolatility)*100 if pd.notna(row.impliedVolatility) else None
-    return {'expiry':expiry,'strike':strike,'bid':bid,'ask':ask,'premium':mid,'breakeven':be,'cushion_pct':cushion,'cash_yield_pct':cash_yield,'iv_pct':iv}
+def norm_cdf(x): return 0.5*(1+math.erf(x/math.sqrt(2)))
+
+
+def put_delta_bs(spot,strike,iv,dte):
+    try:
+        sigma=max(float(iv),1e-6); t=max(float(dte)/365.0,1e-6)
+        d1=(math.log(spot/strike)+(RISK_FREE+0.5*sigma*sigma)*t)/(sigma*math.sqrt(t))
+        return norm_cdf(d1)-1.0
+    except Exception:return None
+
+
+def earnings_date(ticker):
+    try:
+        cal=yf.Ticker(ticker).calendar
+        ed=cal.get('Earnings Date') if isinstance(cal,dict) else None
+        if not ed:return None
+        e=ed[0] if isinstance(ed,list) else ed
+        return pd.Timestamp(e).date()
+    except Exception:return None
+
+
+def candidate_puts(ticker,price,support,expiry):
+    if not expiry:return []
+    puts=yf.Ticker(ticker).option_chain(expiry).puts.copy()
+    if puts.empty:return []
+    exp_date=datetime.strptime(expiry,'%Y-%m-%d').date(); today=datetime.now(ET).date(); dte=max((exp_date-today).days,1)
+    ed=earnings_date(ticker); event_risk=bool(ed and today<ed<=exp_date)
+    puts=puts[puts.strike<price].copy(); rows=[]
+    for _,r in puts.iterrows():
+        strike=float(r.strike); bid=float(r.bid or 0); ask=float(r.ask or 0)
+        mid=(bid+ask)/2 if bid>0 and ask>0 else max(bid,ask)
+        if mid<=0: continue
+        iv=float(r.impliedVolatility) if pd.notna(r.impliedVolatility) else None
+        delta=put_delta_bs(price,strike,iv,dte) if iv else None
+        be=strike-mid
+        rows.append({'strike':strike,'bid':bid,'ask':ask,'premium':mid,'breakeven':be,'iv_pct':iv*100 if iv else None,'delta':delta,'annualized_return_pct':(mid/strike)*(365/dte)*100 if strike else None,'distance_to_support_pct':((be-support)/support*100) if support else None,'dte':dte,'earnings_risk':event_risk,'earnings_date':ed.isoformat() if ed else None})
+    if not rows:return []
+    targets=[('Conservative',0.12),('Preferred',0.20),('Aggressive',0.30)]; chosen=[]; used=set()
+    fallback_pct={'Conservative':0.75,'Preferred':0.82,'Aggressive':0.90}
+    for label,target in targets:
+        pool=[x for x in rows if x['strike'] not in used]
+        if not pool: continue
+        with_delta=[x for x in pool if x['delta'] is not None]
+        pick=min(with_delta,key=lambda x:abs(abs(x['delta'])-target)) if with_delta else min(pool,key=lambda x:abs(x['strike']-price*fallback_pct[label]))
+        used.add(pick['strike']); pick=dict(pick); pick['profile']=label; chosen.append(pick)
+    return chosen
 
 
 def market_open_now(now):
     cal=mcal.get_calendar('NYSE'); sched=cal.schedule(start_date=now.date(),end_date=now.date())
     if sched.empty:return False
-    o=sched.iloc[0].market_open.tz_convert(ET); c=sched.iloc[0].market_close.tz_convert(ET)
-    return o<=now<=c
+    return sched.iloc[0].market_open.tz_convert(ET)<=now<=sched.iloc[0].market_close.tz_convert(ET)
 
 
 def should_run(now):
@@ -81,98 +101,45 @@ def should_run(now):
     if event in {'workflow_dispatch','push'}: return True
     cal=mcal.get_calendar('NYSE'); sched=cal.schedule(start_date=now.date(),end_date=now.date())
     if sched.empty:return False
-    cron=os.getenv('GITHUB_EVENT_SCHEDULE','').strip()
-    utc_offset=now.utcoffset().total_seconds()/3600
-    if utc_offset == -4:
-        valid={
-            '30 14 * * 1-5','0 17 * * 1-5','30 18 * * 1-5',
-            '45 14 * * 1-5','15 17 * * 1-5','45 18 * * 1-5'
-        }
+    cron=os.getenv('GITHUB_EVENT_SCHEDULE','').strip(); off=now.utcoffset().total_seconds()/3600
+    if off==-4:
+        valid={'30 14 * * 1-5','0 17 * * 1-5','30 18 * * 1-5','45 14 * * 1-5','15 17 * * 1-5','45 18 * * 1-5'}
     else:
-        valid={
-            '30 15 * * 1-5','0 18 * * 1-5','30 19 * * 1-5',
-            '45 15 * * 1-5','15 18 * * 1-5','45 19 * * 1-5'
-        }
+        valid={'30 15 * * 1-5','0 18 * * 1-5','30 19 * * 1-5','45 15 * * 1-5','15 18 * * 1-5','45 19 * * 1-5'}
     return cron in valid
 
 
 def main():
     now=datetime.now(ET)
-    if not should_run(now):
-        print('Not a scheduled ET trading-day refresh; exiting.'); return
-
+    if not should_run(now): print('Not a scheduled ET trading-day refresh; exiting.'); return
     raw={}; analyses=[]
     for sym in TICKERS:
-        t=yf.Ticker(sym)
-        h=t.history(period='3mo',interval='1d',auto_adjust=True,actions=False)
+        h=yf.Ticker(sym).history(period='3mo',interval='1d',auto_adjust=True,actions=False)
         if h.empty: continue
-        h=h[['Open','High','Low','Close']].dropna()
-        close=float(h.Close.iloc[-1]); prev=float(h.Close.iloc[-2]) if len(h)>1 else close
-        ch=(close/prev-1)*100 if prev else 0
-        recent=h.tail(45)
-        low=float(recent.Low.min()); high=float(recent.High.max())
-        sane=recent[(recent.High <= close*1.65) & (recent.Low >= close*0.45)]
-        if len(sane) >= 20:
-            low=float(sane.Low.min()); high=float(sane.High.max())
-        fb=fibs(low,high)
-        ema20=float(h.Close.ewm(span=20,adjust=False).mean().iloc[-1])
-        key_support=support_below(close,fb)
-        raw[sym]={'ticker':sym,'price':close,'change_pct':ch,'low45':low,'high45':high,'fib':fb,'ema20':ema20,'key_support':key_support}
-
+        h=h[['Open','High','Low','Close']].dropna(); close=float(h.Close.iloc[-1]); prev=float(h.Close.iloc[-2]) if len(h)>1 else close
+        recent=h.tail(45); sane=recent[(recent.High<=close*1.65)&(recent.Low>=close*0.45)]
+        if len(sane)>=20: recent=sane
+        low=float(recent.Low.min()); high=float(recent.High.max()); fb=fibs(low,high)
+        raw[sym]={'price':close,'change_pct':(close/prev-1)*100 if prev else 0,'low45':low,'high45':high,'fib':fb,'ema20':float(h.Close.ewm(span=20,adjust=False).mean().iloc[-1]),'key_support':support_below(close,fb)}
     for sym in PUT_NAMES:
-        x=raw[sym]; expiry=nearest_expiry(yf.Ticker(sym)); opt=option_pick(sym,x['price'],x['fib'],expiry)
-        support=x['key_support']
-        near_support=abs(x['price']-support)/x['price'] <= .04
-        vertical=x['change_pct']>=6
-        premium_good=bool(opt and opt['cash_yield_pct']>=4.5)
-        event_penalty=False
-        try:
-            cal=yf.Ticker(sym).calendar
-            ed=cal.get('Earnings Date') if isinstance(cal,dict) else None
-            if ed and expiry:
-                e=ed[0] if isinstance(ed,list) else ed
-                event_penalty=datetime.now(ET).date() < pd.Timestamp(e).date() <= datetime.strptime(expiry,'%Y-%m-%d').date()
-        except Exception: pass
-        score=55 + (12 if near_support else 0) + (12 if premium_good else 0) - (18 if vertical else 0) - (18 if event_penalty else 0)
-        if sym=='SOXL': score-=8
-        score=max(0,min(100,score))
-        decision='SELL' if score>=68 and not vertical else 'WAIT'
-        preferred='No suitable chain'
-        trigger='Wait for pullback into support with richer premium.'
-        risk='High-beta semiconductor exposure.'
-        if opt:
-            preferred=f"{opt['expiry']} ${opt['strike']:.0f}P near ${opt['premium']:.2f} midpoint"
-            trigger=f"Favor entry near ${support:.2f} nearest support; require stable tape and ~{opt['cash_yield_pct']:.1f}% credit/strike or better."
-            risk=('3x daily leverage and volatility drag.' if sym=='SOXL' else ('Earnings/event risk may dominate option pricing.' if event_penalty else 'Gap risk and volatility expansion.'))
-        analyses.append({
-            'ticker':sym,'price':f(x['price']),'change_pct':f(x['change_pct']),'decision':decision,'score':int(score),
-            'contract':(f"{opt['expiry']} ${opt['strike']:.0f}P" if opt else None),
-            'premium':f(opt['premium']) if opt else None,
-            'breakeven':f(opt['breakeven']) if opt else None,
-            'key_support':f(support),
-            'fib':{k:f(v) for k,v in x['fib'].items()},
-            'preferred':preferred,'trigger':trigger,'risk':risk,
-            'note':f"Adjusted 45-day swing ${x['low45']:.2f} → ${x['high45']:.2f}; EMA20 ${x['ema20']:.2f}"
-        })
-
+        x=raw[sym]; expiry=nearest_expiry(yf.Ticker(sym)); candidates=candidate_puts(sym,x['price'],x['key_support'],expiry)
+        pref=next((c for c in candidates if c['profile']=='Preferred'),candidates[0] if candidates else None)
+        near=abs(x['price']-x['key_support'])/x['price']<=.04; vertical=x['change_pct']>=6
+        premium_good=bool(pref and pref['annualized_return_pct'] and pref['annualized_return_pct']>=35); event=bool(pref and pref['earnings_risk'])
+        score=55+(12 if near else 0)+(12 if premium_good else 0)-(18 if vertical else 0)-(18 if event else 0)-(8 if sym=='SOXL' else 0)
+        score=max(0,min(100,score)); decision='SELL' if score>=68 and not vertical and not event else 'WAIT'
+        clean=[]
+        for c in candidates:
+            clean.append({**c,'strike':f(c['strike']),'bid':f(c['bid']),'ask':f(c['ask']),'premium':f(c['premium']),'breakeven':f(c['breakeven']),'iv_pct':f(c['iv_pct']),'delta':f(c['delta']),'annualized_return_pct':f(c['annualized_return_pct']),'distance_to_support_pct':f(c['distance_to_support_pct'])})
+        analyses.append({'ticker':sym,'price':f(x['price']),'change_pct':f(x['change_pct']),'decision':decision,'score':int(score),'contract':(f"{expiry} ${pref['strike']:.0f}P" if pref else None),'premium':f(pref['premium']) if pref else None,'breakeven':f(pref['breakeven']) if pref else None,'key_support':f(x['key_support']),'fib':{k:f(v) for k,v in x['fib'].items()},'candidates':clean,'trigger':f"Nearest technical support ${x['key_support']:.2f}; prefer stable/reclaiming tape before entry.",'risk':'3x daily leverage and volatility drag.' if sym=='SOXL' else ('Earnings falls before expiration.' if event else 'Gap risk and volatility expansion.'),'note':f"Adjusted 45-day swing ${x['low45']:.2f} → ${x['high45']:.2f}; EMA20 ${x['ema20']:.2f}"})
     ranking=sorted(analyses,key=lambda z:z['score'],reverse=True)
     smh=raw.get('SMH',{}); entries=[]
     if smh:
-        price=smh['price']; levels=sorted([v for v in smh['fib'].values() if v <= price], reverse=True)
-        starter=(price*.995,price*1.005)
-        def zone(v): return f"${v-3:.0f}–${v+3:.0f}"
-        entries=[{'zone':f"${starter[0]:.0f}–${starter[1]:.0f}",'allocation':20,'label':'starter only'}]
-        labels=[('first support',30),('strong support',30),('major accumulation',20)]
-        for i,(label,alloc) in enumerate(labels):
-            if i < len(levels): entries.append({'zone':zone(levels[i]),'allocation':alloc,'label':label})
-
-    payload={
-        'updated_et':now.strftime('%Y-%m-%d %I:%M %p ET'),
-        'market_state':'OPEN' if market_open_now(now) else 'CLOSED',
-        'tickers':[{'ticker':k,'price':f(v['price']),'change_pct':f(v['change_pct'])} for k,v in raw.items()],
-        'ranking':ranking,'analysis':analyses,
-        'smh':{'price':f(smh.get('price')),'entries':entries}
-    }
+        price=smh['price']; levels=sorted([v for v in smh['fib'].values() if v<=price],reverse=True)
+        entries=[{'zone':f"${price*.995:.0f}–${price*1.005:.0f}",'allocation':20,'label':'starter only'}]
+        for i,(label,alloc) in enumerate([('first support',30),('strong support',30),('major accumulation',20)]):
+            if i<len(levels): entries.append({'zone':f"${levels[i]-3:.0f}–${levels[i]+3:.0f}",'allocation':alloc,'label':label})
+    payload={'updated_et':now.strftime('%Y-%m-%d %I:%M %p ET'),'market_state':'OPEN' if market_open_now(now) else 'CLOSED','tickers':[{'ticker':k,'price':f(v['price']),'change_pct':f(v['change_pct'])} for k,v in raw.items()],'ranking':ranking,'analysis':analyses,'smh':{'price':f(smh.get('price')),'entries':entries}}
     os.makedirs('data',exist_ok=True)
     with open('data/dashboard.json','w') as fh: json.dump(payload,fh,indent=2)
     print(json.dumps(payload,indent=2))
