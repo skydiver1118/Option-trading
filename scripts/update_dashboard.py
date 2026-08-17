@@ -31,10 +31,6 @@ def fibs(low,high):
 
 
 def support_below(price, fib):
-    """Return the nearest Fibonacci retracement at or below price.
-    If price is below every retracement, fall back to the swing-low side (78.6%).
-    This prevents a level above spot from being mislabeled as support.
-    """
     vals=[float(v) for v in fib.values() if v is not None and float(v) <= price]
     return max(vals) if vals else float(fib['78.6%'])
 
@@ -81,15 +77,22 @@ def market_open_now(now):
 
 
 def should_run(now):
-    if os.getenv('GITHUB_EVENT_NAME')=='workflow_dispatch': return True
+    event=os.getenv('GITHUB_EVENT_NAME','')
+    if event in {'workflow_dispatch','push'}: return True
     cal=mcal.get_calendar('NYSE'); sched=cal.schedule(start_date=now.date(),end_date=now.date())
     if sched.empty:return False
     cron=os.getenv('GITHUB_EVENT_SCHEDULE','').strip()
     utc_offset=now.utcoffset().total_seconds()/3600
     if utc_offset == -4:
-        valid={'30 14 * * 1-5','0 17 * * 1-5','30 18 * * 1-5'}
+        valid={
+            '30 14 * * 1-5','0 17 * * 1-5','30 18 * * 1-5',
+            '45 14 * * 1-5','15 17 * * 1-5','45 18 * * 1-5'
+        }
     else:
-        valid={'30 15 * * 1-5','0 18 * * 1-5','30 19 * * 1-5'}
+        valid={
+            '30 15 * * 1-5','0 18 * * 1-5','30 19 * * 1-5',
+            '45 15 * * 1-5','15 18 * * 1-5','45 19 * * 1-5'
+        }
     return cron in valid
 
 
@@ -101,8 +104,6 @@ def main():
     raw={}; analyses=[]
     for sym in TICKERS:
         t=yf.Ticker(sym)
-        # IMPORTANT: use split/dividend-adjusted OHLC consistently. Mixing raw historical
-        # OHLC with post-split current prices created false swing highs and bad Fibonacci levels.
         h=t.history(period='3mo',interval='1d',auto_adjust=True,actions=False)
         if h.empty: continue
         h=h[['Open','High','Low','Close']].dropna()
@@ -110,13 +111,9 @@ def main():
         ch=(close/prev-1)*100 if prev else 0
         recent=h.tail(45)
         low=float(recent.Low.min()); high=float(recent.High.max())
-
-        # Defensive sanity check against provider anomalies. A 45-day high/low that is wildly
-        # disconnected from current adjusted price is not used for technical levels.
         sane=recent[(recent.High <= close*1.65) & (recent.Low >= close*0.45)]
         if len(sane) >= 20:
             low=float(sane.Low.min()); high=float(sane.High.max())
-
         fb=fibs(low,high)
         ema20=float(h.Close.ewm(span=20,adjust=False).mean().iloc[-1])
         key_support=support_below(close,fb)
