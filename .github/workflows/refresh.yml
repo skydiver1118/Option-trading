@@ -2,15 +2,26 @@ name: Refresh option dashboard
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh.yml'
+      - 'scripts/update_dashboard.py'
   schedule:
-    # Run both EDT and EST UTC equivalents. Python selects the correct set for New York time
-    # using the cron expression itself, so GitHub Actions queue delays do not suppress a refresh.
+    # Primary EDT/EST schedules for 10:30, 13:00, 14:30 ET.
     - cron: '30 14 * * 1-5'
     - cron: '30 15 * * 1-5'
     - cron: '0 17 * * 1-5'
     - cron: '0 18 * * 1-5'
     - cron: '30 18 * * 1-5'
     - cron: '30 19 * * 1-5'
+    # 15-minute fallback schedules. They protect against skipped/delayed GitHub cron runs.
+    - cron: '45 14 * * 1-5'
+    - cron: '45 15 * * 1-5'
+    - cron: '15 17 * * 1-5'
+    - cron: '15 18 * * 1-5'
+    - cron: '45 18 * * 1-5'
+    - cron: '45 19 * * 1-5'
 
 permissions:
   contents: write
@@ -26,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -57,5 +68,13 @@ jobs:
         with:
           path: .
       - name: Deploy dashboard to GitHub Pages
-        id: deployment
+        id: deploy1
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Wait before retry
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 30
+      - name: Retry GitHub Pages deployment
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
         uses: actions/deploy-pages@v4
