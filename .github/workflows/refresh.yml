@@ -1,31 +1,23 @@
 name: Refresh option dashboard
-# Manual refresh trigger requested 2026-08-17
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/refresh.yml'
-      - 'scripts/update_dashboard.py'
   schedule:
     # Morning reliability window around the requested 10:30 ET refresh.
-    # GitHub cron can queue late, so run at 10:20, 10:30, and 10:40 ET.
     - cron: '20 14 * * 1-5'
     - cron: '30 14 * * 1-5'
     - cron: '40 14 * * 1-5'
     - cron: '20 15 * * 1-5'
     - cron: '30 15 * * 1-5'
     - cron: '40 15 * * 1-5'
-    # Primary EDT/EST schedules for 13:00 and 14:30 ET.
+    # 13:00 and 14:30 ET primary + fallback schedules.
     - cron: '0 17 * * 1-5'
-    - cron: '0 18 * * 1-5'
-    - cron: '30 18 * * 1-5'
-    - cron: '30 19 * * 1-5'
-    # 15-minute fallbacks for afternoon runs.
     - cron: '15 17 * * 1-5'
+    - cron: '0 18 * * 1-5'
     - cron: '15 18 * * 1-5'
+    - cron: '30 18 * * 1-5'
     - cron: '45 18 * * 1-5'
+    - cron: '30 19 * * 1-5'
     - cron: '45 19 * * 1-5'
 
 permissions:
@@ -35,14 +27,15 @@ permissions:
 
 concurrency:
   group: option-dashboard-refresh
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     environment:
       name: github-pages
-      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url }}
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -56,7 +49,39 @@ jobs:
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/update_dashboard.py
-      - name: Commit refreshed data
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload dashboard to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy dashboard to GitHub Pages
+        id: deploy1
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Wait before second deployment attempt
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 30
+      - name: Retry GitHub Pages deployment
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Wait before third deployment attempt
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 60
+      - name: Final GitHub Pages deployment attempt
+        id: deploy3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      # Preserve the latest JSON in the repository, but never let a transient git race
+      # turn an otherwise successful dashboard refresh into a failed workflow/email.
+      - name: Best-effort commit refreshed data
+        continue-on-error: true
         run: |
           if git diff --quiet data/dashboard.json; then
             echo "No dashboard data change."
@@ -64,23 +89,15 @@ jobs:
             git config user.name "option-dashboard-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/dashboard.json
-            git commit -m "Refresh option dashboard data"
-            git push
+            git commit -m "Refresh option dashboard data" || true
+            git pull --rebase origin main || true
+            git push origin HEAD:main || true
           fi
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-      - name: Upload dashboard to Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - name: Deploy dashboard to GitHub Pages
-        id: deploy1
-        continue-on-error: true
-        uses: actions/deploy-pages@v4
-      - name: Wait before retry
-        if: steps.deploy1.outcome == 'failure'
-        run: sleep 30
-      - name: Retry GitHub Pages deployment
-        id: deploy2
-        if: steps.deploy1.outcome == 'failure'
-        uses: actions/deploy-pages@v4
+
+      - name: Report deployment result
+        run: |
+          if [ "${{ steps.deploy1.outcome }}" = "success" ] || [ "${{ steps.deploy2.outcome }}" = "success" ] || [ "${{ steps.deploy3.outcome }}" = "success" ]; then
+            echo "Dashboard deployed successfully."
+          else
+            echo "GitHub Pages deployment failed after three attempts; a later scheduled fallback will retry."
+          fi
