@@ -9,16 +9,20 @@ on:
       - '.github/workflows/refresh.yml'
       - 'scripts/update_dashboard.py'
   schedule:
-    # Primary EDT/EST schedules for 10:30, 13:00, 14:30 ET.
+    # Morning reliability window around the requested 10:30 ET refresh.
+    # GitHub cron can queue late, so run at 10:20, 10:30, and 10:40 ET.
+    - cron: '20 14 * * 1-5'
     - cron: '30 14 * * 1-5'
+    - cron: '40 14 * * 1-5'
+    - cron: '20 15 * * 1-5'
     - cron: '30 15 * * 1-5'
+    - cron: '40 15 * * 1-5'
+    # Primary EDT/EST schedules for 13:00 and 14:30 ET.
     - cron: '0 17 * * 1-5'
     - cron: '0 18 * * 1-5'
     - cron: '30 18 * * 1-5'
     - cron: '30 19 * * 1-5'
-    # 15-minute fallback schedules. They protect against skipped/delayed GitHub cron runs.
-    - cron: '45 14 * * 1-5'
-    - cron: '45 15 * * 1-5'
+    # 15-minute fallbacks for afternoon runs.
     - cron: '15 17 * * 1-5'
     - cron: '15 18 * * 1-5'
     - cron: '45 18 * * 1-5'
