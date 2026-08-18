@@ -1,49 +1,49 @@
 {
-  "updated_et": "2026-08-18 11:05 AM ET",
+  "updated_et": "2026-08-18 11:06 AM ET",
   "market_state": "OPEN",
   "option_data_source": "Tradier real-time",
   "tickers": [
     {
       "ticker": "SOXL",
-      "price": 124.63,
-      "change_pct": -14.02
+      "price": 124.93,
+      "change_pct": -13.81
     },
     {
       "ticker": "LITE",
-      "price": 877.71,
-      "change_pct": -5.23
+      "price": 879.32,
+      "change_pct": -5.06
     },
     {
       "ticker": "AAOI",
-      "price": 136.32,
-      "change_pct": -9.29
+      "price": 136.57,
+      "change_pct": -9.12
     },
     {
       "ticker": "MRVL",
-      "price": 213.06,
-      "change_pct": -4.04
+      "price": 213.29,
+      "change_pct": -3.93
     },
     {
       "ticker": "MU",
-      "price": 938.6,
-      "change_pct": -3.4
+      "price": 938.91,
+      "change_pct": -3.37
     },
     {
       "ticker": "AVGO",
-      "price": 378.36,
-      "change_pct": -3.72
+      "price": 378.42,
+      "change_pct": -3.71
     },
     {
       "ticker": "SMH",
-      "price": 564.92,
-      "change_pct": -3.9
+      "price": 565.12,
+      "change_pct": -3.86
     }
   ],
   "ranking": [
     {
       "ticker": "LITE",
-      "price": 877.71,
-      "change_pct": -5.23,
+      "price": 879.32,
+      "change_pct": -5.06,
       "decision": "SELL",
       "score": 79,
       "contract": "2026-09-25 $755P",
@@ -113,12 +113,12 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $844.30; prefer stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $594.84 \u2192 $998.50; EMA20 $827.48"
+      "note": "Adjusted 45-day swing $594.84 \u2192 $998.50; EMA20 $827.63"
     },
     {
       "ticker": "AAOI",
-      "price": 136.32,
-      "change_pct": -9.29,
+      "price": 136.57,
+      "change_pct": -9.12,
       "decision": "SELL",
       "score": 79,
       "contract": "2026-09-25 $110P",
@@ -188,12 +188,12 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $136.26; prefer stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $76.01 \u2192 $196.50; EMA20 $125.49"
+      "note": "Adjusted 45-day swing $76.01 \u2192 $196.50; EMA20 $125.51"
     },
     {
       "ticker": "MU",
-      "price": 938.6,
-      "change_pct": -3.4,
+      "price": 938.91,
+      "change_pct": -3.37,
       "decision": "WAIT",
       "score": 61,
       "contract": "2026-09-25 $825P",
@@ -263,17 +263,17 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $935.35; prefer stable/reclaiming tape before entry.",
       "risk": "Earnings falls before expiration.",
-      "note": "Adjusted 45-day swing $737.88 \u2192 $1254.81; EMA20 $907.72"
+      "note": "Adjusted 45-day swing $737.88 \u2192 $1254.81; EMA20 $907.75"
     },
     {
       "ticker": "SOXL",
-      "price": 124.63,
-      "change_pct": -14.02,
+      "price": 124.93,
+      "change_pct": -13.81,
       "decision": "WAIT",
       "score": 59,
       "contract": "2026-09-25 $100P",
-      "premium": 9.03,
-      "breakeven": 90.97,
+      "premium": 9.12,
+      "breakeven": 90.88,
       "key_support": 115.69,
       "fib": {
         "23.6%": 177.87,
@@ -286,13 +286,13 @@
         {
           "strike": 85.0,
           "bid": 4.5,
-          "ask": 4.95,
-          "premium": 4.72,
-          "breakeven": 80.28,
+          "ask": 5.05,
+          "premium": 4.78,
+          "breakeven": 80.22,
           "iv_pct": 138.77,
           "delta": -0.12,
-          "annualized_return_pct": 53.39,
-          "distance_to_support_pct": -30.61,
+          "annualized_return_pct": 53.96,
+          "distance_to_support_pct": -30.66,
           "dte": 38,
           "earnings_risk": false,
           "earnings_date": null,
@@ -302,14 +302,14 @@
         },
         {
           "strike": 100.0,
-          "bid": 8.55,
+          "bid": 8.75,
           "ask": 9.5,
-          "premium": 9.03,
-          "breakeven": 90.97,
+          "premium": 9.12,
+          "breakeven": 90.88,
           "iv_pct": 132.2,
           "delta": -0.21,
-          "annualized_return_pct": 86.69,
-          "distance_to_support_pct": -21.36,
+          "annualized_return_pct": 87.65,
+          "distance_to_support_pct": -21.45,
           "dte": 38,
           "earnings_risk": false,
           "earnings_date": null,
@@ -338,12 +338,12 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $115.69; prefer stable/reclaiming tape before entry.",
       "risk": "3x daily leverage and volatility drag.",
-      "note": "Adjusted 45-day swing $91.50 \u2192 $204.55; EMA20 $140.05"
+      "note": "Adjusted 45-day swing $91.50 \u2192 $204.55; EMA20 $140.07"
     },
     {
       "ticker": "MRVL",
-      "price": 213.06,
-      "change_pct": -4.04,
+      "price": 213.29,
+      "change_pct": -3.93,
       "decision": "WAIT",
       "score": 49,
       "contract": "2026-09-25 $185P",
@@ -395,13 +395,13 @@
         {
           "strike": 200.0,
           "bid": 14.15,
-          "ask": 14.8,
-          "premium": 14.48,
-          "breakeven": 185.53,
+          "ask": 15.15,
+          "premium": 14.65,
+          "breakeven": 185.35,
           "iv_pct": 80.58,
           "delta": -0.3,
-          "annualized_return_pct": 69.52,
-          "distance_to_support_pct": -6.59,
+          "annualized_return_pct": 70.36,
+          "distance_to_support_pct": -6.68,
           "dte": 38,
           "earnings_risk": true,
           "earnings_date": "2026-08-27",
@@ -413,17 +413,17 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $198.62; prefer stable/reclaiming tape before entry.",
       "risk": "Earnings falls before expiration.",
-      "note": "Adjusted 45-day swing $162.90 \u2192 $329.80; EMA20 $211.79"
+      "note": "Adjusted 45-day swing $162.90 \u2192 $329.80; EMA20 $211.81"
     },
     {
       "ticker": "AVGO",
-      "price": 378.36,
-      "change_pct": -3.72,
+      "price": 378.42,
+      "change_pct": -3.71,
       "decision": "WAIT",
       "score": 49,
       "contract": "2026-09-25 $340P",
-      "premium": 7.9,
-      "breakeven": 332.1,
+      "premium": 7.93,
+      "breakeven": 332.07,
       "key_support": 372.76,
       "fib": {
         "23.6%": 414.72,
@@ -453,12 +453,12 @@
         {
           "strike": 340.0,
           "bid": 7.7,
-          "ask": 8.1,
-          "premium": 7.9,
-          "breakeven": 332.1,
+          "ask": 8.15,
+          "premium": 7.93,
+          "breakeven": 332.07,
           "iv_pct": 49.29,
           "delta": -0.21,
-          "annualized_return_pct": 22.32,
+          "annualized_return_pct": 22.39,
           "distance_to_support_pct": -10.91,
           "dte": 38,
           "earnings_risk": true,
@@ -494,13 +494,13 @@
   "analysis": [
     {
       "ticker": "SOXL",
-      "price": 124.63,
-      "change_pct": -14.02,
+      "price": 124.93,
+      "change_pct": -13.81,
       "decision": "WAIT",
       "score": 59,
       "contract": "2026-09-25 $100P",
-      "premium": 9.03,
-      "breakeven": 90.97,
+      "premium": 9.12,
+      "breakeven": 90.88,
       "key_support": 115.69,
       "fib": {
         "23.6%": 177.87,
@@ -513,13 +513,13 @@
         {
           "strike": 85.0,
           "bid": 4.5,
-          "ask": 4.95,
-          "premium": 4.72,
-          "breakeven": 80.28,
+          "ask": 5.05,
+          "premium": 4.78,
+          "breakeven": 80.22,
           "iv_pct": 138.77,
           "delta": -0.12,
-          "annualized_return_pct": 53.39,
-          "distance_to_support_pct": -30.61,
+          "annualized_return_pct": 53.96,
+          "distance_to_support_pct": -30.66,
           "dte": 38,
           "earnings_risk": false,
           "earnings_date": null,
@@ -529,14 +529,14 @@
         },
         {
           "strike": 100.0,
-          "bid": 8.55,
+          "bid": 8.75,
           "ask": 9.5,
-          "premium": 9.03,
-          "breakeven": 90.97,
+          "premium": 9.12,
+          "breakeven": 90.88,
           "iv_pct": 132.2,
           "delta": -0.21,
-          "annualized_return_pct": 86.69,
-          "distance_to_support_pct": -21.36,
+          "annualized_return_pct": 87.65,
+          "distance_to_support_pct": -21.45,
           "dte": 38,
           "earnings_risk": false,
           "earnings_date": null,
@@ -565,12 +565,12 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $115.69; prefer stable/reclaiming tape before entry.",
       "risk": "3x daily leverage and volatility drag.",
-      "note": "Adjusted 45-day swing $91.50 \u2192 $204.55; EMA20 $140.05"
+      "note": "Adjusted 45-day swing $91.50 \u2192 $204.55; EMA20 $140.07"
     },
     {
       "ticker": "LITE",
-      "price": 877.71,
-      "change_pct": -5.23,
+      "price": 879.32,
+      "change_pct": -5.06,
       "decision": "SELL",
       "score": 79,
       "contract": "2026-09-25 $755P",
@@ -640,12 +640,12 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $844.30; prefer stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $594.84 \u2192 $998.50; EMA20 $827.48"
+      "note": "Adjusted 45-day swing $594.84 \u2192 $998.50; EMA20 $827.63"
     },
     {
       "ticker": "AAOI",
-      "price": 136.32,
-      "change_pct": -9.29,
+      "price": 136.57,
+      "change_pct": -9.12,
       "decision": "SELL",
       "score": 79,
       "contract": "2026-09-25 $110P",
@@ -715,12 +715,12 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $136.26; prefer stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $76.01 \u2192 $196.50; EMA20 $125.49"
+      "note": "Adjusted 45-day swing $76.01 \u2192 $196.50; EMA20 $125.51"
     },
     {
       "ticker": "MRVL",
-      "price": 213.06,
-      "change_pct": -4.04,
+      "price": 213.29,
+      "change_pct": -3.93,
       "decision": "WAIT",
       "score": 49,
       "contract": "2026-09-25 $185P",
@@ -772,13 +772,13 @@
         {
           "strike": 200.0,
           "bid": 14.15,
-          "ask": 14.8,
-          "premium": 14.48,
-          "breakeven": 185.53,
+          "ask": 15.15,
+          "premium": 14.65,
+          "breakeven": 185.35,
           "iv_pct": 80.58,
           "delta": -0.3,
-          "annualized_return_pct": 69.52,
-          "distance_to_support_pct": -6.59,
+          "annualized_return_pct": 70.36,
+          "distance_to_support_pct": -6.68,
           "dte": 38,
           "earnings_risk": true,
           "earnings_date": "2026-08-27",
@@ -790,12 +790,12 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $198.62; prefer stable/reclaiming tape before entry.",
       "risk": "Earnings falls before expiration.",
-      "note": "Adjusted 45-day swing $162.90 \u2192 $329.80; EMA20 $211.79"
+      "note": "Adjusted 45-day swing $162.90 \u2192 $329.80; EMA20 $211.81"
     },
     {
       "ticker": "MU",
-      "price": 938.6,
-      "change_pct": -3.4,
+      "price": 938.91,
+      "change_pct": -3.37,
       "decision": "WAIT",
       "score": 61,
       "contract": "2026-09-25 $825P",
@@ -865,17 +865,17 @@
       "option_source": "Tradier",
       "trigger": "Nearest technical support $935.35; prefer stable/reclaiming tape before entry.",
       "risk": "Earnings falls before expiration.",
-      "note": "Adjusted 45-day swing $737.88 \u2192 $1254.81; EMA20 $907.72"
+      "note": "Adjusted 45-day swing $737.88 \u2192 $1254.81; EMA20 $907.75"
     },
     {
       "ticker": "AVGO",
-      "price": 378.36,
-      "change_pct": -3.72,
+      "price": 378.42,
+      "change_pct": -3.71,
       "decision": "WAIT",
       "score": 49,
       "contract": "2026-09-25 $340P",
-      "premium": 7.9,
-      "breakeven": 332.1,
+      "premium": 7.93,
+      "breakeven": 332.07,
       "key_support": 372.76,
       "fib": {
         "23.6%": 414.72,
@@ -905,12 +905,12 @@
         {
           "strike": 340.0,
           "bid": 7.7,
-          "ask": 8.1,
-          "premium": 7.9,
-          "breakeven": 332.1,
+          "ask": 8.15,
+          "premium": 7.93,
+          "breakeven": 332.07,
           "iv_pct": 49.29,
           "delta": -0.21,
-          "annualized_return_pct": 22.32,
+          "annualized_return_pct": 22.39,
           "distance_to_support_pct": -10.91,
           "dte": 38,
           "earnings_risk": true,
@@ -944,7 +944,7 @@
     }
   ],
   "smh": {
-    "price": 564.92,
+    "price": 565.12,
     "entries": [
       {
         "zone": "$562\u2013$568",
