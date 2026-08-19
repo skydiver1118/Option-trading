@@ -109,7 +109,9 @@ def market_open_now(now):
 def should_run(now):
  if os.getenv('GITHUB_EVENT_NAME','') in {'workflow_dispatch','push'}:return True
  if mcal.get_calendar('NYSE').schedule(start_date=now.date(),end_date=now.date()).empty:return False
- cron=os.getenv('GITHUB_EVENT_SCHEDULE','').strip();off=now.utcoffset().total_seconds()/3600;valid={'20 14 * * 1-5','30 14 * * 1-5','40 14 * * 1-5','0 17 * * 1-5','15 17 * * 1-5','30 18 * * 1-5','45 18 * * 1-5'} if off==-4 else {'20 15 * * 1-5','30 15 * * 1-5','40 15 * * 1-5','0 18 * * 1-5','15 18 * * 1-5','30 19 * * 1-5','45 19 * * 1-5'};return cron in valid
+ cron=os.getenv('GITHUB_EVENT_SCHEDULE','').strip();off=now.utcoffset().total_seconds()/3600
+ valid={'0 14 * * 1-5','0 16 * * 1-5','0 18 * * 1-5'} if off==-4 else {'0 15 * * 1-5','0 17 * * 1-5','0 19 * * 1-5'}
+ return cron in valid
 def main():
  now=datetime.now(ET)
  if not should_run(now):print('Not scheduled');return
