@@ -3,22 +3,15 @@ name: Refresh option dashboard
 on:
   workflow_dispatch:
   schedule:
-    # Morning reliability window around the requested 10:30 ET refresh.
-    - cron: '20 14 * * 1-5'
-    - cron: '30 14 * * 1-5'
-    - cron: '40 14 * * 1-5'
-    - cron: '20 15 * * 1-5'
-    - cron: '30 15 * * 1-5'
-    - cron: '40 15 * * 1-5'
-    # 13:00 and 14:30 ET primary + fallback schedules.
+    # Target refreshes: 10:00 AM, 12:00 PM, and 2:00 PM ET.
+    # Include both EDT (UTC-4) and EST (UTC-5); Python trading-day/timezone guard
+    # ensures only the currently correct ET schedule produces a refresh.
+    - cron: '0 14 * * 1-5'
+    - cron: '0 15 * * 1-5'
+    - cron: '0 16 * * 1-5'
     - cron: '0 17 * * 1-5'
-    - cron: '15 17 * * 1-5'
     - cron: '0 18 * * 1-5'
-    - cron: '15 18 * * 1-5'
-    - cron: '30 18 * * 1-5'
-    - cron: '45 18 * * 1-5'
-    - cron: '30 19 * * 1-5'
-    - cron: '45 19 * * 1-5'
+    - cron: '0 19 * * 1-5'
 
 permissions:
   contents: write
@@ -78,8 +71,6 @@ jobs:
         continue-on-error: true
         uses: actions/deploy-pages@v4
 
-      # Preserve the latest JSON in the repository, but never let a transient git race
-      # turn an otherwise successful dashboard refresh into a failed workflow/email.
       - name: Best-effort commit refreshed data
         continue-on-error: true
         run: |
@@ -99,5 +90,5 @@ jobs:
           if [ "${{ steps.deploy1.outcome }}" = "success" ] || [ "${{ steps.deploy2.outcome }}" = "success" ] || [ "${{ steps.deploy3.outcome }}" = "success" ]; then
             echo "Dashboard deployed successfully."
           else
-            echo "GitHub Pages deployment failed after three attempts; a later scheduled fallback will retry."
+            echo "GitHub Pages deployment failed after three attempts; the next scheduled run will retry."
           fi
