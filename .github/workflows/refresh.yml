@@ -3,15 +3,35 @@ name: Refresh option dashboard
 on:
   workflow_dispatch:
   schedule:
-    # Target refreshes: 10:00 AM, 12:00 PM, and 2:00 PM ET.
-    # Include both EDT (UTC-4) and EST (UTC-5); Python trading-day/timezone guard
-    # ensures only the currently correct ET schedule produces a refresh.
+    # Reliability windows around 10:00 AM, 12:00 PM, and 2:00 PM ET.
+    # GitHub scheduled workflows can be delayed substantially, so we launch several
+    # attempts around each target. The ET gate below rejects out-of-window runs.
+    # EDT candidates (UTC-4)
+    - cron: '40 13 * * 1-5'
+    - cron: '50 13 * * 1-5'
     - cron: '0 14 * * 1-5'
-    - cron: '0 15 * * 1-5'
+    - cron: '10 14 * * 1-5'
+    - cron: '40 15 * * 1-5'
+    - cron: '50 15 * * 1-5'
     - cron: '0 16 * * 1-5'
-    - cron: '0 17 * * 1-5'
+    - cron: '10 16 * * 1-5'
+    - cron: '40 17 * * 1-5'
+    - cron: '50 17 * * 1-5'
     - cron: '0 18 * * 1-5'
+    - cron: '10 18 * * 1-5'
+    # EST candidates (UTC-5)
+    - cron: '40 14 * * 1-5'
+    - cron: '50 14 * * 1-5'
+    - cron: '0 15 * * 1-5'
+    - cron: '10 15 * * 1-5'
+    - cron: '40 16 * * 1-5'
+    - cron: '50 16 * * 1-5'
+    - cron: '0 17 * * 1-5'
+    - cron: '10 17 * * 1-5'
+    - cron: '40 18 * * 1-5'
+    - cron: '50 18 * * 1-5'
     - cron: '0 19 * * 1-5'
+    - cron: '10 19 * * 1-5'
 
 permissions:
   contents: write
@@ -36,42 +56,75 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install -r requirements.txt
+
+      - name: ET target-window and NYSE trading-day gate
+        id: gate
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          import pandas_market_calendars as mcal
+          now = datetime.now(ZoneInfo('America/New_York'))
+          sched = mcal.get_calendar('NYSE').schedule(start_date=now.date(), end_date=now.date())
+          mins = now.hour * 60 + now.minute
+          # Allow queued jobs that actually start near one of the requested target times.
+          windows = [(9*60+30, 10*60+50), (11*60+30, 12*60+50), (13*60+30, 14*60+50)]
+          in_window = any(lo <= mins <= hi for lo, hi in windows)
+          trading_day = not sched.empty
+          manual = '${{ github.event_name }}' == 'workflow_dispatch'
+          run = manual or (trading_day and in_window)
+          print(f'run={str(run).lower()}')
+          print(f'now_et={now.strftime("%Y-%m-%d %I:%M %p ET")}')
+          print(f'trading_day={str(trading_day).lower()}')
+          PY
+
+      - name: Show refresh gate
+        run: echo "ET=${{ steps.gate.outputs.now_et }} run=${{ steps.gate.outputs.run }} trading_day=${{ steps.gate.outputs.trading_day }}"
+
       - name: Update dashboard data
+        if: steps.gate.outputs.run == 'true'
         env:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          # The workflow gate already verifies NYSE trading day and ET timing.
+          # Force the script's manual-run path so reliability-window cron strings are accepted.
+          GITHUB_EVENT_NAME: workflow_dispatch
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/update_dashboard.py
 
       - name: Configure GitHub Pages
+        if: steps.gate.outputs.run == 'true'
         uses: actions/configure-pages@v5
       - name: Upload dashboard to Pages
+        if: steps.gate.outputs.run == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
       - name: Deploy dashboard to GitHub Pages
+        if: steps.gate.outputs.run == 'true'
         id: deploy1
         continue-on-error: true
         uses: actions/deploy-pages@v4
       - name: Wait before second deployment attempt
-        if: steps.deploy1.outcome == 'failure'
+        if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure'
         run: sleep 30
       - name: Retry GitHub Pages deployment
         id: deploy2
-        if: steps.deploy1.outcome == 'failure'
+        if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure'
         continue-on-error: true
         uses: actions/deploy-pages@v4
       - name: Wait before third deployment attempt
-        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
         run: sleep 60
       - name: Final GitHub Pages deployment attempt
         id: deploy3
-        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
         continue-on-error: true
         uses: actions/deploy-pages@v4
 
       - name: Best-effort commit refreshed data
+        if: steps.gate.outputs.run == 'true'
         continue-on-error: true
         run: |
           if git diff --quiet data/dashboard.json; then
@@ -86,9 +139,10 @@ jobs:
           fi
 
       - name: Report deployment result
+        if: steps.gate.outputs.run == 'true'
         run: |
           if [ "${{ steps.deploy1.outcome }}" = "success" ] || [ "${{ steps.deploy2.outcome }}" = "success" ] || [ "${{ steps.deploy3.outcome }}" = "success" ]; then
             echo "Dashboard deployed successfully."
           else
-            echo "GitHub Pages deployment failed after three attempts; the next scheduled run will retry."
+            echo "GitHub Pages deployment failed after three attempts; another reliability-window run will retry."
           fi
