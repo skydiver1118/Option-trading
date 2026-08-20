@@ -9,8 +9,8 @@ import yfinance as yf
 import pandas_market_calendars as mcal
 
 ET=ZoneInfo('America/New_York')
-TICKERS=['SOXL','LITE','AAOI','MRVL','MU','AVGO','QTUM','SMH']
-PUT_NAMES=['SOXL','LITE','AAOI','MRVL','MU','AVGO','QTUM']
+TICKERS=['SOXL','LITE','AAOI','MRVL','MU','AVGO','QTUM','DRAM','SMH']
+PUT_NAMES=['SOXL','LITE','AAOI','MRVL','MU','AVGO','QTUM','DRAM']
 RISK_FREE=.04
 TRADIER_BASE='https://api.tradier.com/v1';TRADIER_TOKEN=os.getenv('TRADIER_TOKEN','').strip()
 
@@ -60,7 +60,7 @@ def put_delta_bs(spot,strike,iv,dte):
   sigma=max(float(iv),1e-6);t=max(dte/365,1e-6);d1=(math.log(spot/strike)+(RISK_FREE+.5*sigma*sigma)*t)/(sigma*math.sqrt(t));return norm_cdf(d1)-1
  except:return None
 def earnings_date(ticker):
- if ticker=='QTUM':return None
+ if ticker in {'QTUM','DRAM'}:return None
  try:
   cal=yf.Ticker(ticker).calendar;ed=cal.get('Earnings Date') if isinstance(cal,dict) else None
   if not ed:return None
@@ -121,7 +121,7 @@ def main():
   if h.empty:continue
   h=h[['Open','High','Low','Close']].dropna();close=float(h.Close.iloc[-1]);prev=float(h.Close.iloc[-2]);recent=h.tail(45);sane=recent[(recent.High<=close*1.65)&(recent.Low>=close*.45)];recent=sane if len(sane)>=20 else recent;low=float(recent.Low.min());high=float(recent.High.max());fb=fibs(low,high);raw[sym]={'price':close,'change_pct':(close/prev-1)*100,'low45':low,'high45':high,'fib':fb,'ema20':float(h.Close.ewm(span=20,adjust=False).mean().iloc[-1]),'key_support':support_below(close,fb)}
  for sym in PUT_NAMES:
-  x=raw[sym];expiry,_=choose_expiry(sym);cands,source=candidate_puts(sym,x['price'],x['key_support'],expiry);sources.add(source);pref=next((c for c in cands if c['profile']=='Preferred'),cands[0] if cands else None);near=abs(x['price']-x['key_support'])/x['price']<=.04;vertical=x['change_pct']>=6;pg=bool(pref and pref['annualized_return_pct']>=35);event=bool(pref and pref['earnings_risk']);score=max(0,min(100,55+(12 if near else 0)+(12 if pg else 0)-(18 if vertical else 0)-(18 if event else 0)-(8 if sym=='SOXL' else 0)));decision='SELL' if score>=68 and not vertical and not event else 'WAIT';clean=[{**c,'strike':f(c['strike']),'bid':f(c['bid']),'ask':f(c['ask']),'premium':f(c['premium']),'breakeven':f(c['breakeven']),'iv_pct':f(c['iv_pct']),'delta':f(c['delta']),'annualized_return_pct':f(c['annualized_return_pct']),'distance_to_support_pct':f(c['distance_to_support_pct'])} for c in cands];risk='3x daily leverage and volatility drag.' if sym=='SOXL' else ('ETF thematic/concentration risk.' if sym=='QTUM' else ('Earnings falls before expiration.' if event else 'Gap risk and volatility expansion.'));analyses.append({'ticker':sym,'price':f(x['price']),'change_pct':f(x['change_pct']),'decision':decision,'score':int(score),'contract':f"{expiry} ${pref['strike']:.0f}P" if pref else None,'premium':f(pref['premium']) if pref else None,'breakeven':f(pref['breakeven']) if pref else None,'key_support':f(x['key_support']),'fib':{k:f(v) for k,v in x['fib'].items()},'candidates':clean,'option_source':source,'expiration_type':'Standard monthly (third Friday)','trigger':f"Nearest technical support ${x['key_support']:.2f}; prefer stable/reclaiming tape before entry.",'risk':risk,'note':f"Adjusted 45-day swing ${x['low45']:.2f} → ${x['high45']:.2f}; EMA20 ${x['ema20']:.2f}"})
+  x=raw[sym];expiry,_=choose_expiry(sym);cands,source=candidate_puts(sym,x['price'],x['key_support'],expiry);sources.add(source);pref=next((c for c in cands if c['profile']=='Preferred'),cands[0] if cands else None);near=abs(x['price']-x['key_support'])/x['price']<=.04;vertical=x['change_pct']>=6;pg=bool(pref and pref['annualized_return_pct']>=35);event=bool(pref and pref['earnings_risk']);score=max(0,min(100,55+(12 if near else 0)+(12 if pg else 0)-(18 if vertical else 0)-(18 if event else 0)-(8 if sym=='SOXL' else 0)));decision='SELL' if score>=68 and not vertical and not event else 'WAIT';clean=[{**c,'strike':f(c['strike']),'bid':f(c['bid']),'ask':f(c['ask']),'premium':f(c['premium']),'breakeven':f(c['breakeven']),'iv_pct':f(c['iv_pct']),'delta':f(c['delta']),'annualized_return_pct':f(c['annualized_return_pct']),'distance_to_support_pct':f(c['distance_to_support_pct'])} for c in cands];risk='3x daily leverage and volatility drag.' if sym=='SOXL' else ('ETF thematic/concentration risk.' if sym in {'QTUM','DRAM'} else ('Earnings falls before expiration.' if event else 'Gap risk and volatility expansion.'));analyses.append({'ticker':sym,'price':f(x['price']),'change_pct':f(x['change_pct']),'decision':decision,'score':int(score),'contract':f"{expiry} ${pref['strike']:.0f}P" if pref else None,'premium':f(pref['premium']) if pref else None,'breakeven':f(pref['breakeven']) if pref else None,'key_support':f(x['key_support']),'fib':{k:f(v) for k,v in x['fib'].items()},'candidates':clean,'option_source':source,'expiration_type':'Standard monthly (third Friday)','trigger':f"Nearest technical support ${x['key_support']:.2f}; prefer stable/reclaiming tape before entry.",'risk':risk,'note':f"Adjusted 45-day swing ${x['low45']:.2f} → ${x['high45']:.2f}; EMA20 ${x['ema20']:.2f}"})
  ranking=sorted(analyses,key=lambda z:z['score'],reverse=True);smh=raw.get('SMH',{});entries=[]
  if smh:
   price=smh['price'];levels=sorted([v for v in smh['fib'].values() if v<=price],reverse=True);entries=[{'zone':f"${price*.995:.0f}–${price*1.005:.0f}",'allocation':20,'label':'starter only'}]
