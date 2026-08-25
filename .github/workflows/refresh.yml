@@ -2,36 +2,27 @@ name: Refresh option dashboard
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh.yml'
   schedule:
-    # Reliability windows around 10:00 AM, 12:00 PM, and 2:00 PM ET.
-    # GitHub scheduled workflows can be delayed substantially, so we launch several
-    # attempts around each target. The ET gate below rejects out-of-window runs.
-    # EDT candidates (UTC-4)
-    - cron: '40 13 * * 1-5'
-    - cron: '50 13 * * 1-5'
-    - cron: '0 14 * * 1-5'
-    - cron: '10 14 * * 1-5'
-    - cron: '40 15 * * 1-5'
-    - cron: '50 15 * * 1-5'
-    - cron: '0 16 * * 1-5'
-    - cron: '10 16 * * 1-5'
-    - cron: '40 17 * * 1-5'
-    - cron: '50 17 * * 1-5'
-    - cron: '0 18 * * 1-5'
-    - cron: '10 18 * * 1-5'
-    # EST candidates (UTC-5)
-    - cron: '40 14 * * 1-5'
-    - cron: '50 14 * * 1-5'
-    - cron: '0 15 * * 1-5'
-    - cron: '10 15 * * 1-5'
-    - cron: '40 16 * * 1-5'
-    - cron: '50 16 * * 1-5'
-    - cron: '0 17 * * 1-5'
-    - cron: '10 17 * * 1-5'
-    - cron: '40 18 * * 1-5'
-    - cron: '50 18 * * 1-5'
-    - cron: '0 19 * * 1-5'
-    - cron: '10 19 * * 1-5'
+    # Target refreshes: 10:00 AM, 12:00 PM, 2:00 PM ET.
+    # Avoid top-of-hour cron congestion by scheduling before/after each target.
+    # EDT (UTC-4): 9:45/10:15, 11:45/12:15, 1:45/2:15 ET
+    - cron: '45 13 * * 1-5'
+    - cron: '15 14 * * 1-5'
+    - cron: '45 15 * * 1-5'
+    - cron: '15 16 * * 1-5'
+    - cron: '45 17 * * 1-5'
+    - cron: '15 18 * * 1-5'
+    # EST (UTC-5)
+    - cron: '45 14 * * 1-5'
+    - cron: '15 15 * * 1-5'
+    - cron: '45 16 * * 1-5'
+    - cron: '15 17 * * 1-5'
+    - cron: '45 18 * * 1-5'
+    - cron: '15 19 * * 1-5'
 
 permissions:
   contents: write
@@ -68,12 +59,12 @@ jobs:
           now = datetime.now(ZoneInfo('America/New_York'))
           sched = mcal.get_calendar('NYSE').schedule(start_date=now.date(), end_date=now.date())
           mins = now.hour * 60 + now.minute
-          # Allow queued jobs that actually start near one of the requested target times.
-          windows = [(9*60+30, 10*60+50), (11*60+30, 12*60+50), (13*60+30, 14*60+50)]
+          # Broad windows tolerate GitHub queue delays while keeping only three intraday periods.
+          windows = [(9*60+20, 10*60+55), (11*60+20, 12*60+55), (13*60+20, 14*60+55)]
           in_window = any(lo <= mins <= hi for lo, hi in windows)
           trading_day = not sched.empty
-          manual = '${{ github.event_name }}' == 'workflow_dispatch'
-          run = manual or (trading_day and in_window)
+          manual_or_fix_push = '${{ github.event_name }}' in ('workflow_dispatch', 'push')
+          run = manual_or_fix_push or (trading_day and in_window)
           print(f'run={str(run).lower()}')
           print(f'now_et={now.strftime("%Y-%m-%d %I:%M %p ET")}')
           print(f'trading_day={str(trading_day).lower()}')
@@ -85,8 +76,6 @@ jobs:
       - name: Update dashboard data
         if: steps.gate.outputs.run == 'true'
         env:
-          # The workflow gate already verifies NYSE trading day and ET timing.
-          # Force the script's manual-run path so reliability-window cron strings are accepted.
           GITHUB_EVENT_NAME: workflow_dispatch
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
@@ -144,5 +133,5 @@ jobs:
           if [ "${{ steps.deploy1.outcome }}" = "success" ] || [ "${{ steps.deploy2.outcome }}" = "success" ] || [ "${{ steps.deploy3.outcome }}" = "success" ]; then
             echo "Dashboard deployed successfully."
           else
-            echo "GitHub Pages deployment failed after three attempts; another reliability-window run will retry."
+            echo "GitHub Pages deployment failed after three attempts; the next scheduled run will retry."
           fi
