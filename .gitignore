@@ -1,0 +1,4 @@
+windows/.secrets/
+windows/logs/
+__pycache__/
+*.pyc
