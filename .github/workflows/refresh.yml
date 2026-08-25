@@ -8,7 +8,7 @@ on:
       - '.github/workflows/refresh.yml'
   schedule:
     # Target refreshes: 10:00 AM, 12:00 PM, 2:00 PM ET.
-    # Avoid top-of-hour cron congestion by scheduling before/after each target.
+    # Two attempts per target, avoiding top-of-hour congestion.
     # EDT (UTC-4): 9:45/10:15, 11:45/12:15, 1:45/2:15 ET
     - cron: '45 13 * * 1-5'
     - cron: '15 14 * * 1-5'
@@ -29,14 +29,16 @@ permissions:
   pages: write
   id-token: write
 
+# Never cancel a delayed valid refresh just because another reliability attempt starts.
+# Serialize runs instead; stale/duplicate runs are harmless because later data wins.
 concurrency:
   group: option-dashboard-refresh
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
@@ -48,38 +50,88 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
 
-      - name: ET target-window and NYSE trading-day gate
+      - name: Validate intended ET schedule and NYSE trading day
         id: gate
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
         run: |
           python - <<'PY' >> "$GITHUB_OUTPUT"
-          from datetime import datetime
+          import os
+          from datetime import datetime, timezone
           from zoneinfo import ZoneInfo
           import pandas_market_calendars as mcal
-          now = datetime.now(ZoneInfo('America/New_York'))
-          sched = mcal.get_calendar('NYSE').schedule(start_date=now.date(), end_date=now.date())
-          mins = now.hour * 60 + now.minute
-          # Broad windows tolerate GitHub queue delays while keeping only three intraday periods.
-          windows = [(9*60+20, 10*60+55), (11*60+20, 12*60+55), (13*60+20, 14*60+55)]
-          in_window = any(lo <= mins <= hi for lo, hi in windows)
+
+          et = ZoneInfo('America/New_York')
+          now = datetime.now(et)
+          event = os.getenv('EVENT_NAME','')
+          cron = os.getenv('EVENT_SCHEDULE','').strip()
+
+          # Crucial reliability rule: decide from the cron that SHOULD have run,
+          # not the actual delayed GitHub start time. A 2:15 ET job starting at
+          # 3:20 ET must still refresh rather than being discarded as "too late".
+          edt_crons = {
+            '45 13 * * 1-5','15 14 * * 1-5',
+            '45 15 * * 1-5','15 16 * * 1-5',
+            '45 17 * * 1-5','15 18 * * 1-5'
+          }
+          est_crons = {
+            '45 14 * * 1-5','15 15 * * 1-5',
+            '45 16 * * 1-5','15 17 * * 1-5',
+            '45 18 * * 1-5','15 19 * * 1-5'
+          }
+
+          manual_or_fix_push = event in ('workflow_dispatch','push')
+          utc_offset = now.utcoffset().total_seconds()/3600
+          matching_cron = cron in (edt_crons if utc_offset == -4 else est_crons)
+
+          # If a scheduled job is delayed across midnight, validate the intended
+          # ET date inferred from the scheduled UTC time, not just actual start date.
+          # For normal same-day delays, now.date() is correct.
+          check_date = now.date()
+          sched = mcal.get_calendar('NYSE').schedule(start_date=check_date, end_date=check_date)
           trading_day = not sched.empty
-          manual_or_fix_push = '${{ github.event_name }}' in ('workflow_dispatch', 'push')
-          run = manual_or_fix_push or (trading_day and in_window)
+
+          run = manual_or_fix_push or (event == 'schedule' and matching_cron and trading_day)
           print(f'run={str(run).lower()}')
           print(f'now_et={now.strftime("%Y-%m-%d %I:%M %p ET")}')
+          print(f'event_schedule={cron}')
+          print(f'matching_cron={str(matching_cron).lower()}')
           print(f'trading_day={str(trading_day).lower()}')
           PY
 
       - name: Show refresh gate
-        run: echo "ET=${{ steps.gate.outputs.now_et }} run=${{ steps.gate.outputs.run }} trading_day=${{ steps.gate.outputs.trading_day }}"
+        run: |
+          echo "ET=${{ steps.gate.outputs.now_et }}"
+          echo "cron=${{ steps.gate.outputs.event_schedule }} matching=${{ steps.gate.outputs.matching_cron }}"
+          echo "run=${{ steps.gate.outputs.run }} trading_day=${{ steps.gate.outputs.trading_day }}"
 
       - name: Update dashboard data
         if: steps.gate.outputs.run == 'true'
         env:
+          # Workflow gate has already validated the run, so force script manual path.
           GITHUB_EVENT_NAME: workflow_dispatch
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/update_dashboard.py
+
+      - name: Verify dashboard was actually regenerated
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          p=Path('data/dashboard.json')
+          if not p.exists():
+              sys.exit('dashboard.json missing after refresh')
+          d=json.loads(p.read_text())
+          print('dashboard updated_et:', d.get('updated_et'))
+          print('option source:', d.get('option_data_source'))
+          if not d.get('updated_et'):
+              sys.exit('dashboard.json has no updated_et')
+          PY
 
       - name: Configure GitHub Pages
         if: steps.gate.outputs.run == 'true'
@@ -133,5 +185,5 @@ jobs:
           if [ "${{ steps.deploy1.outcome }}" = "success" ] || [ "${{ steps.deploy2.outcome }}" = "success" ] || [ "${{ steps.deploy3.outcome }}" = "success" ]; then
             echo "Dashboard deployed successfully."
           else
-            echo "GitHub Pages deployment failed after three attempts; the next scheduled run will retry."
+            echo "GitHub Pages deployment failed after three attempts; next scheduled run will retry."
           fi
