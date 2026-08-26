@@ -11,6 +11,7 @@ import pandas_market_calendars as mcal
 ET=ZoneInfo('America/New_York')
 TICKERS=['SOXL','LITE','AAOI','MRVL','MU','AVGO','QTUM','DRAM','SMH']
 PUT_NAMES=['SOXL','LITE','AAOI','MRVL','MU','AVGO','QTUM','DRAM']
+ETF_TICKERS={'SOXL','QTUM','DRAM','SMH'}
 RISK_FREE=.04
 TRADIER_BASE='https://api.tradier.com/v1';TRADIER_TOKEN=os.getenv('TRADIER_TOKEN','').strip()
 
@@ -60,7 +61,7 @@ def put_delta_bs(spot,strike,iv,dte):
   sigma=max(float(iv),1e-6);t=max(dte/365,1e-6);d1=(math.log(spot/strike)+(RISK_FREE+.5*sigma*sigma)*t)/(sigma*math.sqrt(t));return norm_cdf(d1)-1
  except:return None
 def earnings_date(ticker):
- if ticker in {'QTUM','DRAM'}:return None
+ if ticker in ETF_TICKERS:return None
  try:
   cal=yf.Ticker(ticker).calendar;ed=cal.get('Earnings Date') if isinstance(cal,dict) else None
   if not ed:return None

@@ -10,6 +10,8 @@ $RepoRoot = Split-Path -Parent $ScriptDir
 $LogDir = Join-Path $ScriptDir 'logs'
 $SecretDir = Join-Path $ScriptDir '.secrets'
 $TokenFile = Join-Path $SecretDir 'tradier_token.txt'
+$NativeCommandHelper = Join-Path $ScriptDir 'native_command.ps1'
+. $NativeCommandHelper
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 $Stamp = Get-Date -Format 'yyyy-MM-dd_HHmmss'
 $LogFile = Join-Path $LogDir "refresh_$Stamp.log"
@@ -59,7 +61,11 @@ try {
     }
 
     # Sync code first. A temporary GitHub/network failure should not prevent local data generation.
-    try { Invoke-Retry -Name 'git pull' -Attempts 2 -DelaySeconds 10 -Command { git pull --rebase origin main 2>&1 | Tee-Object -FilePath $LogFile -Append } }
+    try {
+        Invoke-Retry -Name 'git pull' -Attempts 2 -DelaySeconds 10 -Command {
+            Invoke-NativeLogged -FilePath 'git' -ArgumentList @('pull', '--rebase', 'origin', 'main') -LogFile $LogFile -Name 'git pull'
+        }
+    }
     catch { Log "Continuing with local code because git pull failed: $($_.Exception.Message)" }
 
     $secureToken = Get-Content $TokenFile | ConvertTo-SecureString
@@ -69,8 +75,7 @@ try {
 
     $before = if (Test-Path 'data\dashboard.json') { (Get-Item 'data\dashboard.json').LastWriteTimeUtc } else { [datetime]::MinValue }
     Log 'Downloading market/options data and rebuilding dashboard.json...'
-    & python 'scripts\update_dashboard.py' 2>&1 | Tee-Object -FilePath $LogFile -Append
-    if ($LASTEXITCODE -ne 0) { throw "update_dashboard.py failed with exit code $LASTEXITCODE" }
+    Invoke-NativeLogged -FilePath 'python' -ArgumentList @('scripts\update_dashboard.py') -LogFile $LogFile -Name 'update_dashboard.py'
     if (-not (Test-Path 'data\dashboard.json')) { throw 'data/dashboard.json was not created.' }
 
     $after = (Get-Item 'data\dashboard.json').LastWriteTimeUtc
@@ -84,9 +89,10 @@ try {
     if ($changed) {
         git config user.name 'option-dashboard-local'
         git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-        git commit -m "Local refresh option dashboard data $($json.updated_et)" 2>&1 | Tee-Object -FilePath $LogFile -Append
-        if ($LASTEXITCODE -ne 0) { throw 'git commit failed.' }
-        Invoke-Retry -Name 'git push' -Attempts 4 -DelaySeconds 15 -Command { git push origin HEAD:main 2>&1 | Tee-Object -FilePath $LogFile -Append }
+        Invoke-NativeLogged -FilePath 'git' -ArgumentList @('commit', '-m', "Local refresh option dashboard data $($json.updated_et)") -LogFile $LogFile -Name 'git commit'
+        Invoke-Retry -Name 'git push' -Attempts 4 -DelaySeconds 15 -Command {
+            Invoke-NativeLogged -FilePath 'git' -ArgumentList @('push', 'origin', 'HEAD:main') -LogFile $LogFile -Name 'git push'
+        }
         Log 'Dashboard data pushed to GitHub. GitHub Pages push-triggered deployment will publish it.'
     } else {
         Log 'No Git diff detected after refresh; nothing to push.'
