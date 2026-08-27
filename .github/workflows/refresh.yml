@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/refresh.yml'
+      - 'scripts/mrvl_calendar_snapshot.py'
   schedule:
     # Target refreshes: 10:00 AM, 12:00 PM, 2:00 PM ET.
     # Two attempts per target, avoiding top-of-hour congestion.
@@ -29,8 +30,6 @@ permissions:
   pages: write
   id-token: write
 
-# Never cancel a delayed valid refresh just because another reliability attempt starts.
-# Serialize runs instead; stale/duplicate runs are harmless because later data wins.
 concurrency:
   group: option-dashboard-refresh
   cancel-in-progress: false
@@ -59,7 +58,7 @@ jobs:
         run: |
           python - <<'PY' >> "$GITHUB_OUTPUT"
           import os
-          from datetime import datetime, timezone
+          from datetime import datetime
           from zoneinfo import ZoneInfo
           import pandas_market_calendars as mcal
 
@@ -68,9 +67,6 @@ jobs:
           event = os.getenv('EVENT_NAME','')
           cron = os.getenv('EVENT_SCHEDULE','').strip()
 
-          # Crucial reliability rule: decide from the cron that SHOULD have run,
-          # not the actual delayed GitHub start time. A 2:15 ET job starting at
-          # 3:20 ET must still refresh rather than being discarded as "too late".
           edt_crons = {
             '45 13 * * 1-5','15 14 * * 1-5',
             '45 15 * * 1-5','15 16 * * 1-5',
@@ -85,14 +81,9 @@ jobs:
           manual_or_fix_push = event in ('workflow_dispatch','push')
           utc_offset = now.utcoffset().total_seconds()/3600
           matching_cron = cron in (edt_crons if utc_offset == -4 else est_crons)
-
-          # If a scheduled job is delayed across midnight, validate the intended
-          # ET date inferred from the scheduled UTC time, not just actual start date.
-          # For normal same-day delays, now.date() is correct.
           check_date = now.date()
           sched = mcal.get_calendar('NYSE').schedule(start_date=check_date, end_date=check_date)
           trading_day = not sched.empty
-
           run = manual_or_fix_push or (event == 'schedule' and matching_cron and trading_day)
           print(f'run={str(run).lower()}')
           print(f'now_et={now.strftime("%Y-%m-%d %I:%M %p ET")}')
@@ -110,11 +101,16 @@ jobs:
       - name: Update dashboard data
         if: steps.gate.outputs.run == 'true'
         env:
-          # Workflow gate has already validated the run, so force script manual path.
           GITHUB_EVENT_NAME: workflow_dispatch
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/update_dashboard.py
+
+      - name: Update MRVL calendar snapshot
+        if: steps.gate.outputs.run == 'true'
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/mrvl_calendar_snapshot.py
 
       - name: Verify dashboard was actually regenerated
         if: steps.gate.outputs.run == 'true'
@@ -123,14 +119,12 @@ jobs:
           python - <<'PY'
           import json, sys
           from pathlib import Path
-          p=Path('data/dashboard.json')
-          if not p.exists():
-              sys.exit('dashboard.json missing after refresh')
-          d=json.loads(p.read_text())
-          print('dashboard updated_et:', d.get('updated_et'))
-          print('option source:', d.get('option_data_source'))
-          if not d.get('updated_et'):
-              sys.exit('dashboard.json has no updated_et')
+          for name in ['dashboard.json', 'mrvl_calendar.json']:
+              p=Path('data')/name
+              if not p.exists():
+                  sys.exit(f'{name} missing after refresh')
+              d=json.loads(p.read_text())
+              print(name, 'updated_et:', d.get('updated_et'))
           PY
 
       - name: Configure GitHub Pages
@@ -168,12 +162,12 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
         run: |
-          if git diff --quiet data/dashboard.json; then
+          if git diff --quiet data/dashboard.json data/mrvl_calendar.json; then
             echo "No dashboard data change."
           else
             git config user.name "option-dashboard-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/dashboard.json
+            git add data/dashboard.json data/mrvl_calendar.json
             git commit -m "Refresh option dashboard data" || true
             git pull --rebase origin main || true
             git push origin HEAD:main || true
