@@ -1,5 +1,5 @@
 {
-  "updated_et": "2026-08-28 09:44:04 PM ET",
+  "updated_et": "2026-08-30 07:58:52 PM ET",
   "source": "Tradier production API",
   "symbol": "MRVL",
   "underlying": {
@@ -15,262 +15,49 @@
     {
       "type": "put",
       "strike": 215,
-      "front": {
-        "symbol": "MRVL260828P00215000",
-        "strike": 215.0,
-        "type": "put",
-        "bid": 0.02,
-        "ask": 0.07,
-        "mid": 0.045,
-        "last": 0.03,
-        "volume": 17891,
-        "open_interest": 4188,
-        "iv": 0.6377,
-        "delta": -0.0452,
-        "gamma": 0.02503,
-        "theta": -0.0078,
-        "vega": 0.001
-      },
-      "back": {
-        "symbol": "MRVL260904P00215000",
-        "strike": 215.0,
-        "type": "put",
-        "bid": 5.6,
-        "ask": 6.45,
-        "mid": 6.025,
-        "last": 6.15,
-        "volume": 2389,
-        "open_interest": 613,
-        "iv": 0.5855,
-        "delta": -0.4362,
-        "gamma": 0.02225,
-        "theta": -0.497,
-        "vega": 0.1182
-      },
-      "calendar_mid_debit": 5.98,
-      "calendar_natural_debit": 6.43,
-      "calendar_optimistic_debit": 5.53
+      "missing": true
     },
     {
       "type": "put",
       "strike": 220,
-      "front": {
-        "symbol": "MRVL260828P00220000",
-        "strike": 220.0,
-        "type": "put",
-        "bid": 2.77,
-        "ask": 3.9,
-        "mid": 3.335,
-        "last": 2.96,
-        "volume": 16481,
-        "open_interest": 6898,
-        "iv": 1.1426,
-        "delta": -1.0,
-        "gamma": 0.12162,
-        "theta": -0.0572,
-        "vega": 0.0042
-      },
-      "back": {
-        "symbol": "MRVL260904P00220000",
-        "strike": 220.0,
-        "type": "put",
-        "bid": 8.3,
-        "ask": 9.3,
-        "mid": 8.8,
-        "last": 8.61,
-        "volume": 3227,
-        "open_interest": 1553,
-        "iv": 0.6001,
-        "delta": -0.5494,
-        "gamma": 0.02255,
-        "theta": -0.5143,
-        "vega": 0.1198
-      },
-      "calendar_mid_debit": 5.465,
-      "calendar_natural_debit": 6.53,
-      "calendar_optimistic_debit": 4.4
+      "missing": true
     },
     {
       "type": "put",
       "strike": 225,
-      "front": {
-        "symbol": "MRVL260828P00225000",
-        "strike": 225.0,
-        "type": "put",
-        "bid": 7.45,
-        "ask": 9.5,
-        "mid": 8.475,
-        "last": 7.77,
-        "volume": 6058,
-        "open_interest": 2752,
-        "iv": 2.4164,
-        "delta": -1.0,
-        "gamma": 0.0,
-        "theta": 0.0,
-        "vega": 0.0
-      },
-      "back": {
-        "symbol": "MRVL260904P00225000",
-        "strike": 225.0,
-        "type": "put",
-        "bid": 11.45,
-        "ask": 12.7,
-        "mid": 12.075,
-        "last": 12.0,
-        "volume": 1488,
-        "open_interest": 627,
-        "iv": 0.6096,
-        "delta": -0.6526,
-        "gamma": 0.02103,
-        "theta": -0.4958,
-        "vega": 0.1155
-      },
-      "calendar_mid_debit": 3.6,
-      "calendar_natural_debit": 5.25,
-      "calendar_optimistic_debit": 1.95
+      "missing": true
     },
     {
       "type": "call",
       "strike": 260,
-      "front": {
-        "symbol": "MRVL260828C00260000",
-        "strike": 260.0,
-        "type": "call",
-        "bid": 0.0,
-        "ask": 0.01,
-        "mid": 0.01,
-        "last": 0.01,
-        "volume": 1751,
-        "open_interest": 7963,
-        "iv": 0.0,
-        "delta": 0.0,
-        "gamma": 0.0,
-        "theta": 0.0,
-        "vega": 0.0
-      },
-      "back": {
-        "symbol": "MRVL260904C00260000",
-        "strike": 260.0,
-        "type": "call",
-        "bid": 0.31,
-        "ask": 0.38,
-        "mid": 0.345,
-        "last": 0.38,
-        "volume": 7267,
-        "open_interest": 3010,
-        "iv": 0.7245,
-        "delta": 0.0358,
-        "gamma": 0.0041,
-        "theta": -0.1345,
-        "vega": 0.0288
-      },
-      "calendar_mid_debit": 0.335,
-      "calendar_natural_debit": 0.38,
-      "calendar_optimistic_debit": 0.3
+      "missing": true
     },
     {
       "type": "call",
       "strike": 265,
-      "front": {
-        "symbol": "MRVL260828C00265000",
-        "strike": 265.0,
-        "type": "call",
-        "bid": 0.0,
-        "ask": 0.01,
-        "mid": 0.01,
-        "last": 0.01,
-        "volume": 4436,
-        "open_interest": 6728,
-        "iv": 0.0,
-        "delta": 0.0,
-        "gamma": 0.0,
-        "theta": 0.0,
-        "vega": 0.0
-      },
-      "back": {
-        "symbol": "MRVL260904C00265000",
-        "strike": 265.0,
-        "type": "call",
-        "bid": 0.2,
-        "ask": 0.26,
-        "mid": 0.23,
-        "last": 0.25,
-        "volume": 779,
-        "open_interest": 572,
-        "iv": 0.7472,
-        "delta": 0.0255,
-        "gamma": 0.00305,
-        "theta": -0.1042,
-        "vega": 0.0201
-      },
-      "calendar_mid_debit": 0.22,
-      "calendar_natural_debit": 0.26,
-      "calendar_optimistic_debit": 0.19
+      "missing": true
     },
     {
       "type": "call",
       "strike": 270,
-      "front": {
-        "symbol": "MRVL260828C00270000",
-        "strike": 270.0,
-        "type": "call",
-        "bid": 0.0,
-        "ask": 0.01,
-        "mid": 0.01,
-        "last": 0.01,
-        "volume": 1634,
-        "open_interest": 5671,
-        "iv": 0.0,
-        "delta": 0.0,
-        "gamma": 0.0,
-        "theta": 0.0,
-        "vega": 0.0
-      },
-      "back": {
-        "symbol": "MRVL260904C00270000",
-        "strike": 270.0,
-        "type": "call",
-        "bid": 0.1,
-        "ask": 0.22,
-        "mid": 0.16,
-        "last": 0.21,
-        "volume": 4783,
-        "open_interest": 1826,
-        "iv": 0.7416,
-        "delta": 0.0184,
-        "gamma": 0.00227,
-        "theta": -0.0816,
-        "vega": 0.0166
-      },
-      "calendar_mid_debit": 0.15,
-      "calendar_natural_debit": 0.22,
-      "calendar_optimistic_debit": 0.09
+      "missing": true
     }
   ],
   "structures": [
     {
       "put_strike": 225,
       "call_strike": 260,
-      "combined_mid_debit": 3.935,
-      "combined_natural_debit": 5.63,
-      "put_calendar_mid_debit": 3.6,
-      "call_calendar_mid_debit": 0.335
+      "missing": true
     },
     {
       "put_strike": 220,
       "call_strike": 265,
-      "combined_mid_debit": 5.685,
-      "combined_natural_debit": 6.79,
-      "put_calendar_mid_debit": 5.465,
-      "call_calendar_mid_debit": 0.22
+      "missing": true
     },
     {
       "put_strike": 215,
       "call_strike": 270,
-      "combined_mid_debit": 6.13,
-      "combined_natural_debit": 6.65,
-      "put_calendar_mid_debit": 5.98,
-      "call_calendar_mid_debit": 0.15
+      "missing": true
     }
   ]
 }
