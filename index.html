@@ -13,64 +13,45 @@
       <div>
         <p class="eyebrow">SYSTEMATIC PUT-SELLING MONITOR</p>
         <h1>Option Trading Dashboard</h1>
-        <p class="sub">SOXL · LITE · AAOI · MRVL · SMH — support, Fibonacci structure, put premium and entry discipline.</p>
+        <p class="sub">Stock V2 ownership conviction first; option execution second. A short-put SELL is blocked unless the underlying is rated Long-Term BUY or STRONG BUY.</p>
       </div>
-      <div class="status-card">
-        <span id="marketDot" class="dot"></span>
-        <div>
-          <strong id="marketState">Loading…</strong>
-          <small id="updatedAt">Waiting for data</small>
-        </div>
-      </div>
+      <div class="status-card"><span id="marketDot" class="dot"></span><div><strong id="marketState">Loading…</strong><small id="updatedAt">Waiting for data</small></div></div>
     </header>
 
+    <section class="policy-banner"><strong id="policyText">Loading ownership policy…</strong><span id="stockSource"></span></section>
     <section class="summary-grid" id="summaryGrid"></section>
 
     <section class="panel">
       <div class="panel-head">
-        <div>
-          <p class="eyebrow">PUT-SELLING RANKING</p>
-          <h2>Current opportunities</h2>
-        </div>
-        <div class="legend"><span class="pill sell">SELL</span><span class="pill wait">WAIT</span><span class="pill avoid">AVOID</span></div>
+        <div><p class="eyebrow">PUT-SELLING RANKING</p><h2>Current opportunities</h2><p class="sub">Long-Term Rating and Entry Quality come from Stock V2. Option score measures execution quality only.</p></div>
+        <div class="legend"><span class="pill sell">SELL</span><span class="pill wait">WAIT</span><span class="pill avoid">NO TRADE</span></div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Rank</th><th>Ticker</th><th>Price</th><th>Trend</th><th>Decision</th><th>Preferred put</th><th>Premium</th><th>Breakeven</th><th>Support</th><th>Score</th></tr>
-          </thead>
-          <tbody id="rankingBody"></tbody>
-        </table>
-      </div>
+      <div class="table-wrap"><table><thead><tr><th>Rank</th><th>Ticker</th><th>Price</th><th>Long-Term</th><th>Entry</th><th>Ownership Gate</th><th>Decision</th><th>Preferred put</th><th>Premium</th><th>Support</th><th>Option Score</th></tr></thead><tbody id="rankingBody"></tbody></table></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><div><p class="eyebrow">SIGNAL RECONCILIATION</p><h2>Why Stock V2 and options can differ</h2><p class="sub">A stock may be a Strong Buy while the put remains WAIT because premium, IV, liquidity, support location, stabilization, DTE, delta or event risk is not attractive enough.</p></div></div>
+      <div class="reconciliation-list" id="reconciliationList"></div>
     </section>
 
     <section class="cards" id="tickerCards"></section>
 
     <section class="panel smh-panel">
-      <div class="panel-head">
-        <div><p class="eyebrow">CORE SEMICONDUCTOR EXPOSURE</p><h2>SMH staged entry plan</h2></div>
-        <div class="price-block"><span>SMH</span><strong id="smhPrice">—</strong></div>
-      </div>
+      <div class="panel-head"><div><p class="eyebrow">CORE SEMICONDUCTOR EXPOSURE</p><h2>SMH staged entry plan</h2></div><div class="price-block"><span>SMH</span><strong id="smhPrice">—</strong></div></div>
       <div id="smhPlan" class="entry-grid"></div>
     </section>
 
     <section class="panel methodology">
-      <div>
-        <p class="eyebrow">FRAMEWORK</p>
-        <h2>How the signal is generated</h2>
-      </div>
+      <div><p class="eyebrow">FRAMEWORK</p><h2>Two-layer decision system</h2></div>
       <div class="method-grid">
-        <article><strong>1</strong><h3>Price structure</h3><p>Short puts are favored on pullbacks into support, not after vertical rallies.</p></article>
-        <article><strong>2</strong><h3>Fibonacci confluence</h3><p>23.6%, 38.2%, 50%, 61.8% and 78.6% retracements are calculated from the recent swing low to swing high.</p></article>
-        <article><strong>3</strong><h3>Premium quality</h3><p>Credit, breakeven cushion, annualized cash yield and bid/ask quality determine whether the option is worth selling.</p></article>
-        <article><strong>4</strong><h3>Event control</h3><p>Earnings and major semiconductor catalysts reduce the score unless the expiration avoids the binary event.</p></article>
+        <article><strong>1</strong><h3>Ownership gate</h3><p>Only Stock V2 Long-Term BUY or STRONG BUY underlyings can ever receive a short-put SELL.</p></article>
+        <article><strong>2</strong><h3>Canonical technical state</h3><p>Covered stocks use the same Stock V2 daily RSI, trend and support layer rather than independently reclassifying the underlying.</p></article>
+        <article><strong>3</strong><h3>Option economics</h3><p>IV, premium yield, delta, DTE, breakeven-to-support and bid/ask liquidity are scored independently.</p></article>
+        <article><strong>4</strong><h3>Execution control</h3><p>Support proximity, stabilization and earnings/event risk can keep an otherwise attractive stock at WAIT.</p></article>
       </div>
     </section>
 
-    <footer>
-      <span>Refresh schedule: 10:30 AM · 1:00 PM · 2:30 PM ET on NYSE trading days</span>
-      <span>Research dashboard — not an order-entry system.</span>
-    </footer>
+    <footer><span>Research dashboard — not an order-entry system.</span><span>NO TRADE means the ownership gate failed; WAIT means the stock passed but the option setup did not.</span></footer>
   </main>
   <script src="app.js"></script>
 </body>
