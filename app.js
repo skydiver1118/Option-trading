@@ -3,11 +3,14 @@ const pct=n=>Number.isFinite(n)?`${n>=0?'+':''}${n.toFixed(2)}%`:'—';
 const num=n=>Number.isFinite(n)?n.toFixed(2):'—';
 const pill=s=>`<span class="pill ${s==='SELL'?'sell':s==='WAIT'?'wait':'avoid'}">${s}</span>`;
 const gate=x=>`<span class="gate ${x.underlying_eligible?'gate-ok':'gate-no'}">${x.underlying_eligible?'ELIGIBLE':'BLOCKED'}</span>`;
+const formatExpiry=s=>{if(!s)return '—';const m=String(s).match(/(\d{4})-(\d{2})-(\d{2})/);if(!m)return s;const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
 const candidateTable=x=>{const rows=(x.candidates||[]).map(c=>`<tr><td><strong>${c.profile}</strong></td><td>$${Number(c.strike).toFixed(0)}P</td><td>${num(c.delta)}</td><td>${pct(c.iv_pct)}</td><td>${fmt(c.premium)}</td><td>${fmt(c.breakeven)}</td><td>${pct(c.distance_to_support_pct)}</td><td>${pct(c.spread_pct)}</td><td>${pct(c.annualized_return_pct)}</td><td>${c.dte||'—'}</td><td>${c.earnings_risk?`YES${c.earnings_date?` · ${c.earnings_date}`:''}`:'NO'}</td></tr>`).join('');return rows?`<div class="candidate-wrap"><div class="candidate-title">Put candidates · ${x.option_source||'option feed'}</div><table class="candidate-table"><thead><tr><th>Profile</th><th>Strike</th><th>Delta</th><th>IV</th><th>Premium</th><th>Breakeven</th><th>BE vs Support</th><th>Bid/Ask Spread</th><th>Annualized</th><th>DTE</th><th>Earnings</th></tr></thead><tbody>${rows}</tbody></table></div>`:''};
 const components=x=>{const c=x.option_components||{};return `<div class="component-grid">${[['IV','iv'],['Premium','premium'],['Delta','delta'],['DTE','dte'],['BE / Support','breakeven_support'],['Liquidity','liquidity'],['Support','support_proximity'],['Stabilization','stabilization'],['Event','event']].map(([label,key])=>`<div class="component"><span>${label}</span><strong>${Number.isFinite(c[key])?c[key]:'—'}</strong></div>`).join('')}</div>`};
 fetch('data/dashboard.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
   document.getElementById('updatedAt').textContent=`Updated ${d.updated_et}`;
   document.getElementById('marketState').textContent=`${d.market_state||'Market data'}${d.option_data_source?` · Options: ${d.option_data_source}`:''}`;
+  const expiryRaw=d.option_expiration||((d.ranking||[]).map(x=>x.contract).find(Boolean)||'').match(/\d{4}-\d{2}-\d{2}/)?.[0];
+  document.getElementById('optionExpiration').textContent=`Monthly expiration: ${formatExpiry(expiryRaw)}`;
   document.getElementById('marketDot').style.background=d.market_state==='OPEN'?'var(--green)':'var(--amber)';
   document.getElementById('policyText').textContent=d.policy||'Short-put SELL requires a Stock V2 long-term BUY/STRONG BUY rating.';
   document.getElementById('stockSource').textContent=`Underlying model: ${d.stock_v2_source||'Stock V2'}${d.stock_v2_as_of?` · ${d.stock_v2_as_of}`:''}`;
