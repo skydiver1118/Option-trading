@@ -59,12 +59,11 @@ try {
         }
     }
 
-    try {
-        Invoke-Retry -Name 'git pull' -Attempts 2 -DelaySeconds 10 -Command {
-            Invoke-NativeLogged -FilePath 'git' -ArgumentList @('pull', '--rebase', 'origin', 'main') -LogFile $LogFile -Name 'git pull'
-        }
+    # SAFETY: never generate/push with stale local code. If sync fails, abort this run.
+    Invoke-Retry -Name 'git pull' -Attempts 3 -DelaySeconds 15 -Command {
+        Invoke-NativeLogged -FilePath 'git' -ArgumentList @('pull', '--rebase', 'origin', 'main') -LogFile $LogFile -Name 'git pull'
     }
-    catch { Log "Continuing with local code because git pull failed: $($_.Exception.Message)" }
+    Log 'Repository sync succeeded; using current October-only dashboard code.'
 
     $secureToken = Get-Content $TokenFile | ConvertTo-SecureString
     $env:TRADIER_TOKEN = Get-PlainText $secureToken
@@ -80,6 +79,7 @@ try {
     if ($after -le $before) { throw 'dashboard.json timestamp did not advance.' }
     $json = Get-Content 'data\dashboard.json' -Raw | ConvertFrom-Json
     if ($json.option_expiration -ne '2026-10-16') { throw "Unexpected option expiration: $($json.option_expiration)" }
+    if ($json.ranking_basis -ne 'Option execution score descending') { throw "Unexpected ranking basis: $($json.ranking_basis)" }
     Log "Dashboard generated: updated_et=$($json.updated_et), option_source=$($json.option_data_source), expiration=$($json.option_expiration), ranking=$($json.ranking_basis)"
 
     git add data/dashboard.json
