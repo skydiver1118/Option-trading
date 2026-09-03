@@ -50,7 +50,6 @@ try {
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) { throw 'Git is not available in PATH.' }
     if (-not (Test-Path $TokenFile)) { throw "Tradier token file missing: $TokenFile. Run windows\install.ps1 first." }
 
-    # Only update on NYSE trading days. -Force bypasses this check for testing.
     if (-not $Force) {
         $isTradingDay = & python -c "import pandas_market_calendars as mcal; from datetime import datetime; from zoneinfo import ZoneInfo; d=datetime.now(ZoneInfo('America/New_York')).date(); print('1' if not mcal.get_calendar('NYSE').schedule(start_date=d,end_date=d).empty else '0')"
         if ($LASTEXITCODE -ne 0) { throw 'Unable to determine NYSE trading-day status.' }
@@ -60,7 +59,6 @@ try {
         }
     }
 
-    # Sync code first. A temporary GitHub/network failure should not prevent local data generation.
     try {
         Invoke-Retry -Name 'git pull' -Attempts 2 -DelaySeconds 10 -Command {
             Invoke-NativeLogged -FilePath 'git' -ArgumentList @('pull', '--rebase', 'origin', 'main') -LogFile $LogFile -Name 'git pull'
@@ -74,16 +72,16 @@ try {
     $env:GITHUB_EVENT_SCHEDULE = ''
 
     $before = if (Test-Path 'data\dashboard.json') { (Get-Item 'data\dashboard.json').LastWriteTimeUtc } else { [datetime]::MinValue }
-    Log 'Downloading market/options data and rebuilding dashboard.json...'
-    Invoke-NativeLogged -FilePath 'python' -ArgumentList @('scripts\update_dashboard.py') -LogFile $LogFile -Name 'update_dashboard.py'
+    Log 'Downloading market/options data and rebuilding dashboard.json with October monthly expiration...'
+    Invoke-NativeLogged -FilePath 'python' -ArgumentList @('scripts\update_dashboard_october.py') -LogFile $LogFile -Name 'update_dashboard_october.py'
     if (-not (Test-Path 'data\dashboard.json')) { throw 'data/dashboard.json was not created.' }
 
     $after = (Get-Item 'data\dashboard.json').LastWriteTimeUtc
     if ($after -le $before) { throw 'dashboard.json timestamp did not advance.' }
     $json = Get-Content 'data\dashboard.json' -Raw | ConvertFrom-Json
-    Log "Dashboard generated: updated_et=$($json.updated_et), option_source=$($json.option_data_source)"
+    if ($json.option_expiration -ne '2026-10-16') { throw "Unexpected option expiration: $($json.option_expiration)" }
+    Log "Dashboard generated: updated_et=$($json.updated_et), option_source=$($json.option_data_source), expiration=$($json.option_expiration), ranking=$($json.ranking_basis)"
 
-    # Publish through Git. pages.yml deploys GitHub Pages on every push to main.
     git add data/dashboard.json
     $changed = git status --porcelain -- data/dashboard.json
     if ($changed) {
@@ -98,7 +96,6 @@ try {
         Log 'No Git diff detected after refresh; nothing to push.'
     }
 
-    # Keep logs bounded.
     Get-ChildItem $LogDir -Filter 'refresh_*.log' | Sort-Object LastWriteTime -Descending | Select-Object -Skip 60 | Remove-Item -Force -ErrorAction SilentlyContinue
     Log 'SUCCESS'
     exit 0
