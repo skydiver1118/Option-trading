@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/workflows/refresh.yml'
       - 'scripts/update_dashboard.py'
-      - 'scripts/update_dashboard_october.py'
+      - 'scripts/update_dashboard_dynamic.py'
       - 'scripts/mrvl_calendar_snapshot.py'
       - 'tests/test_update_dashboard.py'
       - 'app.js'
@@ -52,7 +52,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Validate Python and ownership-gate tests
         run: |
-          python -m py_compile scripts/update_dashboard.py scripts/update_dashboard_october.py
+          python -m py_compile scripts/update_dashboard.py scripts/update_dashboard_dynamic.py
           python -m unittest tests/test_update_dashboard.py
 
       - name: Validate intended ET schedule and NYSE trading day
@@ -73,16 +73,15 @@ jobs:
           manual=event in ('workflow_dispatch','push'); matching=cron in (edt if now.utcoffset().total_seconds()/3600==-4 else est)
           trading=not mcal.get_calendar('NYSE').schedule(start_date=now.date(),end_date=now.date()).empty
           run=manual or (event=='schedule' and matching and trading)
-          print(f'run={str(run).lower()}'); print(f'now_et={now.strftime("%Y-%m-%d %I:%M %p ET")}'); print(f'trading_day={str(trading).lower()}')
+          print(f'run={str(run).lower()}')
           PY
 
-      - name: Update dashboard data — October monthly only
+      - name: Update dashboard data — Greek-aware monthly expiration
         if: steps.gate.outputs.run == 'true'
         env:
           GITHUB_EVENT_NAME: workflow_dispatch
-          GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
-        run: python scripts/update_dashboard_october.py
+        run: python scripts/update_dashboard_dynamic.py
 
       - name: Update MRVL calendar snapshot
         if: steps.gate.outputs.run == 'true'
@@ -90,18 +89,25 @@ jobs:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/mrvl_calendar_snapshot.py
 
-      - name: Verify dashboard ownership policy and October expiration
+      - name: Verify dashboard policy
         if: steps.gate.outputs.run == 'true'
         run: |
           python - <<'PY'
           import json
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
           d=json.load(open('data/dashboard.json'))
           bad=[x['ticker'] for x in d.get('analysis',[]) if x.get('decision')=='SELL' and x.get('long_term_rating') not in {'BUY','STRONG BUY'}]
           if bad: raise SystemExit(f'INVALID SELL without long-term BUY gate: {bad}')
-          if d.get('option_expiration') != '2026-10-16': raise SystemExit(f"Wrong expiration: {d.get('option_expiration')}")
+          today=datetime.now(ZoneInfo('America/New_York')).date()
+          for x in d.get('analysis',[]):
+              e=(x.get('expiration_selection') or {}).get('expiration')
+              if not e: continue
+              dte=(datetime.strptime(e,'%Y-%m-%d').date()-today).days
+              if not 19 <= dte <= 50: raise SystemExit(f'{x["ticker"]} expiration outside 19-50 DTE: {e} ({dte})')
           scores=[float(x.get('score') or 0) for x in d.get('ranking',[])]
           if scores != sorted(scores, reverse=True): raise SystemExit('Ranking is not sorted by option score descending')
-          print('Ownership gate, October expiration, and option-score ranking validation passed.')
+          print('Ownership gate, 19-50 DTE expiration policy, and score ranking validated.')
           PY
 
       - name: Configure GitHub Pages
@@ -117,20 +123,9 @@ jobs:
         id: deploy1
         continue-on-error: true
         uses: actions/deploy-pages@v4
-      - name: Wait before second deployment attempt
-        if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure'
-        run: sleep 30
       - name: Retry GitHub Pages deployment
         id: deploy2
         if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure'
-        continue-on-error: true
-        uses: actions/deploy-pages@v4
-      - name: Wait before third deployment attempt
-        if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
-        run: sleep 60
-      - name: Final GitHub Pages deployment attempt
-        id: deploy3
-        if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
         continue-on-error: true
         uses: actions/deploy-pages@v4
 
@@ -138,10 +133,9 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
         run: |
-          if git diff --quiet data/dashboard.json data/mrvl_calendar.json; then echo "No dashboard data change."; else
-            git config user.name "option-dashboard-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/dashboard.json data/mrvl_calendar.json
-            git commit -m "Refresh option dashboard data" || true
-            git pull --rebase origin main || true
-            git push origin HEAD:main || true
-          fi
+          git config user.name "option-dashboard-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/dashboard.json data/mrvl_calendar.json
+          git commit -m "Refresh Greek-aware option dashboard data" || exit 0
+          git pull --rebase origin main || true
+          git push origin HEAD:main || true
