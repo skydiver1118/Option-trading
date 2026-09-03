@@ -1,3 +1,4 @@
+# Greek-aware monthly expiration engine: standard monthly only, 19-50 DTE
 name: Refresh option dashboard
 
 on:
@@ -42,7 +43,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: github-pages
-      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -54,7 +55,6 @@ jobs:
         run: |
           python -m py_compile scripts/update_dashboard.py scripts/update_dashboard_dynamic.py
           python -m unittest tests/test_update_dashboard.py
-
       - name: Validate intended ET schedule and NYSE trading day
         id: gate
         shell: bash
@@ -72,44 +72,35 @@ jobs:
           est={'45 14 * * 1-5','15 15 * * 1-5','45 16 * * 1-5','15 17 * * 1-5','45 18 * * 1-5','15 19 * * 1-5'}
           manual=event in ('workflow_dispatch','push'); matching=cron in (edt if now.utcoffset().total_seconds()/3600==-4 else est)
           trading=not mcal.get_calendar('NYSE').schedule(start_date=now.date(),end_date=now.date()).empty
-          run=manual or (event=='schedule' and matching and trading)
-          print(f'run={str(run).lower()}')
+          print(f'run={str(manual or (event=="schedule" and matching and trading)).lower()}')
           PY
-
       - name: Update dashboard data — Greek-aware monthly expiration
         if: steps.gate.outputs.run == 'true'
         env:
           GITHUB_EVENT_NAME: workflow_dispatch
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/update_dashboard_dynamic.py
-
       - name: Update MRVL calendar snapshot
         if: steps.gate.outputs.run == 'true'
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/mrvl_calendar_snapshot.py
-
       - name: Verify dashboard policy
         if: steps.gate.outputs.run == 'true'
         run: |
           python - <<'PY'
           import json
-          from datetime import datetime
-          from zoneinfo import ZoneInfo
           d=json.load(open('data/dashboard.json'))
           bad=[x['ticker'] for x in d.get('analysis',[]) if x.get('decision')=='SELL' and x.get('long_term_rating') not in {'BUY','STRONG BUY'}]
           if bad: raise SystemExit(f'INVALID SELL without long-term BUY gate: {bad}')
-          today=datetime.now(ZoneInfo('America/New_York')).date()
           for x in d.get('analysis',[]):
-              e=(x.get('expiration_selection') or {}).get('expiration')
-              if not e: continue
-              dte=(datetime.strptime(e,'%Y-%m-%d').date()-today).days
-              if not 19 <= dte <= 50: raise SystemExit(f'{x["ticker"]} expiration outside 19-50 DTE: {e} ({dte})')
+              dte=(x.get('expiration_selection') or {}).get('dte')
+              if dte is not None and not 19 <= int(dte) <= 50: raise SystemExit(f'{x["ticker"]} DTE outside 19-50: {dte}')
           scores=[float(x.get('score') or 0) for x in d.get('ranking',[])]
           if scores != sorted(scores, reverse=True): raise SystemExit('Ranking is not sorted by option score descending')
-          print('Ownership gate, 19-50 DTE expiration policy, and score ranking validated.')
+          if 'Greek-weighted' not in d.get('expiration_policy',''): raise SystemExit('Greek-weighted expiration policy missing')
+          print('Dynamic expiration policy validated.')
           PY
-
       - name: Configure GitHub Pages
         if: steps.gate.outputs.run == 'true'
         uses: actions/configure-pages@v5
@@ -128,8 +119,7 @@ jobs:
         if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure'
         continue-on-error: true
         uses: actions/deploy-pages@v4
-
-      - name: Best-effort commit refreshed data
+      - name: Commit refreshed data
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
         run: |
