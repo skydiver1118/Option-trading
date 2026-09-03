@@ -22,6 +22,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Enforce October monthly dashboard
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('data/dashboard.json'))
+          exp=d.get('option_expiration')
+          if exp != '2026-10-16':
+              raise SystemExit(f'Refusing to deploy stale/wrong expiration dashboard: {exp}')
+          scores=[float(x.get('score') or 0) for x in d.get('ranking',[])]
+          if scores != sorted(scores, reverse=True):
+              raise SystemExit('Refusing to deploy dashboard not ranked by option score descending')
+          print('Dashboard deployment gate passed: October 16, 2026 monthly expiration.')
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
