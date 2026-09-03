@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/refresh.yml'
       - 'scripts/update_dashboard.py'
+      - 'scripts/update_dashboard_october.py'
       - 'scripts/mrvl_calendar_snapshot.py'
       - 'tests/test_update_dashboard.py'
       - 'app.js'
@@ -51,7 +52,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Validate Python and ownership-gate tests
         run: |
-          python -m py_compile scripts/update_dashboard.py
+          python -m py_compile scripts/update_dashboard.py scripts/update_dashboard_october.py
           python -m unittest tests/test_update_dashboard.py
 
       - name: Validate intended ET schedule and NYSE trading day
@@ -75,13 +76,13 @@ jobs:
           print(f'run={str(run).lower()}'); print(f'now_et={now.strftime("%Y-%m-%d %I:%M %p ET")}'); print(f'trading_day={str(trading).lower()}')
           PY
 
-      - name: Update dashboard data
+      - name: Update dashboard data — October monthly
         if: steps.gate.outputs.run == 'true'
         env:
           GITHUB_EVENT_NAME: workflow_dispatch
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
-        run: python scripts/update_dashboard.py
+        run: python scripts/update_dashboard_october.py
 
       - name: Update MRVL calendar snapshot
         if: steps.gate.outputs.run == 'true'
@@ -89,7 +90,7 @@ jobs:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/mrvl_calendar_snapshot.py
 
-      - name: Verify dashboard ownership policy
+      - name: Verify dashboard ownership policy and October expiration
         if: steps.gate.outputs.run == 'true'
         run: |
           python - <<'PY'
@@ -97,7 +98,10 @@ jobs:
           d=json.load(open('data/dashboard.json'))
           bad=[x['ticker'] for x in d.get('analysis',[]) if x.get('decision')=='SELL' and x.get('long_term_rating') not in {'BUY','STRONG BUY'}]
           if bad: raise SystemExit(f'INVALID SELL without long-term BUY gate: {bad}')
-          print('Ownership gate validation passed.')
+          if d.get('option_expiration') != '2026-10-16': raise SystemExit(f"Wrong expiration: {d.get('option_expiration')}")
+          scores=[float(x.get('score') or 0) for x in d.get('ranking',[])]
+          if scores != sorted(scores, reverse=True): raise SystemExit('Ranking is not sorted by option score descending')
+          print('Ownership gate, October expiration, and option-score ranking validation passed.')
           PY
 
       - name: Configure GitHub Pages
