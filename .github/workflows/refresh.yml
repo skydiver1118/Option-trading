@@ -76,7 +76,7 @@ jobs:
           print(f'run={str(run).lower()}'); print(f'now_et={now.strftime("%Y-%m-%d %I:%M %p ET")}'); print(f'trading_day={str(trading).lower()}')
           PY
 
-      - name: Update dashboard data — October monthly
+      - name: Update dashboard data — October monthly only
         if: steps.gate.outputs.run == 'true'
         env:
           GITHUB_EVENT_NAME: workflow_dispatch
