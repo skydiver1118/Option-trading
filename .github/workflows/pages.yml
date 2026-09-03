@@ -22,18 +22,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Enforce October monthly dashboard
+      - name: Validate Greek-aware expiration dashboard
         run: |
           python - <<'PY'
           import json
           d=json.load(open('data/dashboard.json'))
-          exp=d.get('option_expiration')
-          if exp != '2026-10-16':
-              raise SystemExit(f'Refusing to deploy stale/wrong expiration dashboard: {exp}')
           scores=[float(x.get('score') or 0) for x in d.get('ranking',[])]
-          if scores != sorted(scores, reverse=True):
-              raise SystemExit('Refusing to deploy dashboard not ranked by option score descending')
-          print('Dashboard deployment gate passed: October 16, 2026 monthly expiration.')
+          if scores != sorted(scores, reverse=True): raise SystemExit('Ranking is not option-score descending')
+          bad=[]
+          for x in d.get('analysis',[]):
+              m=x.get('expiration_selection') or {}
+              dte=m.get('dte')
+              if dte is not None and not 19 <= int(dte) <= 50: bad.append((x.get('ticker'),dte))
+          if bad: raise SystemExit(f'Expiration outside 19-50 DTE: {bad}')
+          if 'Greek-weighted' not in d.get('expiration_policy',''): raise SystemExit('Greek-aware expiration policy missing')
+          print('Dynamic monthly expiration deployment gate passed.')
           PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
