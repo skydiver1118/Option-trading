@@ -1,0 +1,29 @@
+name: SOXL 30m 40d Optimization
+on:
+  push:
+    paths:
+      - 'scripts/soxl_30m_wr_cci_40d_fast.py'
+      - '.github/workflows/soxl-30m-40d.yml'
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy requests
+      - name: Optimize SOXL 30m on IS and test OOS
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/soxl_30m_wr_cci_40d_fast.py
+      - name: Commit results
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/williams_r/soxl_30m_40d_* data/williams_r/SOXL_tradier_30m_40d.csv
+          git diff --cached --quiet || git commit -m 'Update SOXL 30m 40d backtest results'
+          git push
