@@ -7,6 +7,7 @@ on:
     paths:
       - 'scripts/williams_r_backtest.py'
       - 'scripts/williams_r_next_close_10y.py'
+      - 'scripts/williams_r_benchmark.py'
       - '.github/workflows/williams-r-backtest.yml'
 
 permissions:
@@ -30,6 +31,8 @@ jobs:
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/williams_r_next_close_10y.py
+      - name: Run exact-period SPY buy-and-hold benchmark
+        run: python scripts/williams_r_benchmark.py
       - name: Commit backtest results
         run: |
           git config user.name "option-dashboard-bot"
