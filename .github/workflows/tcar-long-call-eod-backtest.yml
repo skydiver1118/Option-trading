@@ -1,0 +1,34 @@
+name: TCAR long-call EOD research backtest
+on:
+  push:
+    branches: [research/tcar-option-backtest]
+    paths:
+      - scripts/backtest_tcar_long_calls_onclick.py
+      - .github/workflows/tcar-long-call-eod-backtest.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy requests
+      - name: Run research-only historical option backtest
+        run: python scripts/backtest_tcar_long_calls_onclick.py
+      - name: Commit research outputs to branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/options/tcar_onclick_eod
+          git commit -m 'Add TCAR long-call EOD backtest results' || exit 0
+          git push origin HEAD:research/tcar-option-backtest
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tcar-long-call-eod-results
+          path: data/options/tcar_onclick_eod
+          if-no-files-found: ignore
