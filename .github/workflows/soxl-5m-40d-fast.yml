@@ -1,0 +1,32 @@
+name: SOXL 5m 40d Fast
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/soxl_5m_wr_cci_40d_fast.py'
+      - '.github/workflows/soxl-5m-40d-fast.yml'
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy requests
+      - name: Optimize SOXL 5m on IS and test OOS
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/soxl_5m_wr_cci_40d_fast.py
+      - name: Commit results
+        run: |
+          git config user.name "option-dashboard-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/williams_r
+          git commit -m "Refresh SOXL 5m 40d results" || exit 0
+          git pull --rebase origin main || true
+          git push origin HEAD:main || true
