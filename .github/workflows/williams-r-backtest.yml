@@ -9,6 +9,7 @@ on:
       - 'scripts/williams_r_next_close_10y.py'
       - 'scripts/williams_r_benchmark.py'
       - 'scripts/williams_r_core_overlay.py'
+      - 'scripts/williams_r_multi_etf_10y.py'
       - '.github/workflows/williams-r-backtest.yml'
 
 permissions:
@@ -38,6 +39,10 @@ jobs:
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/williams_r_core_overlay.py
+      - name: Run multi-ETF Williams R backtest
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/williams_r_multi_etf_10y.py
       - name: Commit backtest results
         run: |
           git config user.name "option-dashboard-bot"
