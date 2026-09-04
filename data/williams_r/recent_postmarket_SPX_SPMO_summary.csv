@@ -1,0 +1,3 @@
+symbol,daily_bars,extended_bars,closed_trades,win_rate,profit_factor,avg_trade,total_return_closed_trades,skipped_signals_no_post_price
+SPX,13,377,1,1.0,inf,0.004727030974354562,0.004727030974354562,0
+SPMO,13,674,1,0.0,0.0,-0.0053248501986130625,-0.0053248501986130625,0

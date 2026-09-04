@@ -1,0 +1,2 @@
+signal_date,entry_date,entry_price,exit_date,exit_price,return,reason
+2026-08-25,2026-08-20T16:15:00,7641.16,2026-08-25T16:15:00,7677.28,0.004727030974354562,close>prev_high+wr>-30
