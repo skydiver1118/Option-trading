@@ -60,3 +60,4 @@ def main():
             z=bt(seg,mode); z.update({'period':period,'start':seg.index.min().date().isoformat(),'end':seg.index.max().date().isoformat(),'execution':'next_open'}); rows.append(z)
     df=pd.DataFrame(rows); df.to_csv(OUT/'soxl_daily_wr_cci_ablation.csv',index=False); print(df.to_string(index=False))
 if __name__=='__main__': main()
+# trigger 2026-09-04
