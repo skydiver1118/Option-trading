@@ -1,0 +1,27 @@
+name: Probe historical SOXL options data
+on:
+  push:
+    branches: [research/tcar-option-backtest]
+    paths:
+      - scripts/probe_onclick_tcar.py
+      - .github/workflows/probe-onclick-tcar.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Run research-only data probe
+        run: python scripts/probe_onclick_tcar.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onclick-probe-response
+          path: onclick_probe_response.json
+          if-no-files-found: ignore
