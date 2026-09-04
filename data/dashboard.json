@@ -172,19 +172,7 @@
       "trigger": "Nearest support $96.96; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $76.01 \u2192 $160.99; EMA20 $113.96",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.4,
-        "theta_efficiency": 12.576470588235294,
-        "theta_gamma_ratio": 11.851441241685142,
-        "preferred_delta": -0.1908,
-        "preferred_theta": -0.1069,
-        "preferred_gamma": 0.00902,
-        "preferred_vega": 0.0942,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "LITE",
@@ -304,19 +292,7 @@
       "trigger": "Nearest support $818.89; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $594.84 \u2192 $999.67; EMA20 $869.23",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.7,
-        "theta_efficiency": 10.098630136986301,
-        "theta_gamma_ratio": 567.0769230769231,
-        "preferred_delta": -0.1948,
-        "preferred_theta": -0.7372,
-        "preferred_gamma": 0.0013,
-        "preferred_vega": 0.8008,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "MRVL",
@@ -436,19 +412,7 @@
       "trigger": "Nearest support $206.57; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $162.90 \u2192 $260.40; EMA20 $220.55",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.2,
-        "theta_efficiency": 8.573684210526315,
-        "theta_gamma_ratio": 25.334370139968893,
-        "preferred_delta": -0.2119,
-        "preferred_theta": -0.1629,
-        "preferred_gamma": 0.00643,
-        "preferred_vega": 0.2202,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "DRAM",
@@ -568,19 +532,7 @@
       "trigger": "Nearest support $55.49; require stable/reclaiming tape before entry.",
       "risk": "ETF thematic/concentration risk.",
       "note": "Adjusted 45-day swing $44.40 \u2192 $66.10; EMA20 $56.03",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.5,
-        "theta_efficiency": 7.901960784313726,
-        "theta_gamma_ratio": 1.587864460204886,
-        "preferred_delta": -0.2078,
-        "preferred_theta": -0.0403,
-        "preferred_gamma": 0.02538,
-        "preferred_vega": 0.0592,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "SOXL",
@@ -700,19 +652,7 @@
       "trigger": "Nearest support $106.00; require stable/reclaiming tape before entry.",
       "risk": "3x daily leverage and volatility drag.",
       "note": "Adjusted 45-day swing $91.50 \u2192 $188.43; EMA20 $120.98",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.9,
-        "theta_efficiency": 14.944444444444445,
-        "theta_gamma_ratio": 22.049180327868854,
-        "preferred_delta": -0.1986,
-        "preferred_theta": -0.1345,
-        "preferred_gamma": 0.0061,
-        "preferred_vega": 0.1101,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "MU",
@@ -832,19 +772,7 @@
       "trigger": "Nearest support $942.20; require stable/reclaiming tape before entry.",
       "risk": "Earnings falls before expiration.",
       "note": "Adjusted 45-day swing $737.88 \u2192 $1036.13; EMA20 $942.66",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 94.9,
-        "theta_efficiency": 8.76046511627907,
-        "theta_gamma_ratio": 538.1428571428571,
-        "preferred_delta": -0.2011,
-        "preferred_theta": -0.7534,
-        "preferred_gamma": 0.0014,
-        "preferred_vega": 0.9974,
-        "event_risk": true,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "AVGO",
@@ -964,19 +892,7 @@
       "trigger": "Nearest support $357.80; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $342.33 \u2192 $432.73; EMA20 $373.38",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 97.8,
-        "theta_efficiency": 4.559375,
-        "theta_gamma_ratio": 25.7773851590106,
-        "preferred_delta": -0.1672,
-        "preferred_theta": -0.1459,
-        "preferred_gamma": 0.00566,
-        "preferred_vega": 0.3119,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "QTUM",
@@ -1096,19 +1012,7 @@
       "trigger": "Nearest support $145.81; require stable/reclaiming tape before entry.",
       "risk": "ETF thematic/concentration risk.",
       "note": "Adjusted 45-day swing $132.10 \u2192 $159.73; EMA20 $148.63",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.6,
-        "theta_efficiency": 4.213235294117647,
-        "theta_gamma_ratio": 3.2191011235955056,
-        "preferred_delta": -0.2061,
-        "preferred_theta": -0.0573,
-        "preferred_gamma": 0.0178,
-        "preferred_vega": 0.1436,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     }
   ],
   "analysis": [
@@ -1230,19 +1134,7 @@
       "trigger": "Nearest support $106.00; require stable/reclaiming tape before entry.",
       "risk": "3x daily leverage and volatility drag.",
       "note": "Adjusted 45-day swing $91.50 \u2192 $188.43; EMA20 $120.98",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.9,
-        "theta_efficiency": 14.944444444444445,
-        "theta_gamma_ratio": 22.049180327868854,
-        "preferred_delta": -0.1986,
-        "preferred_theta": -0.1345,
-        "preferred_gamma": 0.0061,
-        "preferred_vega": 0.1101,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "LITE",
@@ -1362,19 +1254,7 @@
       "trigger": "Nearest support $818.89; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $594.84 \u2192 $999.67; EMA20 $869.23",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.7,
-        "theta_efficiency": 10.098630136986301,
-        "theta_gamma_ratio": 567.0769230769231,
-        "preferred_delta": -0.1948,
-        "preferred_theta": -0.7372,
-        "preferred_gamma": 0.0013,
-        "preferred_vega": 0.8008,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "AAOI",
@@ -1494,19 +1374,7 @@
       "trigger": "Nearest support $96.96; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $76.01 \u2192 $160.99; EMA20 $113.96",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.4,
-        "theta_efficiency": 12.576470588235294,
-        "theta_gamma_ratio": 11.851441241685142,
-        "preferred_delta": -0.1908,
-        "preferred_theta": -0.1069,
-        "preferred_gamma": 0.00902,
-        "preferred_vega": 0.0942,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "MRVL",
@@ -1626,19 +1494,7 @@
       "trigger": "Nearest support $206.57; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $162.90 \u2192 $260.40; EMA20 $220.55",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.2,
-        "theta_efficiency": 8.573684210526315,
-        "theta_gamma_ratio": 25.334370139968893,
-        "preferred_delta": -0.2119,
-        "preferred_theta": -0.1629,
-        "preferred_gamma": 0.00643,
-        "preferred_vega": 0.2202,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "MU",
@@ -1758,19 +1614,7 @@
       "trigger": "Nearest support $942.20; require stable/reclaiming tape before entry.",
       "risk": "Earnings falls before expiration.",
       "note": "Adjusted 45-day swing $737.88 \u2192 $1036.13; EMA20 $942.66",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 94.9,
-        "theta_efficiency": 8.76046511627907,
-        "theta_gamma_ratio": 538.1428571428571,
-        "preferred_delta": -0.2011,
-        "preferred_theta": -0.7534,
-        "preferred_gamma": 0.0014,
-        "preferred_vega": 0.9974,
-        "event_risk": true,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "AVGO",
@@ -1890,19 +1734,7 @@
       "trigger": "Nearest support $357.80; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
       "note": "Adjusted 45-day swing $342.33 \u2192 $432.73; EMA20 $373.38",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 97.8,
-        "theta_efficiency": 4.559375,
-        "theta_gamma_ratio": 25.7773851590106,
-        "preferred_delta": -0.1672,
-        "preferred_theta": -0.1459,
-        "preferred_gamma": 0.00566,
-        "preferred_vega": 0.3119,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "QTUM",
@@ -2022,19 +1854,7 @@
       "trigger": "Nearest support $145.81; require stable/reclaiming tape before entry.",
       "risk": "ETF thematic/concentration risk.",
       "note": "Adjusted 45-day swing $132.10 \u2192 $159.73; EMA20 $148.63",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.6,
-        "theta_efficiency": 4.213235294117647,
-        "theta_gamma_ratio": 3.2191011235955056,
-        "preferred_delta": -0.2061,
-        "preferred_theta": -0.0573,
-        "preferred_gamma": 0.0178,
-        "preferred_vega": 0.1436,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     },
     {
       "ticker": "DRAM",
@@ -2154,19 +1974,7 @@
       "trigger": "Nearest support $55.49; require stable/reclaiming tape before entry.",
       "risk": "ETF thematic/concentration risk.",
       "note": "Adjusted 45-day swing $44.40 \u2192 $66.10; EMA20 $56.03",
-      "expiration_selection": {
-        "expiration": "2026-10-16",
-        "dte": 42,
-        "expiration_score": 99.5,
-        "theta_efficiency": 7.901960784313726,
-        "theta_gamma_ratio": 1.587864460204886,
-        "preferred_delta": -0.2078,
-        "preferred_theta": -0.0403,
-        "preferred_gamma": 0.02538,
-        "preferred_vega": 0.0592,
-        "event_risk": false,
-        "selection_reason": "Greek-weighted monthly expiration score (theta 30%, theta/gamma 20%, premium 15%, delta 10%, vega 10%, liquidity 10%, event 5%)"
-      }
+      "expiration_selection": {}
     }
   ],
   "reconciliation": [
@@ -2237,7 +2045,7 @@
     ]
   },
   "ranking_basis": "Option execution score descending",
-  "option_expiration": "2026-10-16",
+  "option_expiration": "per-ticker",
   "requested_refresh_mode": "Greek-aware 19\u201350 DTE monthly",
   "expiration_selection_method": {
     "dte_window": [
