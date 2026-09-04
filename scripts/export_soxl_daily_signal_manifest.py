@@ -43,6 +43,16 @@ PERIODS = {
     "OOS": ("2024-09-03", "2026-09-03"),
 }
 EXPECTED_CLOSED_TRADES = {"IS": 71, "VALIDATION": 27, "OOS": 18}
+EXPECTED_SOURCE_ROWS = 2765
+EXPECTED_SOURCE_SHA256 = (
+    "51e0639cf0e37dcbfb7e9ff2b84246d15dee2f0bfec0dd2a3442be28ed09f084"
+)
+EXPECTED_MANIFEST_CSV_SHA256 = (
+    "bac983971dff5f2ee216a0d89d7c16ff1f202f574885d9f6de493c6a3afaf20d"
+)
+EXPECTED_MANIFEST_PYTHON_SHA256 = (
+    "f51e251a8a5bfc34bc574ca7d3b77118c83915e765b912facfa936f8a72c70f5"
+)
 
 
 def fetch(symbol: str) -> pd.DataFrame:
@@ -129,7 +139,18 @@ def load_or_create_source_snapshot() -> tuple[pd.DataFrame, str]:
     if not np.isfinite(values).all():
         raise RuntimeError("Source snapshot contains missing or non-finite prices")
 
-    return source.sort_index(), hashlib.sha256(source_bytes).hexdigest()
+    source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+    if len(source) != EXPECTED_SOURCE_ROWS:
+        raise RuntimeError(
+            f"Frozen source snapshot has {len(source)} rows; "
+            f"expected {EXPECTED_SOURCE_ROWS}"
+        )
+    if source_sha256 != EXPECTED_SOURCE_SHA256:
+        raise RuntimeError(
+            "Frozen source snapshot does not match the independently pinned v1 digest"
+        )
+
+    return source.sort_index(), source_sha256
 
 
 def prepare(source: pd.DataFrame) -> pd.DataFrame:
@@ -298,12 +319,26 @@ def main() -> None:
     frame.to_csv(MANIFEST_CSV, index=False)
     write_python_manifest(rows)
 
+    manifest_csv_sha256 = hashlib.sha256(MANIFEST_CSV.read_bytes()).hexdigest()
+    manifest_python_sha256 = hashlib.sha256(
+        (QC_OUT / "signal_manifest.py").read_bytes()
+    ).hexdigest()
+    if manifest_csv_sha256 != EXPECTED_MANIFEST_CSV_SHA256:
+        raise RuntimeError("Generated CSV manifest does not match the pinned v1 digest")
+    if manifest_python_sha256 != EXPECTED_MANIFEST_PYTHON_SHA256:
+        raise RuntimeError(
+            "Generated Python manifest does not match the pinned v1 digest"
+        )
+
     metadata = {
         "strategy_version": "soxl-daily-wr2-cci5-qqq-ema200-v1",
         "source_start": SOURCE_START,
         "source_end": SOURCE_END,
         "source_snapshot": SOURCE_SNAPSHOT.as_posix(),
         "source_sha256": source_sha256,
+        "source_rows": len(source),
+        "manifest_csv_sha256": manifest_csv_sha256,
+        "manifest_python_sha256": manifest_python_sha256,
         "periods": PERIODS,
         "parameters": {
             "wr_lookback": WR_N,

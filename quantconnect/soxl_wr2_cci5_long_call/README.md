@@ -57,6 +57,19 @@ allowing a secret-bearing job to push repository changes. After the first
 export, review and commit the snapshot, metadata, CSV, and Python manifest
 together; then pin the reviewed source digest before treating v1 as immutable.
 
+## Frozen provenance
+
+The reviewed v1 export contains 2,765 source rows from 2015-09-04 through
+2026-09-03 and 234 execution actions. The exporter independently enforces all
+three digests below, so deleting or modifying generated metadata cannot silently
+redefine the frozen dataset.
+
+| Artifact | SHA-256 |
+|---|---|
+| Tradier source snapshot | `51e0639cf0e37dcbfb7e9ff2b84246d15dee2f0bfec0dd2a3442be28ed09f084` |
+| CSV signal manifest | `bac983971dff5f2ee216a0d89d7c16ff1f202f574885d9f6de493c6a3afaf20d` |
+| Python signal manifest | `f51e251a8a5bfc34bc574ca7d3b77118c83915e765b912facfa936f8a72c70f5` |
+
 ## Cloud run
 
 Create a QuantConnect Python project and add `main.py` plus
