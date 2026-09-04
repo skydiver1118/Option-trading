@@ -1,0 +1,24 @@
+name: SOXL TCMR Integrated Backtest
+on:
+  workflow_dispatch:
+  push:
+    paths: ['scripts/soxl_tcmr_integrated_backtest.py']
+permissions: {contents: write}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install pandas numpy requests
+      - name: Run integrated backtest
+        env: {TRADIER_TOKEN: '${{ secrets.TRADIER_TOKEN }}'}
+        run: python scripts/soxl_tcmr_integrated_backtest.py
+      - name: Commit results
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/williams_r/soxl_tcmr_integrated_performance.csv
+          git commit -m 'Update TCMR integrated performance' || exit 0
+          git push
