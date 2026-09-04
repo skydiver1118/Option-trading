@@ -1,0 +1,2 @@
+wr_lookback,wr_entry,wr_exit,cci_lookback,cci_entry,cci_exit,trades,win_rate,profit_factor,avg_trade,median_trade,avg_hold_15m_bars,total_return,annualized_return,sharpe,max_drawdown,calmar,exposure,ending_equity
+5.0,-80.0,-40.0,5.0,-80.0,50.0,40.0,0.8,3.3200689807372457,0.010964437343547134,0.006641899515236638,10.6,0.5178386949469946,193.01821866055715,6.033130674324274,-0.10375539027469072,1860.3199134960078,0.27692307692307694,151783.86949469947
