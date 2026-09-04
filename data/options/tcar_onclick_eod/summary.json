@@ -28,5 +28,36 @@
   "available_recent_start": "2025-01-02",
   "available_recent_end": "2026-09-03",
   "eligible_tcar_trades": 10,
-  "completed_option_trades": 10
+  "completed_option_trades": 10,
+  "underlying_tcar_same_period": {
+    "trades": 10,
+    "win_rate": 0.9,
+    "profit_factor": 196.66793814218303,
+    "avg_trade_return": 0.08027402590448432,
+    "median_trade_return": 0.04905515863848532,
+    "total_return": 1.1216720093620896,
+    "cagr": 0.5700970062373865,
+    "sharpe": 1.2999928939726195,
+    "max_drawdown": -0.16459807446931907,
+    "calmar": 3.4635703247163563,
+    "ending_equity": 212167.20093620894
+  },
+  "soxl_buy_hold_same_period": {
+    "total_return": 2.7945254177035195,
+    "cagr": 1.2251117657374118,
+    "sharpe": 1.2697386049045247,
+    "max_drawdown": -0.7652916073968705,
+    "calmar": 1.600843069355763,
+    "ending_equity": 379452.54177035193
+  },
+  "option_execution_diagnostics": {
+    "average_entry_spread_as_pct_of_ask": 0.13400993539663406,
+    "median_entry_spread_as_pct_of_ask": 0.10041707698546026,
+    "maximum_entry_spread_as_pct_of_ask": 0.41578947368421054,
+    "underlying_trade_win_rate": 0.9,
+    "option_premium_trade_win_rate": 0.4,
+    "underlying_avg_unscaled_trade_return": 0.0862542719626291,
+    "option_avg_premium_return": -0.01423774931175697,
+    "option_underlying_trade_return_correlation": 0.4846207503050831
+  }
 }
