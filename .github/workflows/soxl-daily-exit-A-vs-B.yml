@@ -1,0 +1,28 @@
+name: SOXL Daily Exit A vs B
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/soxl_daily_exit_ab_test.py'
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy requests
+      - name: Run exit comparison
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/soxl_daily_exit_ab_test.py
+      - name: Commit results
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/williams_r/soxl_daily_exit_A_vs_B.csv
+          git commit -m 'Update SOXL exit A vs B results' || exit 0
+          git push
