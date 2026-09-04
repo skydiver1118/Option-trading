@@ -1,0 +1,25 @@
+name: Export TCAR manifest
+on:
+  push:
+    branches: [research/tcar-option-backtest]
+    paths:
+      - scripts/export_tcar_manifest.py
+      - .github/workflows/export-tcar-manifest.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install pandas numpy
+      - run: python scripts/export_tcar_manifest.py
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add quantconnect/soxl_tcar_long_call_midpoint
+          git commit -m 'Generate frozen TCAR signal manifest' || exit 0
+          git push origin HEAD:research/tcar-option-backtest
