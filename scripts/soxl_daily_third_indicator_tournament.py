@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# trigger tournament
 import os, math, requests
 from pathlib import Path
 import pandas as pd, numpy as np
@@ -17,13 +18,11 @@ def prep():
  s=fetch('SOXL'); q=fetch('QQQ'); x=s.join(q[['open','high','low','close','volume']].add_prefix('q_'),how='inner')
  hh=x.high.rolling(2).max(); ll=x.low.rolling(2).min(); x['wr']=-100*(hh-x.close)/(hh-ll)
  tp=(x.high+x.low+x.close)/3; ma=tp.rolling(5).mean(); md=tp.rolling(5).apply(lambda z:np.mean(np.abs(z-np.mean(z))),raw=True); x['cci']=(tp-ma)/(0.015*md); x['prev_high']=x.high.shift(1)
- # SOXL indicators
  x['ret1']=x.close.pct_change(); x['gap']=x.open/x.close.shift(1)-1; x['clv']=(2*x.close-x.high-x.low)/(x.high-x.low).replace(0,np.nan)
  x['rvol20']=x.volume/x.volume.shift(1).rolling(20).mean(); x['volz20']=(x.volume-x.volume.shift(1).rolling(20).mean())/x.volume.shift(1).rolling(20).std()
  tr=pd.concat([(x.high-x.low).abs(),(x.high-x.close.shift(1)).abs(),(x.low-x.close.shift(1)).abs()],axis=1).max(axis=1); x['atr14']=tr.rolling(14).mean(); x['atrpct']=x.atr14/x.close
  x['bbwidth20']=(4*x.close.rolling(20).std())/x.close.rolling(20).mean()
  up=x.high.diff(); dn=-x.low.diff(); plus_dm=np.where((up>dn)&(up>0),up,0.0); minus_dm=np.where((dn>up)&(dn>0),dn,0.0); atr14=tr.rolling(14).mean(); plus_di=100*pd.Series(plus_dm,index=x.index).rolling(14).mean()/atr14; minus_di=100*pd.Series(minus_dm,index=x.index).rolling(14).mean()/atr14; dx=100*(plus_di-minus_di).abs()/(plus_di+minus_di); x['adx14']=dx.rolling(14).mean()
- # QQQ regime/momentum
  for n in [20,50,100,200]: x[f'q_ema{n}']=x.q_close.ewm(span=n,adjust=False,min_periods=n).mean()
  x['q_dist50']=x.q_close/x.q_ema50-1; x['q_dist200']=x.q_close/x.q_ema200-1; x['q_ret1']=x.q_close.pct_change(); x['q_ret5']=x.q_close.pct_change(5); x['q_atr14']=pd.concat([(x.q_high-x.q_low).abs(),(x.q_high-x.q_close.shift(1)).abs(),(x.q_low-x.q_close.shift(1)).abs()],axis=1).max(axis=1).rolling(14).mean(); x['q_atrpct']=x.q_atr14/x.q_close
  return x
