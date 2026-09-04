@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+src=open('scripts/soxl_15m_wr_cci_40d_opt.py').read()
+src=src.replace("'interval':'15min'","'interval':'5min'")
+src=src.replace("interval=15min","interval=5min")
+src=src.replace("bars_per_year=26*252","bars_per_year=78*252")
+src=src.replace("/900).mean()","/300).mean()")
+src=src.replace("avg_hold_15m_bars","avg_hold_5m_bars")
+src=src.replace("SOXL_tradier_15m_40d.csv","SOXL_tradier_5m_40d_ultrafast.csv")
+src=src.replace("soxl_15m_40d_IS_grid.csv","soxl_5m_40d_ultrafast_IS_grid.csv")
+src=src.replace("soxl_15m_40d_selected.csv","soxl_5m_40d_ultrafast_selected.csv")
+src=src.replace("soxl_15m_40d_locked_IS_OOS.csv","soxl_5m_40d_ultrafast_locked_IS_OOS.csv")
+src=src.replace("wr_ns=[2,3,4,5,7,10,14,20]; wr_entries=[-95,-90,-85,-80,-75]; wr_exits=[-50,-40,-30,-20,-10]\n    cci_ns=[3,5,7,10,14,20]; cci_entries=[-150,-120,-100,-80,-50]; cci_exits=[-50,0,50,100]","wr_ns=[3,5,7]; wr_entries=[-85,-80]; wr_exits=[-50,-40]\n    cci_ns=[3,5,7]; cci_entries=[-100,-80]; cci_exits=[0,50]")
+exec(src)
