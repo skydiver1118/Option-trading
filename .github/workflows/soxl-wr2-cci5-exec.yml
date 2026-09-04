@@ -1,0 +1,31 @@
+name: SOXL WR2 CCI5 OOS Execution Compare
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/soxl_wr2_cci5_exec_compare.py'
+      - '.github/workflows/soxl-wr2-cci5-exec.yml'
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy requests
+      - name: Compare next open and next close
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/soxl_wr2_cci5_exec_compare.py
+      - name: Commit results
+        run: |
+          git config user.name "option-dashboard-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/williams_r
+          git commit -m "Refresh SOXL WR2 CCI5 execution comparison" || exit 0
+          git pull --rebase origin main || true
+          git push origin HEAD:main || true
