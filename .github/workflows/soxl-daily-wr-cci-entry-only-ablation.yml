@@ -1,0 +1,28 @@
+name: SOXL Daily WR CCI Entry Only Ablation
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/soxl_daily_wr_cci_entry_only_ablation.py'
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy requests
+      - name: Run ablation
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/soxl_daily_wr_cci_entry_only_ablation.py
+      - name: Commit results
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/williams_r/soxl_daily_wr_cci_entry_only_ablation.csv
+          git commit -m 'Update SOXL entry-only ablation results' || exit 0
+          git push
