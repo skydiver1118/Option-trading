@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# strict IS-only selection trigger
 import os, math, requests
 from pathlib import Path
 import pandas as pd, numpy as np
@@ -84,16 +85,14 @@ def candidates():
 
 def main():
  x=prep(); end=x.index.max().normalize(); start=end-pd.DateOffset(years=10); is_end=start+pd.DateOffset(years=6)-pd.Timedelta(days=1); va_start=is_end+pd.Timedelta(days=1); va_end=start+pd.DateOffset(years=8)-pd.Timedelta(days=1); oo_start=va_end+pd.Timedelta(days=1); segs={'IS':x.loc[start:is_end],'Validation':x.loc[va_start:va_end],'OOS':x.loc[oo_start:end]}
- base=bt(segs['IS'],lambda r:True); rows=[]
- for fam,param,fn in candidates():
+ rows=[]; cands=candidates()
+ for fam,param,fn in cands:
   z=bt(segs['IS'],fn); z.update(family=fam,param=param); rows.append(z)
  isdf=pd.DataFrame(rows); eligible=isdf[isdf.trades>=MIN_TRADES].copy(); isdf.to_csv(OUT/'soxl_third_indicator_strict_is_all_candidates.csv',index=False)
  winners=[]
  for criterion in ['cagr','sharpe']:
-  w=eligible.sort_values([criterion,'profit_factor','calmar'],ascending=[False,False,False]).iloc[0]
-  fam,param=w.family,w.param
-  fn=next(fn for f,p,fn in candidates() if f==fam and p==param)
-  rec={'criterion':criterion,'family':fam,'param':param}
+  w=eligible.sort_values([criterion,'profit_factor','calmar'],ascending=[False,False,False]).iloc[0]; fam,param=w.family,w.param
+  fn=next(fn for f,p,fn in cands if f==fam and p==param); rec={'criterion':criterion,'family':fam,'param':param}
   for period,seg in segs.items():
    z=bt(seg,fn)
    for k,v in z.items(): rec[f'{period}_{k}']=v
