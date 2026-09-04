@@ -14,6 +14,7 @@ on:
       - 'scripts/williams_r_same_close_spy_spmo.py'
       - 'scripts/williams_r_soxl_optimize_10y.py'
       - 'scripts/williams_r2_cci_soxl_optimize_10y.py'
+      - 'scripts/williams_r_soxl_wr_cci_full_optimize.py'
       - '.github/workflows/williams-r-backtest.yml'
 
 permissions:
@@ -63,6 +64,10 @@ jobs:
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/williams_r2_cci_soxl_optimize_10y.py
+      - name: Full SOXL WR plus CCI IS optimization
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/williams_r_soxl_wr_cci_full_optimize.py
       - name: Commit backtest results
         run: |
           git config user.name "option-dashboard-bot"
