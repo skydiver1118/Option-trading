@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/williams_r_backtest.py'
+      - 'scripts/williams_r_next_close_10y.py'
       - '.github/workflows/williams-r-backtest.yml'
 
 permissions:
@@ -25,6 +26,10 @@ jobs:
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/williams_r_backtest.py
+      - name: Run 10-year next-close IS validation OOS backtest
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/williams_r_next_close_10y.py
       - name: Commit backtest results
         run: |
           git config user.name "option-dashboard-bot"
