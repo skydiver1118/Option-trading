@@ -1,0 +1,46 @@
+name: Export Frozen SOXL Daily Signal Manifest
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: export-soxl-daily-signal-manifest-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pandas==2.2.3 numpy==2.3.5 requests==2.32.5
+
+      - name: Export fixed signal dates
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/export_soxl_daily_signal_manifest.py
+
+      - name: Retain manifest for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: soxl-daily-v1-signal-manifest
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            data/williams_r/soxl_daily_v1_source_snapshot.csv
+            data/williams_r/soxl_daily_v1_signal_manifest.csv
+            data/williams_r/soxl_daily_v1_signal_manifest_metadata.json
+            quantconnect/soxl_wr2_cci5_long_call/signal_manifest.py
