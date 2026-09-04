@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# QQQ EMA200 position-sizing overlay backtest; fixed daily SOXL WR2/CCI5 rule.
 import os, math, requests
 from pathlib import Path
 import pandas as pd
