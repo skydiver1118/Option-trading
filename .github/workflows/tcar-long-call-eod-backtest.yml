@@ -4,6 +4,7 @@ on:
     branches: [research/tcar-option-backtest]
     paths:
       - scripts/backtest_tcar_long_calls_onclick.py
+      - scripts/add_tcar_option_comparison.py
       - .github/workflows/tcar-long-call-eod-backtest.yml
   workflow_dispatch:
 permissions:
@@ -19,12 +20,14 @@ jobs:
       - run: pip install pandas numpy requests
       - name: Run research-only historical option backtest
         run: python scripts/backtest_tcar_long_calls_onclick.py
+      - name: Add same-period ETF comparison
+        run: python scripts/add_tcar_option_comparison.py
       - name: Commit research outputs to branch
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add data/options/tcar_onclick_eod
-          git commit -m 'Add TCAR long-call EOD backtest results' || exit 0
+          git commit -m 'Update TCAR option and ETF comparison results' || exit 0
           git push origin HEAD:research/tcar-option-backtest
       - uses: actions/upload-artifact@v4
         if: always()
