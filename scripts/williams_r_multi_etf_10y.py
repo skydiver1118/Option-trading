@@ -7,7 +7,7 @@ import numpy as np
 TOKEN=os.environ['TRADIER_TOKEN']
 BASE='https://api.tradier.com/v1'
 OUT=Path('data/williams_r'); OUT.mkdir(parents=True, exist_ok=True)
-TICKERS=['SOXL','SMH','SPMO','VGT']
+TICKERS=['SOXL','SMH','SPMO','VGT','SSO','TQQQ']
 
 def fetch_history(symbol, start='2015-09-01', end=None):
     if end is None: end=pd.Timestamp.today().date().isoformat()
