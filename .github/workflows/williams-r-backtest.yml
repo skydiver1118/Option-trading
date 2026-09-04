@@ -8,6 +8,7 @@ on:
       - 'scripts/williams_r_backtest.py'
       - 'scripts/williams_r_next_close_10y.py'
       - 'scripts/williams_r_benchmark.py'
+      - 'scripts/williams_r_core_overlay.py'
       - '.github/workflows/williams-r-backtest.yml'
 
 permissions:
@@ -33,6 +34,10 @@ jobs:
         run: python scripts/williams_r_next_close_10y.py
       - name: Run exact-period SPY buy-and-hold benchmark
         run: python scripts/williams_r_benchmark.py
+      - name: Run SPY core plus Williams R tactical overlay
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/williams_r_core_overlay.py
       - name: Commit backtest results
         run: |
           git config user.name "option-dashboard-bot"
