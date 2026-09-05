@@ -62,6 +62,7 @@ class FakeCalendar:
     def get(self, url, params=None, timeout=None):
         if url.endswith('/markets/calendar'):
             days = [
+                {'date': '2026-09-04', 'status': 'open', 'open': {'start': '09:30', 'end': '16:00'}},
                 {'date': '2026-09-05', 'status': 'closed'},
                 {'date': '2026-09-06', 'status': 'closed'},
                 {'date': '2026-09-07', 'status': 'closed'},
@@ -71,8 +72,24 @@ class FakeCalendar:
         raise AssertionError(url)
 
 
+class FakeEarlyCloseCalendar:
+    base = 'https://early-close.invalid/v1'
+
+    def get(self, url, params=None, timeout=None):
+        if url.endswith('/markets/calendar'):
+            days = [
+                {'date': '2026-11-27', 'status': 'open', 'open': {'start': '09:30', 'end': '13:00'}},
+                {'date': '2026-11-28', 'status': 'closed'},
+                {'date': '2026-11-29', 'status': 'closed'},
+                {'date': '2026-11-30', 'status': 'open', 'open': {'start': '09:30', 'end': '16:00'}},
+            ]
+            return Resp({'calendar': {'days': {'day': days}}})
+        raise AssertionError(url)
+
+
 class SafetyTests(unittest.TestCase):
     def setUp(self):
+        bot.CALENDAR_CACHE.clear()
         for p in (bot.STATE_PATH, bot.AUDIT_PATH):
             try:
                 p.unlink()
@@ -106,6 +123,12 @@ class SafetyTests(unittest.TestCase):
         ts = bot.pd.Timestamp('2026-09-04T15:45:00-04:00')
         start, end = bot.execution_window(FakeCalendar(), ts)
         self.assertEqual(start.isoformat(), '2026-09-08T09:30:00-04:00')
+        self.assertEqual((end - start).total_seconds(), 60)
+
+    def test_early_close_final_bar_moves_to_next_session(self):
+        ts = bot.pd.Timestamp('2026-11-27T12:45:00-05:00')
+        start, end = bot.execution_window(FakeEarlyCloseCalendar(), ts)
+        self.assertEqual(start.isoformat(), '2026-11-30T09:30:00-05:00')
         self.assertEqual((end - start).total_seconds(), 60)
 
     def test_existing_exact_tag_is_recovered_not_resubmitted(self):
