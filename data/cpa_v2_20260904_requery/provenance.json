@@ -1,0 +1,50 @@
+[
+  {
+    "file": "SPY_2016-12-14_2016-12-16.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=daily&start=2016-12-14&end=2016-12-16",
+    "retrieved_at": "2026-09-05T11:51:56.780932+00:00",
+    "sha256": "8186962ec7999411da35ddf0d1e0ab999d39dfd2ae1d0a3a73d374b10a68b6fa"
+  },
+  {
+    "file": "SPMO_2016-09-01_2016-09-30.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SPMO&interval=daily&start=2016-09-01&end=2016-09-30",
+    "retrieved_at": "2026-09-05T11:51:57.062661+00:00",
+    "sha256": "fb0d5a5d71243ae02f9da41c2ac6342210297e2318e209160d56205f520df885"
+  },
+  {
+    "file": "SPMO_2017-01-01_2017-12-31.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SPMO&interval=daily&start=2017-01-01&end=2017-12-31",
+    "retrieved_at": "2026-09-05T11:51:57.346155+00:00",
+    "sha256": "19c67f56b94a201323782e29266fe9dad8d4f163f2aacd3b4e583efacaa70291"
+  },
+  {
+    "file": "VGT_2016-03-01_2016-04-08.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=VGT&interval=daily&start=2016-03-01&end=2016-04-08",
+    "retrieved_at": "2026-09-05T11:51:57.635478+00:00",
+    "sha256": "0a74196f6455d1813610795c1d1b25496c54cc3312462945eed550c4de41239e"
+  },
+  {
+    "file": "SMH_2018-12-18_2018-12-21.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SMH&interval=daily&start=2018-12-18&end=2018-12-21",
+    "retrieved_at": "2026-09-05T11:51:57.938599+00:00",
+    "sha256": "bd2ae886e6a73c366b102bcd46410b1b86f44f4c8fa23d03d2e02b712e331cd1"
+  },
+  {
+    "file": "QQQ_2016-04-04_2016-04-06.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=QQQ&interval=daily&start=2016-04-04&end=2016-04-06",
+    "retrieved_at": "2026-09-05T11:51:58.219044+00:00",
+    "sha256": "3e6792e4bcf0ab016cd6262aa78b7f5914b4afa8b992dd989bd9c13cd03aca11"
+  },
+  {
+    "file": "TQQQ_2016-04-04_2016-04-06.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=TQQQ&interval=daily&start=2016-04-04&end=2016-04-06",
+    "retrieved_at": "2026-09-05T11:51:58.528646+00:00",
+    "sha256": "047acc064201f19f7eb1fdd8cd4c0a49b7e4fbdad1e418c6637f2c5a11650e61"
+  },
+  {
+    "file": "SOXL_2016-12-16_2016-12-21.json",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SOXL&interval=daily&start=2016-12-16&end=2016-12-21",
+    "retrieved_at": "2026-09-05T11:51:58.820882+00:00",
+    "sha256": "a9548db8ae6b418fc2a2e65d2e3bf7dde48cdff4a5929f31fbbd4ecad42bd6d6"
+  }
+]
