@@ -119,7 +119,7 @@ def evaluate(d, period, use_adx):
     name = 'IS_SELECTED_WR3_CCI4_ADX30' if use_adx else 'FROZEN_WR3_CCI4_BASELINE'
     ent = ((x.wr3 < -70) & (x.cci4 < -75)).to_numpy()
     if use_adx:
-        ent &= (x.adx30 <= 20).to_numpy()
+        ent = ent & (x.adx30 <= 20).to_numpy()
     exits = ((x.close > x.prior_high) | (x.wr3 > -30)).to_numpy()
     cash, shares, entry = INITIAL, 0.0, None
     pending_exit, exit_signal, reason = False, '', ''
