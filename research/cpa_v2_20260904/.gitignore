@@ -1,0 +1,4 @@
+# Reproducible partition copies; canonical Tradier capture is committed in data/.
+results/prepared/
+# Third-party visual excerpts inspected locally; retain URLs/hashes, not copies.
+source_images/

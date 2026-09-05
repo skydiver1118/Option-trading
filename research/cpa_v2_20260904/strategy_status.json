@@ -1,0 +1,19 @@
+{
+  "CPA_PROXY_V1": {
+    "eligible_for_selection": false,
+    "path": "scripts/tradier_cpa_multi_backtest.py",
+    "status": "REJECTED"
+  },
+  "CPA_v2_ancestor": {
+    "commit": "ac70df6a8eec7c71ec62fd20a76dc240d65c318f",
+    "path": "scripts/tradier_cpa_v2_state_machine.py",
+    "performance_used": false,
+    "status": "SUPERSEDED_FOR_THIS_STUDY; ACCOUNTING_DEFECTS"
+  },
+  "CPA_v2_research": {
+    "eligible_for_selection": false,
+    "parameters_frozen": false,
+    "path": "scripts/cpa_v2_engine.py",
+    "status": "DRAFT_BLOCKED_BEFORE_IS"
+  }
+}

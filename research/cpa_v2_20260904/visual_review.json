@@ -1,0 +1,89 @@
+{
+  "accepted": false,
+  "status": "PROVISIONAL_SOURCE_MATCH_NOT_ESTABLISHED",
+  "engine_sha256": "192ab963b131689eb332bf83c348b8aedefe8cfc011f92320e2c20957b6048a0",
+  "parameters": {
+    "atr_bars": 14,
+    "volume_bars": 20,
+    "support_weeks": 26,
+    "support_tolerance_atr": 2.0,
+    "reversal_atr": 1.5,
+    "reversal_clv": 0.6,
+    "reversal_volume": 1.25,
+    "reversal_timeout": 40,
+    "pivot_bars": 5,
+    "contraction": 0.85,
+    "ema_band_atr": 1.0,
+    "breakout_volume": 1.0,
+    "crossback_delay": 2,
+    "touch_atr": 0.25,
+    "base_bars": 10,
+    "base_width_atr": 4.0,
+    "base_support_fraction": 0.7,
+    "extension_atr": 1.5,
+    "weekly_extension": 0.04,
+    "extension_reset_atr": 0.25,
+    "drop_pivot_bars": 3,
+    "stop_atr": 0.5,
+    "entry_stage": "WEDGE_POP",
+    "trim_extension": 2,
+    "trim_fraction": 0.5
+  },
+  "performance_used": false,
+  "reference_optimized": false,
+  "example": "TSLA 2020",
+  "source": "https://www.youtube.com/watch?v=VNvb0_zkYqw",
+  "events": [
+    {
+      "date": "2020-03-19",
+      "event": "REVERSAL_EXTENSION",
+      "cycle": 6
+    },
+    {
+      "date": "2020-04-13",
+      "event": "WEDGE_POP",
+      "cycle": 6
+    },
+    {
+      "date": "2020-04-22",
+      "event": "EMA_CROSSBACK",
+      "cycle": 6
+    },
+    {
+      "date": "2020-06-01",
+      "event": "BASE_N_BREAK_1",
+      "cycle": 6
+    },
+    {
+      "date": "2020-06-10",
+      "event": "EXHAUSTION_EXTENSION_1",
+      "cycle": 6
+    },
+    {
+      "date": "2020-06-30",
+      "event": "BASE_N_BREAK_2",
+      "cycle": 6
+    },
+    {
+      "date": "2020-07-02",
+      "event": "EXHAUSTION_EXTENSION_2",
+      "cycle": 6
+    },
+    {
+      "date": "2020-08-11",
+      "event": "WEDGE_DROP",
+      "cycle": 6
+    }
+  ],
+  "matches": [
+    "Provisional March downside reversal, subsequent EMA reclaim, first supported pullback, repeated bases and extensions are present in causal order."
+  ],
+  "limitations": [
+    "Primary video captions were available but chart frames did not render reliably; exact annotated source event dates remain unverified.",
+    "No initial exhaustion label is inferred for the early-2020 top without a previously detected complete cycle.",
+    "Strict reversal-first state initialization may miss rounded-bottom and reentry examples from Kell.",
+    "Detected April Wedge Pop may be later than the discretionary inside-bar/gap entry; timing cannot be signed off from captions.",
+    "The August Wedge Drop precedes a later rally; its agreement with the source timing is unverified.",
+    "This reference is not a parameter set selected from IS performance."
+  ]
+}
