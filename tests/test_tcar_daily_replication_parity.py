@@ -32,18 +32,18 @@ class ReplicationParity(unittest.TestCase):
             np.testing.assert_allclose(ref[old], actual[new], rtol=1e-12, atol=1e-12, equal_nan=True)
 
     def test_three_factor_entry_strict_boundaries(self):
-        row = pd.Series({'wr2':-91,'cci5':-81,'adx20':15,'close':20,'prev_high':21})
+        row = pd.Series({'wr2':-91,'cci5':-81,'adx20':15,'close':20,'prev_high':21}, dtype=float)
         self.assertEqual(bot.signal_for_row(row,False)[0], 'buy')
         for k,value in [('wr2',-90),('cci5',-80),('adx20',14.999)]:
             changed = row.copy(); changed[k] = value
             self.assertIsNone(bot.signal_for_row(changed,False)[0])
 
     def test_cci_is_not_an_exit(self):
-        row = pd.Series({'wr2':-40,'cci5':150,'adx20':20,'close':20,'prev_high':21})
+        row = pd.Series({'wr2':-40,'cci5':150,'adx20':20,'close':20,'prev_high':21}, dtype=float)
         self.assertIsNone(bot.signal_for_row(row,True)[0])
 
     def test_price_or_wr_exit(self):
-        row = pd.Series({'wr2':-40,'cci5':-150,'adx20':20,'close':22,'prev_high':21})
+        row = pd.Series({'wr2':-40,'cci5':-150,'adx20':20,'close':22,'prev_high':21}, dtype=float)
         self.assertEqual(bot.signal_for_row(row,True)[0],'sell')
         row['close']=20; row['wr2']=-29.9
         self.assertEqual(bot.signal_for_row(row,True)[0],'sell')
