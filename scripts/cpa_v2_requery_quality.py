@@ -12,11 +12,17 @@ CASES = [('SPY','2016-12-14','2016-12-16'),
          ('SMH','2018-12-18','2018-12-21'),
          ('QQQ','2016-04-04','2016-04-06'),
          ('TQQQ','2016-04-04','2016-04-06'),
-         ('SOXL','2016-12-16','2016-12-21')]
+         ('SOXL','2016-12-16','2016-12-21'),
+         # Single-session requests test whether broad-window omissions persist.
+         ('SPY','2016-12-15','2016-12-15'),
+         ('SPMO','2016-09-06','2016-09-06')]
 
 
 def main():
-    out=Path('data/cpa_v2_20260904_requery');out.mkdir(parents=True,exist_ok=True)
+    # Append-only capture: never overwrite the original vendor evidence.
+    stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    out=Path('data/cpa_v2_20260904_requery')/stamp
+    out.mkdir(parents=True,exist_ok=False)
     records=[]
     for symbol,start,end in CASES:
         url='https://api.tradier.com/v1/markets/history?'+urlencode(dict(symbol=symbol,interval='daily',start=start,end=end))
