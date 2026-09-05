@@ -144,6 +144,27 @@ class SafetyTests(unittest.TestCase):
         self.assertEqual(state['active_order']['id'], 77)
         self.assertIsNone(state['pending'])
 
+    def test_restart_recovers_filled_order_from_persisted_pending_tag(self):
+        tag = 'DCR15-SOXL-202609041000-B'
+        order = {
+            'id': 88, 'tag': tag, 'symbol': 'SOXL', 'side': 'buy', 'quantity': 5,
+            'status': 'filled', 'exec_quantity': 5, 'remaining_quantity': 0,
+            'avg_fill_price': 20.0,
+        }
+        broker = FakeBroker(orders=[order], order_by_id={88: order}, positions=[{'symbol': 'SOXL', 'quantity': 5}])
+        cfg = bot.BrokerCfg('https://sandbox.tradier.com/v1', 'x', 'acct', False)
+        state = bot.default_state()
+        state['pending'] = {
+            'action': 'buy', 'tag': tag, 'signal_bar': '2026-09-04T10:00:00-04:00',
+            'execute_at': '2026-09-04T10:15:00-04:00', 'expires_at': '2026-09-04T10:16:00-04:00',
+        }
+        bot.recover_pending_existing_order(broker, cfg, state)
+        self.assertEqual(broker.post_count, 0)
+        self.assertIsNone(state['pending'])
+        self.assertIsNone(state['active_order'])
+        self.assertEqual(state['owned_qty'], 5)
+        self.assertEqual(state['last_order_status'], 'filled')
+
     def test_position_mismatch_halts_instead_of_touching_manual_soxl(self):
         broker = FakeBroker(positions=[{'symbol': 'SOXL', 'quantity': 12}])
         cfg = bot.BrokerCfg('https://sandbox.tradier.com/v1', 'x', 'acct', False)
