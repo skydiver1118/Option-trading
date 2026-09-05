@@ -29,6 +29,7 @@ jobs:
           [void][scriptblock]::Create((Get-Content scripts/install_dcr15_paper_task.ps1 -Raw))
       - name: Execution safety tests
         run: python tests/test_dcr15_execution_safety.py
+      # This dry-run uses production Tradier market data but cannot submit an order.
       - name: Real Tradier data dry-run
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
