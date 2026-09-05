@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# trigger 2026-09-04 continuous 10y three-way comparison
 import os, math, requests
 from pathlib import Path
 import pandas as pd, numpy as np
@@ -32,8 +33,7 @@ def run(seg,use_qqq):
    if pos and ((r.close>r.prev_high) or (r.wr>-30)): pending=('sell',0)
    elif (not pos) and r.wr<-90 and r.cci<-80 and r.adx20>=15:
     if use_qqq:
-     if pd.isna(r.qqq_ema200):
-      continue
+     if pd.isna(r.qqq_ema200): continue
      w=1.0 if r.qqq_close>r.qqq_ema200 else 0.5
     else: w=1.0
     pending=('buy',w)
