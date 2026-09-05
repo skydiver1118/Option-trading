@@ -1,0 +1,28 @@
+name: DCR15 Tradier Smoke
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/dcr15_tradier_bot.py'
+      - 'requirements-dcr15.txt'
+      - '.github/workflows/dcr15-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements-dcr15.txt
+      - name: Compile
+        run: python -m py_compile scripts/dcr15_tradier_bot.py
+      - name: Real Tradier data dry-run
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+          DCR15_MODE: dryrun
+          DCR15_STATE_PATH: /tmp/dcr15-state.json
+          DCR15_AUDIT_PATH: /tmp/dcr15-audit.csv
+        run: python scripts/dcr15_tradier_bot.py --once
