@@ -1,0 +1,36 @@
+name: Audit TQQQ Frozen IS Winners
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/audit_tqqq_strict_is_frozen.py'
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy requests
+      - name: Evaluate fixed rules without optimization
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/audit_tqqq_strict_is_frozen.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tqqq-frozen-is-audit
+          path: data/williams_r/tqqq_strict_is_audit/
+      - name: Commit research outputs only
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add data/williams_r/tqqq_strict_is_audit/
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add frozen TQQQ results, hold benchmarks and trade ledgers'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
