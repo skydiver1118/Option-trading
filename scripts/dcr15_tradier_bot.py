@@ -44,6 +44,7 @@ POLL = int(os.getenv("DCR15_POLL_SECONDS", "5"))
 EXEC_GRACE_SECONDS = int(os.getenv("DCR15_EXECUTION_GRACE_SECONDS", "60"))
 UNKNOWN_SUBMISSION_WAIT_SECONDS = int(os.getenv("DCR15_UNKNOWN_SUBMISSION_WAIT_SECONDS", "60"))
 POSITION_RECONCILE_GRACE_SECONDS = int(os.getenv("DCR15_POSITION_RECONCILE_GRACE_SECONDS", "15"))
+OFFHOURS_POLL_SECONDS = int(os.getenv("DCR15_OFFHOURS_POLL_SECONDS", "60"))
 STATE_PATH = Path(os.getenv("DCR15_STATE_PATH", f"runtime/dcr15/{MODE}-state.json"))
 AUDIT_PATH = Path(os.getenv("DCR15_AUDIT_PATH", f"runtime/dcr15/{MODE}-audit.csv"))
 LIVE_BASE = "https://api.tradier.com/v1"
@@ -53,6 +54,7 @@ CCI_N, CCI_ENTRY, CCI_EXIT = 5, -80.0, 0.0
 TAG_PREFIX = "DCR15-"
 ACTIVE_ORDER_STATUSES = {"pending", "open", "partially_filled", "pending_cancel"}
 TERMINAL_ORDER_STATUSES = {"filled", "rejected", "expired", "canceled", "error"}
+CALENDAR_CACHE: dict[tuple[str, int, int], list[dict]] = {}
 
 
 @dataclass
@@ -216,6 +218,9 @@ def market_open(ms) -> bool:
 
 
 def market_calendar(ms, year: int, month: int) -> list[dict]:
+    key = (ms.base, year, month)
+    if key in CALENDAR_CACHE:
+        return CALENDAR_CACHE[key]
     r = ms.get(
         f"{ms.base}/markets/calendar",
         params={"year": year, "month": month},
@@ -223,31 +228,66 @@ def market_calendar(ms, year: int, month: int) -> list[dict]:
     )
     r.raise_for_status()
     days = (((r.json().get("calendar") or {}).get("days") or {}).get("day") or [])
-    return [days] if isinstance(days, dict) else days
+    days = [days] if isinstance(days, dict) else days
+    CALENDAR_CACHE[key] = days
+    return days
+
+
+def regular_session_bounds(ms, d) -> tuple[datetime, datetime] | None:
+    days = market_calendar(ms, d.year, d.month)
+    entry = next((x for x in days if x.get("date") == d.isoformat()), None)
+    if not entry or entry.get("status") != "open":
+        return None
+    session_info = entry.get("open") or {}
+    start = (session_info.get("start") or "09:30").strip()
+    end = (session_info.get("end") or "16:00").strip()
+    sh, sm = [int(v) for v in start.split(":")[:2]]
+    eh, em = [int(v) for v in end.split(":")[:2]]
+    return (
+        datetime(d.year, d.month, d.day, sh, sm, tzinfo=ET),
+        datetime(d.year, d.month, d.day, eh, em, tzinfo=ET),
+    )
 
 
 def next_regular_open(ms, signal_bar: datetime) -> datetime:
     target = signal_bar.date() + timedelta(days=1)
     for offset in range(0, 15):
         d = target + timedelta(days=offset)
-        days = market_calendar(ms, d.year, d.month)
-        entry = next((x for x in days if x.get("date") == d.isoformat()), None)
-        if not entry or entry.get("status") != "open":
-            continue
-        start = ((entry.get("open") or {}).get("start") or "09:30").strip()
-        hh, mm = [int(v) for v in start.split(":")[:2]]
-        return datetime(d.year, d.month, d.day, hh, mm, tzinfo=ET)
+        bounds = regular_session_bounds(ms, d)
+        if bounds:
+            return bounds[0]
     raise RuntimeError("Unable to resolve next regular market open within 15 calendar days")
 
 
 def execution_window(ms, bar_dt: pd.Timestamp) -> tuple[datetime, datetime]:
     signal = bar_dt.to_pydatetime().astimezone(ET)
-    if signal.time() < dtime(15, 45):
-        execute_at = signal + timedelta(minutes=15)
-    else:
-        execute_at = next_regular_open(ms, signal)
+    candidate = signal + timedelta(minutes=15)
+    bounds = regular_session_bounds(ms, signal.date())
+    if bounds is None:
+        raise RuntimeError(f"Signal bar fell on non-trading date: {signal.date()}")
+    _, session_close = bounds
+    execute_at = candidate if candidate < session_close else next_regular_open(ms, signal)
     return execute_at, execute_at + timedelta(seconds=EXEC_GRACE_SECONDS)
 
+
+def should_fetch_bars(ms, state: dict, now: datetime) -> bool:
+    bounds = regular_session_bounds(ms, now.date())
+    if bounds is None:
+        return False
+    session_open, session_close = bounds
+    if now < session_open:
+        return False
+    if now < session_close:
+        return True
+    final_bar_start = session_close - timedelta(minutes=15)
+    last_bar = state.get("last_bar")
+    if not last_bar:
+        return True
+    try:
+        last = pd.Timestamp(last_bar).to_pydatetime().astimezone(ET)
+    except Exception:
+        return True
+    return last < final_bar_start
 
 def fetch_bars(ms, days=10):
     now = now_et()
@@ -733,14 +773,12 @@ def submit_pending(ms, bs, cfg, state: dict, pending: dict) -> None:
 def reconcile_runtime(bs, cfg, state: dict) -> None:
     if MODE in ("dryrun", "preview"):
         return
-    recover_submission_unknown(bs, cfg, state)
+    if state.get("submission_unknown"):
+        recover_submission_unknown(bs, cfg, state)
     if state.get("halted_reason"):
         return
-    recover_active_session_order(bs, cfg, state)
-    reconcile_active_order(bs, cfg, state)
-    if state.get("halted_reason"):
-        return
-    verify_position_ownership(bs, cfg, state, halt_on_mismatch=not bool(state.get("active_order")))
+    if state.get("active_order"):
+        reconcile_active_order(bs, cfg, state)
     jdump(STATE_PATH, state)
 
 
@@ -749,43 +787,54 @@ def process_once(ms, bs, cfg, state):
     if state.get("halted_reason"):
         return
 
+    now = now_et()
+
+    # Handle a pending next-bar order before requesting a new bar. This allows an
+    # overnight final-bar signal to execute promptly at the next regular open.
+    if not state.get("active_order") and not state.get("submission_unknown"):
+        pending = state.get("pending")
+        if pending:
+            execute_at = pd.Timestamp(pending["execute_at"])
+            expires_at = pd.Timestamp(pending["expires_at"])
+            now_ts = pd.Timestamp(now)
+            if now_ts > expires_at:
+                audit(
+                    "missed_execution_window",
+                    mode=MODE,
+                    action=pending.get("action"),
+                    tag=pending.get("tag"),
+                    note=f"intended={pending['execute_at']} expires={pending['expires_at']}; stale signal not chased",
+                )
+                state["pending"] = None
+                jdump(STATE_PATH, state)
+            elif now_ts >= execute_at and market_open(ms):
+                if MODE not in ("dryrun", "preview") and not verify_position_ownership(bs, cfg, state):
+                    jdump(STATE_PATH, state)
+                    return
+                submit_pending(ms, bs, cfg, state, pending)
+
+    if state.get("active_order") or state.get("submission_unknown"):
+        return
+
+    if not should_fetch_bars(ms, state, now):
+        return
+
     x = indicators(fetch_bars(ms))
     if x.empty or len(x) < 6:
         return
-    now = now_et()
     complete = x[x.index + pd.Timedelta(minutes=15) <= pd.Timestamp(now)]
     if complete.empty:
         return
     bar_dt = complete.index[-1]
     row = complete.iloc[-1]
 
-    if state.get("active_order") or state.get("submission_unknown"):
-        return
-
-    pending = state.get("pending")
-    if pending:
-        execute_at = pd.Timestamp(pending["execute_at"])
-        expires_at = pd.Timestamp(pending["expires_at"])
-        now_ts = pd.Timestamp(now)
-        if now_ts > expires_at:
-            audit(
-                "missed_execution_window",
-                mode=MODE,
-                action=pending.get("action"),
-                tag=pending.get("tag"),
-                note=f"intended={pending['execute_at']} expires={pending['expires_at']}; stale signal not chased",
-            )
-            state["pending"] = None
-            jdump(STATE_PATH, state)
-        elif now_ts >= execute_at and market_open(ms):
-            if MODE not in ("dryrun", "preview") and not verify_position_ownership(bs, cfg, state):
-                jdump(STATE_PATH, state)
-                return
-            submit_pending(ms, bs, cfg, state, pending)
-
     if state.get("last_bar") == bar_dt.isoformat():
         return
     if state.get("pending") or state.get("active_order") or state.get("submission_unknown"):
+        return
+
+    if MODE not in ("dryrun", "preview") and not verify_position_ownership(bs, cfg, state):
+        jdump(STATE_PATH, state)
         return
 
     owned_qty = int(state.get("owned_qty", state.get("sim_qty", 0)) or 0)
@@ -847,7 +896,6 @@ def process_once(ms, bs, cfg, state):
         )
     jdump(STATE_PATH, state)
 
-
 def startup_reconcile(bs, cfg, state: dict) -> None:
     if MODE in ("dryrun", "preview"):
         return
@@ -883,7 +931,17 @@ def main():
             audit("error", mode=MODE, note=repr(e))
         if once:
             break
-        time.sleep(POLL)
+        current = now_et()
+        near_rth = current.weekday() < 5 and dtime(9, 20) <= current.time() <= dtime(16, 15)
+        urgent = bool(state.get("active_order") or state.get("submission_unknown"))
+        pending = state.get("pending")
+        if pending:
+            try:
+                until_exec = (pd.Timestamp(pending["execute_at"]) - pd.Timestamp(current)).total_seconds()
+                urgent = urgent or (-EXEC_GRACE_SECONDS <= until_exec <= 600)
+            except Exception:
+                urgent = True
+        time.sleep(POLL if (near_rth or urgent) else OFFHOURS_POLL_SECONDS)
 
 
 if __name__ == "__main__":
