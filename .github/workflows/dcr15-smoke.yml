@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'scripts/dcr15_tradier_bot.py'
+      - 'scripts/start_dcr15_paper.ps1'
+      - 'scripts/install_dcr15_paper_task.ps1'
       - 'tests/test_dcr15_execution_safety.py'
       - 'requirements-dcr15.txt'
       - '.github/workflows/dcr15-smoke.yml'
@@ -18,8 +20,13 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements-dcr15.txt
-      - name: Compile
+      - name: Compile Python
         run: python -m py_compile scripts/dcr15_tradier_bot.py tests/test_dcr15_execution_safety.py
+      - name: Validate PowerShell syntax
+        shell: pwsh
+        run: |
+          [void][scriptblock]::Create((Get-Content scripts/start_dcr15_paper.ps1 -Raw))
+          [void][scriptblock]::Create((Get-Content scripts/install_dcr15_paper_task.ps1 -Raw))
       - name: Execution safety tests
         run: python tests/test_dcr15_execution_safety.py
       - name: Real Tradier data dry-run
