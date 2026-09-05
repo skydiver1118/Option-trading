@@ -2,77 +2,68 @@
 
 Use this runbook on the Windows PC that will remain logged in while DCR-15 paper trading is active.
 
+## Simplest deployment
+
+From the current `Option-trading` repository root, one PowerShell command performs the local checks, prompts for tokens with masked input, runs the GET-only Tradier preflight, installs the scheduled task, and starts the paper service:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/deploy_dcr15_paper.ps1
+```
+
+The deployment script never enables the live-order gate.
+
 ## Single Codex handoff prompt
 
-Paste the following into local Codex:
+Paste this into local Codex:
 
 ```text
 Deploy the latest SOXL DCR-15 PAPER trading service from my
 skydiver1118/Option-trading repository on this Windows PC.
 
-Rules:
-- PAPER/SANDBOX ONLY. Do not enable DCR15 live mode and do not set
-  TRADIER_LIVE_ENABLE.
-- Do not print, echo, log, commit, or otherwise expose token values.
-- Do not discard any uncommitted local work.
+PAPER/SANDBOX ONLY. Do not enable DCR15 live mode and do not set
+TRADIER_LIVE_ENABLE. Do not print, echo, log, commit, or otherwise expose
+Tradier token values. Do not discard any uncommitted local work.
 
-Procedure:
-1. Find my local Option-trading clone. If none exists, clone
-   https://github.com/skydiver1118/Option-trading.git into an appropriate
-   folder under my Codex workspace.
-2. Run git status. If the working tree is clean, update main with
-   `git pull --ff-only`. If it is not clean, preserve the changes and report
-   the conflict instead of resetting anything.
-3. Confirm these files exist:
-   - scripts/dcr15_tradier_bot.py
-   - scripts/dcr15_sandbox_preflight.py
-   - scripts/setup_dcr15_local_tokens.ps1
-   - scripts/start_dcr15_paper.ps1
-   - scripts/install_dcr15_paper_task.ps1
-   - tests/test_dcr15_execution_safety.py
-4. Run the Python compile and execution-safety tests. Stop if either fails.
-5. Run `scripts/setup_dcr15_local_tokens.ps1`. Let me enter the production
-   Tradier token and sandbox Tradier token interactively with masked input.
-   Do not ask me to paste either token into Codex chat text.
-6. Verify the GET-only local preflight returns PASS. It must show production
-   SOXL quote/15-minute data access and sandbox account/balance/position/order
-   read access. This step must submit zero orders.
-7. Inspect `runtime/dcr15/paper-state.json` if it exists. Never delete or
-   rewrite executable state merely to bypass a halt or position mismatch.
-8. Install/update the Windows scheduled task using
-   `scripts/install_dcr15_paper_task.ps1`.
-9. Start `SOXL-DCR15-Tradier-Paper`.
-10. Verify only one task/service instance is running, DCR15_MODE is paper,
-    and no live-enable environment variable has been introduced by this
-    deployment.
-11. Read only sanitized status from `runtime/dcr15/paper-state.json` and the
-    tail of `runtime/dcr15/paper-audit.csv`. Report strategy state, pending
-    action if any, active order status if any, owned quantity, broker quantity,
-    last processed bar, and halted_reason. Do not show credentials or account
-    identifiers.
-12. If the bot halts because an existing sandbox SOXL position or order is not
-    strategy-owned, stop and report the mismatch. Do not liquidate, cancel, or
-    adopt that position automatically.
+Find my local Option-trading clone. If the working tree is clean, update main
+with `git pull --ff-only`; if it is not clean, preserve my changes and stop
+rather than resetting anything.
+
+Then run:
+  powershell -ExecutionPolicy Bypass -File scripts/deploy_dcr15_paper.ps1
+
+Let me enter the production and sandbox Tradier tokens only through the masked
+PowerShell prompts, not in Codex chat text.
+
+After deployment, verify the scheduled task
+`SOXL-DCR15-Tradier-Paper` is running and there is only one instance. Read only
+sanitized status from `runtime/dcr15/paper-state.json` and the tail of
+`runtime/dcr15/paper-audit.csv`. Report state_mode, last_bar, pending,
+active-order status, owned_qty, broker_qty, last_order_status, and
+halted_reason. Never display credentials or account identifiers.
+
+If the bot halts because an existing sandbox SOXL position/order is not
+strategy-owned, stop and report the mismatch. Do not liquidate, cancel, adopt,
+or delete state to bypass the safeguard.
 ```
 
-## Direct PowerShell equivalent
+## What `deploy_dcr15_paper.ps1` does
 
-From the repository root:
+1. Installs DCR-15 Python dependencies.
+2. Compiles the bot, preflight, and safety tests.
+3. Runs the execution-safety tests.
+4. Runs `setup_dcr15_local_tokens.ps1`.
+   - token entry is masked;
+   - tokens are stored as Windows **User** environment variables on this PC;
+   - token values are not written to the repository.
+5. Runs the GET-only local Tradier preflight.
+   - production SOXL market-data access;
+   - sandbox account/balance/position/order read access;
+   - zero orders submitted.
+6. Installs/updates the `SOXL-DCR15-Tradier-Paper` Windows scheduled task.
+7. Starts that task.
+8. Prints only task/runtime locations and non-secret status.
 
-```powershell
-python -m pip install -r requirements-dcr15.txt
-python -m py_compile scripts/dcr15_tradier_bot.py tests/test_dcr15_execution_safety.py
-python tests/test_dcr15_execution_safety.py
-powershell -ExecutionPolicy Bypass -File scripts/setup_dcr15_local_tokens.ps1
-```
-
-Close and reopen PowerShell after the token setup, then:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install_dcr15_paper_task.ps1
-Start-ScheduledTask -TaskName 'SOXL-DCR15-Tradier-Paper'
-Get-ScheduledTask -TaskName 'SOXL-DCR15-Tradier-Paper' | Get-ScheduledTaskInfo
-```
+The paper launcher explicitly reloads the saved Windows User token values when it starts, so a logoff/reboot is not required merely to make the task see newly saved credentials.
 
 ## Expected runtime files
 
@@ -80,19 +71,21 @@ Get-ScheduledTask -TaskName 'SOXL-DCR15-Tradier-Paper' | Get-ScheduledTaskInfo
 - `runtime/dcr15/paper-audit.csv`
 - `runtime/dcr15/local-preflight-status.json`
 
-## Stop paper service
+## Stop or disable paper trading
+
+Stop the current task instance:
 
 ```powershell
 Stop-ScheduledTask -TaskName 'SOXL-DCR15-Tradier-Paper'
 ```
 
-To disable automatic start at logon without deleting the task:
+Disable automatic start at logon:
 
 ```powershell
 Disable-ScheduledTask -TaskName 'SOXL-DCR15-Tradier-Paper'
 ```
 
-Re-enable it with:
+Re-enable it:
 
 ```powershell
 Enable-ScheduledTask -TaskName 'SOXL-DCR15-Tradier-Paper'
@@ -100,4 +93,4 @@ Enable-ScheduledTask -TaskName 'SOXL-DCR15-Tradier-Paper'
 
 ## Live boundary
 
-This runbook does not activate real-money trading. The paper launcher sets `DCR15_MODE=paper`, and no deployment step here sets the separate live-enable gate.
+This deployment is paper-only. `start_dcr15_paper.ps1` sets `DCR15_MODE=paper`, sends paper orders only to the Tradier Sandbox endpoint, and does not set the separate production live-enable gate.
