@@ -1,0 +1,28 @@
+name: Backtest TQQQ Daily TCAR 10Y
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/backtest_tqqq_daily_tcar_10y.py'
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy requests
+      - name: Run TQQQ backtest
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/backtest_tqqq_daily_tcar_10y.py
+      - name: Commit results
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add data/williams_r/tqqq_daily_tcar_10y_*.csv data/williams_r/tqqq_daily_tcar_10y_metrics.json
+          git diff --cached --quiet || git commit -m 'Update TQQQ daily TCAR 10Y backtest results'
+          git push
