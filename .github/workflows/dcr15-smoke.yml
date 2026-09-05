@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'scripts/dcr15_tradier_bot.py'
+      - 'scripts/dcr15_sandbox_preflight.py'
+      - 'scripts/setup_dcr15_local_tokens.ps1'
       - 'scripts/start_dcr15_paper.ps1'
       - 'scripts/install_dcr15_paper_task.ps1'
       - 'tests/test_dcr15_execution_safety.py'
@@ -21,10 +23,11 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements-dcr15.txt
       - name: Compile Python
-        run: python -m py_compile scripts/dcr15_tradier_bot.py tests/test_dcr15_execution_safety.py
+        run: python -m py_compile scripts/dcr15_tradier_bot.py scripts/dcr15_sandbox_preflight.py tests/test_dcr15_execution_safety.py
       - name: Validate PowerShell syntax
         shell: pwsh
         run: |
+          [void][scriptblock]::Create((Get-Content scripts/setup_dcr15_local_tokens.ps1 -Raw))
           [void][scriptblock]::Create((Get-Content scripts/start_dcr15_paper.ps1 -Raw))
           [void][scriptblock]::Create((Get-Content scripts/install_dcr15_paper_task.ps1 -Raw))
       - name: Execution safety tests
