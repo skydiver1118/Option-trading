@@ -1,0 +1,34 @@
+{
+  "available": {
+    "Tradier_capture_and_provenance": "../../data/cpa_v2_20260904_source/",
+    "Tradier_narrow_requery_evidence": "../../data/cpa_v2_20260904_requery/",
+    "data_quality_and_source_hashes": "results/input_quality.json",
+    "fixed_IS_example_states_and_charts": "morphology/",
+    "individual_data_defects": "results/data_issues.csv",
+    "legacy_strategy_status": "strategy_status.json",
+    "partition_boundaries": "partitions.json",
+    "primary_visual_source_hashes": "source_visual_evidence.json",
+    "protocol_and_acceptance_criteria": "PROTOCOL.md",
+    "registered_parameter_search_space": "search_space.json",
+    "requery_comparison": "results/requery_comparison.json",
+    "source_definitions": "SOURCE_DEFINITIONS.md",
+    "stage_and_pair_status": "results/study_status.json",
+    "summary_and_adversarial_audit": "RESEARCH_REPORT.md",
+    "targeted_test_results": "results/test_results.json",
+    "visual_gate": "visual_review.json"
+  },
+  "note": "Morphology event histories are available only for the fixed IS-era TSLA example. They are not study performance.",
+  "study_status": "BLOCKED_BEFORE_IS",
+  "unstarted": {
+    "IS_frozen_candidate_manifest": "NOT_STARTED; no performance artifact exists",
+    "IS_results_for_tested_configurations": "NOT_STARTED; no performance artifact exists",
+    "OOS_final_results": "NOT_STARTED; no performance artifact exists",
+    "OOS_subperiods_and_correlation": "NOT_STARTED; no performance artifact exists",
+    "benchmark_comparison": "NOT_STARTED; no performance artifact exists",
+    "final_frozen_parameter_manifest": "NOT_STARTED; no performance artifact exists",
+    "study_equity_curves": "NOT_STARTED; no performance artifact exists",
+    "study_event_state_histories": "NOT_STARTED; no performance artifact exists",
+    "study_individual_trade_and_fill_logs": "NOT_STARTED; no performance artifact exists",
+    "validation_pass_fail_results": "NOT_STARTED; no performance artifact exists"
+  }
+}

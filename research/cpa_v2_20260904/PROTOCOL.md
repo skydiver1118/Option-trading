@@ -1,6 +1,6 @@
 # CPA_v2 sequential study protocol — 2026-09-04 endpoint
 
-Status: protocol construction; no performance evaluated in this study.
+Status: protocol construction; performance gates blocked, no performance evaluated.
 Ancestor: ac70df6a8eec7c71ec62fd20a76dc240d65c318f,
 scripts/tradier_cpa_v2_state_machine.py. CPA_PROXY_V1 is rejected.
 
@@ -10,8 +10,11 @@ scripts/tradier_cpa_v2_state_machine.py. CPA_PROXY_V1 is rejected.
   or reconstructed historical constituents. Requested symbols are a fixed,
   user-selected survivor universe, not a survivorship-free universe.
 - Study calendar: available SPY sessions from 2016-09-05 through 2026-09-04
-  inclusive. First floor(0.60*N) IS; next floor(0.20*N) Validation; remainder
-  OOS. Other symbols must cover the same dates without filling missing prices.
+  inclusive. Cut at floor(0.60*N) and floor(0.80*N): IS before the first cut,
+  Validation between the cuts, OOS after the second. Other symbols must cover
+  the same dates without filling missing prices. Cumulative rounding was
+  clarified before any performance computation; the initial capture protocol
+  rounded the two segment lengths separately (one-session difference).
   If the endpoint is unavailable, disclose actual endpoint; do not fabricate it.
 - Fetch from 2015 for feature warm-up. Features/state may use past observations;
   account positions start flat in every scored partition. No signal from a
