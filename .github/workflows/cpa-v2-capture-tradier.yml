@@ -1,0 +1,25 @@
+name: CPA v2 Tradier source capture only
+on:
+  push:
+    branches: [research/cpa-v2-20260905]
+    paths: ['scripts/cpa_v2_capture_tradier.py', '.github/workflows/cpa-v2-capture-tradier.yml']
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download official Tradier daily OHLCV only
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/cpa_v2_capture_tradier.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpa-v2-tradier-source-20260904
+          path: artifacts/cpa_v2_tradier_capture/
+          retention-days: 90
