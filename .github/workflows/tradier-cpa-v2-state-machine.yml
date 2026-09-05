@@ -1,0 +1,31 @@
+name: Tradier CPA v2 State Machine
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/tradier_cpa_v2_state_machine.py'
+      - '.github/workflows/tradier-cpa-v2-state-machine.yml'
+permissions:
+  contents: read
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy requests
+      - name: Run CPA v2 state-machine backtest
+        run: python scripts/tradier_cpa_v2_state_machine.py
+      - name: Show summary
+        run: cat artifacts/tradier_cpa_v2/summary.csv
+      - name: Upload CPA v2 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tradier-cpa-v2-state-machine
+          path: artifacts/tradier_cpa_v2/
