@@ -1,0 +1,30 @@
+name: DCR15 Sandbox Read-Only Preflight
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/dcr15_sandbox_preflight.py'
+      - '.github/workflows/dcr15-sandbox-preflight.yml'
+permissions:
+  contents: read
+concurrency:
+  group: dcr15-readonly-preflight
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout reviewed source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Compile standalone read-only checker
+        run: python3 -m py_compile scripts/dcr15_sandbox_preflight.py
+      - name: Check sandbox and production market data - NO ORDERS
+        env:
+          TRADIER_SANDBOX_TOKEN: ${{ secrets.TRADIER_SANDBOX_TOKEN }}
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+          DCR15_CHECK_REPORT: ${{ runner.temp }}/dcr15-preflight-status.json
+        run: python3 scripts/dcr15_sandbox_preflight.py
