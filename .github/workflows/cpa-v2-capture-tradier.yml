@@ -4,7 +4,7 @@ on:
     branches: [research/cpa-v2-20260905]
     paths: ['scripts/cpa_v2_capture_tradier.py', '.github/workflows/cpa-v2-capture-tradier.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
   capture:
     runs-on: ubuntu-latest
@@ -23,3 +23,12 @@ jobs:
           name: cpa-v2-tradier-source-20260904
           path: artifacts/cpa_v2_tradier_capture/
           retention-days: 90
+      - name: Preserve source snapshot on the research branch
+        run: |
+          mkdir -p data/cpa_v2_20260904_source
+          cp artifacts/cpa_v2_tradier_capture/* data/cpa_v2_20260904_source/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/cpa_v2_20260904_source
+          git diff --cached --quiet || git commit -m 'Preserve Tradier CPA daily source snapshot without performance evaluation'
+          git push origin HEAD:research/cpa-v2-20260905
