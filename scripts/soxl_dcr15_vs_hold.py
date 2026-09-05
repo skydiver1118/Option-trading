@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# trigger DCR15 vs hold 2026-09-04
 import os, requests
 from pathlib import Path
 import pandas as pd, numpy as np
@@ -24,7 +25,7 @@ def add_ind(x):
     tp=(x.high+x.low+x.close)/3; ma=tp.rolling(5).mean(); md=tp.rolling(5).apply(lambda z:np.mean(np.abs(z-np.mean(z))),raw=True); x['cci']=(tp-ma)/(0.015*md); x['prev_high']=x.high.shift(1); return x
 
 def bt(seg):
-    x=add_ind(seg); cash=100000.; sh=0.; pos=False; pending=None; trades=[]; eq=[]
+    x=add_ind(seg); cash=100000.; sh=0.; pos=False; pending=None; eq=[]
     for dt,r in x.iterrows():
         if pending=='buy' and not pos: sh=cash/float(r.open); cash=0.; pos=True; pending=None
         elif pending=='sell' and pos: cash=sh*float(r.open); sh=0.; pos=False; pending=None
@@ -36,7 +37,6 @@ def bt(seg):
     return total,e.pos.mean(),e.equity.iloc[-1]
 
 def hold(seg):
-    # true buy-and-hold from first available RTH open to final RTH close
     total=float(seg.close.iloc[-1]/seg.open.iloc[0]-1)
     return total,100000*(1+total)
 
