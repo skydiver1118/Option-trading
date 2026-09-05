@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# TCAR vs SOXL buy-and-hold comparison
 exec(open('scripts/soxl_tcmr_integrated_backtest.py').read().replace("if __name__=='__main__': main()",''))
 
 def hold_metrics(s):
