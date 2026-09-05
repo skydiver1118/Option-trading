@@ -5,8 +5,17 @@ param(
 $ErrorActionPreference = "Stop"
 Set-Location $RepoPath
 
-if (-not $env:TRADIER_TOKEN) { throw "TRADIER_TOKEN is required for production market data." }
-if (-not $env:TRADIER_SANDBOX_TOKEN) { throw "TRADIER_SANDBOX_TOKEN is required for Tradier paper trading." }
+# Task Scheduler may not inherit user-environment changes made after logon.
+# Load the saved USER values explicitly if they are not already in this process.
+if (-not $env:TRADIER_TOKEN) {
+  $env:TRADIER_TOKEN = [Environment]::GetEnvironmentVariable("TRADIER_TOKEN", "User")
+}
+if (-not $env:TRADIER_SANDBOX_TOKEN) {
+  $env:TRADIER_SANDBOX_TOKEN = [Environment]::GetEnvironmentVariable("TRADIER_SANDBOX_TOKEN", "User")
+}
+
+if (-not $env:TRADIER_TOKEN) { throw "TRADIER_TOKEN is required locally for production market data." }
+if (-not $env:TRADIER_SANDBOX_TOKEN) { throw "TRADIER_SANDBOX_TOKEN is required locally for Tradier paper trading." }
 
 $env:DCR15_MODE = "paper"
 $env:DCR15_ALLOCATION_PCT = "1.0"
