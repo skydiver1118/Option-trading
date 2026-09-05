@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# trigger 2026-09-04
 exec(open('scripts/soxl_daily_tcar_no_qqq_10y.py').read().replace("if __name__=='__main__': main()",''))
 
 def hold_stats(seg):
