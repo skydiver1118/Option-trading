@@ -41,7 +41,6 @@ def backtest(d):
     d=d.loc[START:END].copy(); eq=INITIAL; position=False; entry=None; trades=[]; daily=[]
     for i in range(len(d)):
         row=d.iloc[i]; date=d.index[i]
-        # execute action signaled at prior close
         if position and entry.get('pending_exit',False):
             px=float(row.open); ret=px/entry['price']-1; eq*=1+ret
             trades.append({'entry_signal_date':entry['signal_date'].date().isoformat(),'entry_date':entry['date'].date().isoformat(),'entry_price':entry['price'],'exit_date':date.date().isoformat(),'exit_price':px,'return':ret,'holding_days':(date-entry['date']).days})
@@ -50,11 +49,9 @@ def backtest(d):
             prev=d.iloc[i-1]
             if bool(prev.wr < -90 and prev.cci < -80 and prev.adx >= 15):
                 position=True; entry={'signal_date':d.index[i-1],'date':date,'price':float(row.open),'pending_exit':False}
-        # mark equity at close
         mark=eq if not position else eq*(float(row.close)/entry['price'])
         daily.append((date,mark,1 if position else 0))
-        if position:
-            entry['pending_exit']=bool((row.close > row.prior_high) or (row.wr > -30))
+        if position: entry['pending_exit']=bool((row.close > row.prior_high) or (row.wr > -30))
     if position:
         px=float(d.iloc[-1].close); ret=px/entry['price']-1; eq*=1+ret
         trades.append({'entry_signal_date':entry['signal_date'].date().isoformat(),'entry_date':entry['date'].date().isoformat(),'entry_price':entry['price'],'exit_date':d.index[-1].date().isoformat(),'exit_price':px,'return':ret,'holding_days':(d.index[-1]-entry['date']).days})
@@ -67,5 +64,5 @@ def backtest(d):
     return metrics,t,curve
 
 if __name__=='__main__':
-    d=indicators(fetch_tradier()); m,t,c=backtest(d); t.to_csv(OUT/'tqqq_daily_tcar_10y_trades.csv',index=False); c.to_csv(OUT/'tqqq_daily_tcar_10y_equity.csv'); (OUT/'tqqq_daily_tcar_10y_metrics.json').write_text(json.dumps(m,indent=2,allow_nan=True))
-    print(json.dumps(m,indent=2,allow_nan=True))
+    d=indicators(fetch_tradier()); m,t,c=backtest(d); t.to_csv(OUT/'tqqq_daily_tcar_10y_trades.csv',index=False); c.to_csv(OUT/'tqqq_daily_tcar_10y_equity.csv'); (OUT/'tqqq_daily_tcar_10y_metrics.json').write_text(json.dumps(m,indent=2,allow_nan=True)); print(json.dumps(m,indent=2,allow_nan=True))
+# trigger: 2026-09-04
