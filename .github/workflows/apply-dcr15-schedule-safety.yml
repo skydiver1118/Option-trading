@@ -1,0 +1,28 @@
+name: Apply DCR15 Schedule Safety
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/_apply_dcr15_schedule_safety.py'
+      - '.github/workflows/apply-dcr15-schedule-safety.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Apply patch
+        run: python scripts/_apply_dcr15_schedule_safety.py
+      - name: Compile patched bot
+        run: python -m py_compile scripts/dcr15_tradier_bot.py
+      - name: Commit patched bot
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add scripts/dcr15_tradier_bot.py
+          git commit -m 'Handle early closes and reduce DCR15 off-hours polling' || exit 0
+          git push
