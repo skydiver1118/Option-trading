@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# trigger 2026-09-04 Yahoo-vs-Tradier replication
+# Yahoo vs Tradier replication with one-year indicator warmup
 import os, math, requests
 from pathlib import Path
 import pandas as pd, numpy as np, yfinance as yf
 TOKEN=os.environ['TRADIER_TOKEN']; BASE='https://api.tradier.com/v1'; OUT=Path('data/williams_r'); OUT.mkdir(parents=True,exist_ok=True)
-START='2016-09-06'; END='2026-09-04'
+START='2016-09-06'; END='2026-09-04'; WARMUP=(pd.Timestamp(START)-pd.DateOffset(years=1)).date().isoformat()
 
 def fetch_tradier():
- s=requests.Session(); s.headers.update({'Authorization':f'Bearer {TOKEN}','Accept':'application/json'}); rows=[]; cur=pd.Timestamp(START); endt=pd.Timestamp(END)
+ s=requests.Session(); s.headers.update({'Authorization':f'Bearer {TOKEN}','Accept':'application/json'}); rows=[]; cur=pd.Timestamp(WARMUP); endt=pd.Timestamp(END)
  while cur<=endt:
   stop=min(endt,cur+pd.DateOffset(years=8)-pd.Timedelta(days=1)); r=s.get(f'{BASE}/markets/history',params={'symbol':'SOXL','interval':'daily','start':cur.date().isoformat(),'end':stop.date().isoformat()},timeout=30); r.raise_for_status(); d=(r.json().get('history') or {}).get('day') or []; rows += [d] if isinstance(d,dict) else d; cur=stop+pd.Timedelta(days=1)
  x=pd.DataFrame(rows); x['date']=pd.to_datetime(x.date)
@@ -15,7 +15,7 @@ def fetch_tradier():
  return x.drop_duplicates('date').sort_values('date').set_index('date')[['open','high','low','close','volume']]
 
 def fetch_yahoo():
- x=yf.download('SOXL',start=START,end=(pd.Timestamp(END)+pd.Timedelta(days=1)).date().isoformat(),interval='1d',auto_adjust=True,actions=False,progress=False,threads=False)
+ x=yf.download('SOXL',start=WARMUP,end=(pd.Timestamp(END)+pd.Timedelta(days=1)).date().isoformat(),interval='1d',auto_adjust=True,actions=False,progress=False,threads=False)
  if isinstance(x.columns,pd.MultiIndex): x.columns=x.columns.get_level_values(0)
  x=x.rename(columns={c:c.lower() for c in x.columns}); x.index=pd.to_datetime(x.index).tz_localize(None); return x[['open','high','low','close','volume']].dropna()
 
@@ -25,6 +25,7 @@ def prep(x):
  tr=pd.concat([(x.high-x.low).abs(),(x.high-x.close.shift(1)).abs(),(x.low-x.close.shift(1)).abs()],axis=1).max(axis=1); up=x.high.diff(); dn=-x.low.diff(); pdm=np.where((up>dn)&(up>0),up,0.); mdm=np.where((dn>up)&(dn>0),dn,0.); atr=tr.rolling(20).mean(); pdi=100*pd.Series(pdm,index=x.index).rolling(20).mean()/atr; mdi=100*pd.Series(mdm,index=x.index).rolling(20).mean()/atr; x['adx20']=(100*(pdi-mdi).abs()/(pdi+mdi)).rolling(20).mean(); x['prev_high']=x.high.shift(1); return x
 
 def run(x,source):
+ x=x.loc[pd.Timestamp(START):pd.Timestamp(END)]
  cash=100000.; sh=0.; pos=False; pending=None; ent=None; entdt=None; sigdt=None; trades=[]; eq=[]
  for dt,r in x.iterrows():
   if pending:
@@ -45,7 +46,7 @@ def main():
  td=fetch_tradier(); yd=fetch_yahoo(); common=td.index.intersection(yd.index); td=td.loc[common]; yd=yd.loc[common]
  diag=[]
  for c in ['open','high','low','close']:
-  rel=(yd[c]/td[c]-1).replace([np.inf,-np.inf],np.nan).dropna(); diag.append({'field':c,'mean_abs_pct_diff':rel.abs().mean(),'median_abs_pct_diff':rel.abs().median(),'max_abs_pct_diff':rel.abs().max(),'corr':yd[c].corr(td[c])})
+  rel=(yd.loc[pd.Timestamp(START):,c]/td.loc[pd.Timestamp(START):,c]-1).replace([np.inf,-np.inf],np.nan).dropna(); diag.append({'field':c,'mean_abs_pct_diff':rel.abs().mean(),'median_abs_pct_diff':rel.abs().median(),'max_abs_pct_diff':rel.abs().max(),'corr':yd.loc[pd.Timestamp(START):,c].corr(td.loc[pd.Timestamp(START):,c])})
  ts,tt,te=run(prep(td),'Tradier'); ys,yt,ye=run(prep(yd),'Yahoo_auto_adjusted')
  pd.DataFrame([ts,ys]).to_csv(OUT/'soxl_daily_tcar_yahoo_vs_tradier_10y_performance.csv',index=False)
  pd.concat([tt,yt],ignore_index=True).to_csv(OUT/'soxl_daily_tcar_yahoo_vs_tradier_10y_trades.csv',index=False)
