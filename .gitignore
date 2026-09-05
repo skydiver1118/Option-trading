@@ -2,3 +2,7 @@ windows/.secrets/
 windows/logs/
 __pycache__/
 *.pyc
+
+# Local-only credentials: windows.secrets is distinct from windows/.secrets.
+windows.secrets/
+runtime/dcr15/
