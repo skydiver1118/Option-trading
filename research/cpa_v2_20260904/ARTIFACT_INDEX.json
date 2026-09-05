@@ -15,7 +15,11 @@
     "stage_and_pair_status": "results/study_status.json",
     "summary_and_adversarial_audit": "RESEARCH_REPORT.md",
     "targeted_test_results": "results/test_results.json",
-    "visual_gate": "visual_review.json"
+    "visual_gate": "visual_review.json",
+    "continuation_report": "CONTINUATION_REPORT.md",
+    "continuation_requery_comparison": "results/continuation_requery_comparison.json",
+    "defects_by_partition": "results/defects_by_partition.csv",
+    "unsent_vendor_correction_request": "TRADIER_CORRECTION_REQUEST.md"
   },
   "note": "Morphology event histories are available only for the fixed IS-era TSLA example. They are not study performance.",
   "study_status": "BLOCKED_BEFORE_IS",

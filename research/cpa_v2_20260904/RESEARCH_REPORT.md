@@ -1,5 +1,8 @@
 # CPA_v2 study: blocked before performance optimization
 
+Latest continuation: [CONTINUATION_REPORT.md](CONTINUATION_REPORT.md). Ten additional
+Tradier queries reproduced the defects; both prerequisite gates remain closed.
+
 **No IS optimization, validation performance evaluation, or OOS performance
 evaluation has been performed in this protocol. No parameters are frozen and
 no strategy is selected.** This is an incomplete experiment with explicit
