@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# trigger 2026-09-04 Yahoo-vs-Tradier replication
 import os, math, requests
 from pathlib import Path
 import pandas as pd, numpy as np, yfinance as yf
@@ -42,7 +43,6 @@ def run(x,source):
 
 def main():
  td=fetch_tradier(); yd=fetch_yahoo(); common=td.index.intersection(yd.index); td=td.loc[common]; yd=yd.loc[common]
- # price-source diagnostics on common dates
  diag=[]
  for c in ['open','high','low','close']:
   rel=(yd[c]/td[c]-1).replace([np.inf,-np.inf],np.nan).dropna(); diag.append({'field':c,'mean_abs_pct_diff':rel.abs().mean(),'median_abs_pct_diff':rel.abs().median(),'max_abs_pct_diff':rel.abs().max(),'corr':yd[c].corr(td[c])})
@@ -50,7 +50,6 @@ def main():
  pd.DataFrame([ts,ys]).to_csv(OUT/'soxl_daily_tcar_yahoo_vs_tradier_10y_performance.csv',index=False)
  pd.concat([tt,yt],ignore_index=True).to_csv(OUT/'soxl_daily_tcar_yahoo_vs_tradier_10y_trades.csv',index=False)
  pd.DataFrame(diag).to_csv(OUT/'soxl_daily_tcar_yahoo_vs_tradier_price_diagnostics.csv',index=False)
- # trade-date matching summary
  a=set(zip(pd.to_datetime(tt.entry_date).dt.date,pd.to_datetime(tt.exit_date).dt.date)); b=set(zip(pd.to_datetime(yt.entry_date).dt.date,pd.to_datetime(yt.exit_date).dt.date)); summ={'tradier_trades':len(a),'yahoo_trades':len(b),'exact_matched_trades':len(a&b),'tradier_only':len(a-b),'yahoo_only':len(b-a)}; pd.DataFrame([summ]).to_csv(OUT/'soxl_daily_tcar_yahoo_vs_tradier_trade_match.csv',index=False)
  print(pd.DataFrame([ts,ys]).to_string(index=False)); print(pd.DataFrame([summ]).to_string(index=False)); print(pd.DataFrame(diag).to_string(index=False))
 if __name__=='__main__': main()
