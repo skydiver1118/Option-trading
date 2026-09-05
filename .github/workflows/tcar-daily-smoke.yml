@@ -2,47 +2,56 @@ name: TCAR Daily Tradier Smoke
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'scripts/tcar_daily_tradier_bot.py'
       - 'scripts/tcar_daily_sandbox_preflight.py'
+      - 'scripts/tcar_daily_migration_check.py'
       - 'scripts/setup_tcar_daily_local_tokens.ps1'
       - 'scripts/start_tcar_daily_paper.ps1'
       - 'scripts/install_tcar_daily_paper_task.ps1'
       - 'scripts/deploy_tcar_daily_paper.ps1'
       - 'tests/test_tcar_daily_execution_safety.py'
+      - 'tests/test_tcar_daily_replication_parity.py'
+      - 'requirements-tcar-daily.txt'
       - '.github/workflows/tcar-daily-smoke.yml'
 permissions:
   contents: read
+concurrency:
+  group: tcar-daily-readonly-validation
+  cancel-in-progress: false
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r requirements-dcr15.txt
-      - name: Compile Python
-        run: python -m py_compile scripts/tcar_daily_tradier_bot.py scripts/tcar_daily_sandbox_preflight.py tests/test_tcar_daily_execution_safety.py
-      - name: Validate PowerShell syntax
+      - run: pip install -r requirements-tcar-daily.txt
+      - name: Compile daily Python
+        run: python -m py_compile scripts/tcar_daily_tradier_bot.py scripts/tcar_daily_sandbox_preflight.py scripts/tcar_daily_migration_check.py tests/test_tcar_daily_execution_safety.py tests/test_tcar_daily_replication_parity.py
+      - name: Validate Windows launcher syntax (not deployment)
         shell: pwsh
         run: |
           [void][scriptblock]::Create((Get-Content scripts/setup_tcar_daily_local_tokens.ps1 -Raw))
           [void][scriptblock]::Create((Get-Content scripts/start_tcar_daily_paper.ps1 -Raw))
           [void][scriptblock]::Create((Get-Content scripts/install_tcar_daily_paper_task.ps1 -Raw))
           [void][scriptblock]::Create((Get-Content scripts/deploy_tcar_daily_paper.ps1 -Raw))
-      - name: Daily TCAR rule and safety tests
+      - name: Daily TCAR rule and safety tests - mocked broker
         run: python tests/test_tcar_daily_execution_safety.py
-      - name: GET-only Tradier daily preflight
+      - name: Frozen daily replication arithmetic parity - offline
+        run: python tests/test_tcar_daily_replication_parity.py
+      - name: GET-only Tradier DAILY data and sandbox preflight - NO ORDERS
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
           TRADIER_SANDBOX_TOKEN: ${{ secrets.TRADIER_SANDBOX_TOKEN }}
-          TCAR_CHECK_REPORT: /tmp/tcar-daily-preflight.json
+          TCAR_CHECK_REPORT: ${{ runner.temp }}/tcar-daily-preflight.json
         run: python scripts/tcar_daily_sandbox_preflight.py
-      - name: Real Tradier daily-data dry-run
+      - name: GET-only migration eligibility - NO ORDERS
         env:
-          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
-          TCAR_MODE: dryrun
-          TCAR_STATE_PATH: /tmp/tcar-daily-state.json
-          TCAR_AUDIT_PATH: /tmp/tcar-daily-audit.csv
-        run: python scripts/tcar_daily_tradier_bot.py --once
+          TRADIER_SANDBOX_TOKEN: ${{ secrets.TRADIER_SANDBOX_TOKEN }}
+        run: python scripts/tcar_daily_migration_check.py
