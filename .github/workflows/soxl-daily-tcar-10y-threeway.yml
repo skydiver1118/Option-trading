@@ -1,0 +1,27 @@
+name: SOXL Daily TCAR 10Y Threeway
+on:
+  workflow_dispatch:
+  push:
+    paths: ['scripts/soxl_daily_tcar_10y_threeway.py']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy requests
+      - name: Run comparison
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/soxl_daily_tcar_10y_threeway.py
+      - name: Commit results
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/williams_r/soxl_daily_tcar_10y_threeway.csv
+          git commit -m 'Update continuous 10y TCAR three-way comparison' || exit 0
+          git push
