@@ -8,7 +8,7 @@ import json
 import math
 import os
 import sys
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import numpy as np
@@ -43,7 +43,7 @@ def clean(obj):
     if isinstance(obj,(np.bool_,)): return bool(obj)
     if isinstance(obj,(float,np.floating)):
         return float(obj) if math.isfinite(obj) else None
-    if isinstance(obj,(pd.Timestamp,datetime)): return obj.isoformat()
+    if isinstance(obj,(pd.Timestamp,datetime,date)): return obj.isoformat()
     return obj
 
 
