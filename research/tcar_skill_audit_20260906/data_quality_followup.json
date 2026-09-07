@@ -1,0 +1,20 @@
+{
+  "parent_experiment": "TCAR_SKILL_AUDIT_20260906_V1",
+  "first_run_id": 34078685513,
+  "original_data_gate": "FAILED: 7 Tradier OHLC inconsistencies, 3 inside evaluation; no changes to thresholds or selection",
+  "frozen_inputs": {
+    "tradier_raw_2015-09-06_2023-09-05.json": "e5ed75a990e3d99f93c7b65ea168cad655689e21d05661ce93c1ed22b15c8f2f",
+    "tradier_raw_2023-09-06_2026-09-04.json": "a1e719e3d85141d1470bb93bbc87e46c29c4dd249dbeb8c7d444fc2ceeafb6c9"
+  },
+  "flagged_evaluation_dates": ["2016-12-19", "2023-06-05", "2023-12-20"],
+  "followup_before_computing_returns": [
+    "Preserve and hash original raw responses; do not alter market prices in the raw-feed replay",
+    "Run the original frozen protocol to completion in CONDITIONAL DIAGNOSTIC mode; retain failed OHLC check in the results",
+    "Download independent Yahoo split-adjusted OHLC; validate it separately; do not silently inner-join away missing dates",
+    "Re-pull only the flagged Tradier dates via market-history GET and check whether the values persist",
+    "Report raw Tradier and independently validated Yahoo results side by side",
+    "Report a clearly labeled HYBRID sensitivity replacing only flagged Tradier OHLC rows with Yahoo OHLC; this is not an authoritative correction and not the primary model",
+    "Do not optimize or select any parameter from validation/OOS; do not change deployed trading code or orders"
+  ],
+  "decision": "Data quality gate remains FAILED for raw Tradier. Neither a successful script nor attractive conditional results upgrades it to validated or production-ready. Exact source convention/repair requires reconciliation. OOS remains reused/compromised."
+}
