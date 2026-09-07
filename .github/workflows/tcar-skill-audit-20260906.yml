@@ -5,10 +5,13 @@ on:
     branches: [main]
     paths:
       - 'scripts/audit_tcar_skill_20260906.py'
+      - 'scripts/diagnose_tcar_source_20260906.py'
       - 'research/tcar_skill_audit_20260906/spec.json'
+      - 'research/tcar_skill_audit_20260906/data_quality_followup.json'
       - '.github/workflows/tcar-skill-audit-20260906.yml'
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: tcar-skill-audit-20260906
   cancel-in-progress: false
@@ -21,6 +24,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Download immutable market-data responses from first failed audit
+        uses: actions/download-artifact@v4
+        with:
+          name: TCAR_Backtesting_Audit_20260906
+          run-id: 34078685513
+          github-token: ${{ github.token }}
+          path: research/tcar_skill_audit_20260906/frozen_input/
       - name: Install research dependencies
         run: pip install 'pandas>=2.2,<4' 'numpy>=1.26,<3' 'requests>=2.31,<3' 'exchange-calendars>=4.10' 'yfinance>=0.2.65' tabulate
       - name: Normalize metadata date serialization (no strategy changes)
@@ -33,27 +43,29 @@ jobs:
           s=s.replace('isinstance(obj,(pd.Timestamp,datetime))','isinstance(obj,(pd.Timestamp,datetime,date))')
           p.write_text(s)
           PY
-          python -m py_compile scripts/audit_tcar_skill_20260906.py
-      - name: Fresh Tradier daily data and fixed audit - MARKET GET ONLY
+          python -m py_compile scripts/audit_tcar_skill_20260906.py scripts/diagnose_tcar_source_20260906.py
+      - name: Conditional replay and independent vendor diagnosis - data gate remains FAILED
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
-        run: python scripts/audit_tcar_skill_20260906.py
+        run: python scripts/diagnose_tcar_source_20260906.py
       - name: Package source and environment
         if: always()
         run: |
           mkdir -p research/tcar_skill_audit_20260906/results
           cp scripts/audit_tcar_skill_20260906.py research/tcar_skill_audit_20260906/results/
+          cp scripts/diagnose_tcar_source_20260906.py research/tcar_skill_audit_20260906/results/
           cp scripts/soxl_daily_tcar_yahoo_vs_tradier_10y.py research/tcar_skill_audit_20260906/results/reference_backtest.py
           cp research/tcar_skill_audit_20260906/spec.json research/tcar_skill_audit_20260906/results/spec.json
+          cp research/tcar_skill_audit_20260906/data_quality_followup.json research/tcar_skill_audit_20260906/results/data_quality_followup.json
           pip freeze > research/tcar_skill_audit_20260906/results/python_environment.txt
-      - name: Archive research evidence including hashed raw market-data responses
+      - name: Archive conditional research evidence and original raw responses
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: TCAR_Backtesting_Audit_20260906
+          name: TCAR_Backtesting_Audit_20260906_Conditional
           path: research/tcar_skill_audit_20260906/results/
           retention-days: 30
-      - name: Save report and derived results (not raw market data or credentials)
+      - name: Save derived diagnostic results (not raw market data or credentials)
         if: success()
         run: |
           git config user.name 'github-actions[bot]'
@@ -61,7 +73,10 @@ jobs:
           git add scripts/audit_tcar_skill_20260906.py
           p=research/tcar_skill_audit_20260906/results
           git add "$p/summary.json" "$p/metrics.csv" "$p/REPORT.md" "$p/validation_checks.csv" "$p/hashes.json" "$p/is_only_neighborhood.csv" "$p/one_year_robustness.csv" "$p/annual_returns.csv"
-          git add "$p/"*trades.csv
+          git add "$p/"*trades.csv "$p/tradier_ohlc_violations.csv"
+          for f in flagged_dates_vendor_comparison.csv hybrid_flagged_row_sensitivity.csv; do
+            if [ -f "$p/$f" ]; then git add "$p/$f"; fi
+          done
           git diff --cached --quiet && exit 0
-          git commit -m 'Record frozen TCAR daily audit results; reused OOS; no orders or deployment changes'
+          git commit -m 'Record conditional TCAR audit: original OHLC gate FAILED, OOS reused, no orders'
           git push
