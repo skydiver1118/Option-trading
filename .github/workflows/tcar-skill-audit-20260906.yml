@@ -1,0 +1,67 @@
+name: TCAR Backtesting Skill Audit 20260906
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_tcar_skill_20260906.py'
+      - 'research/tcar_skill_audit_20260906/spec.json'
+      - '.github/workflows/tcar-skill-audit-20260906.yml'
+permissions:
+  contents: write
+concurrency:
+  group: tcar-skill-audit-20260906
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install research dependencies
+        run: pip install 'pandas>=2.2,<4' 'numpy>=1.26,<3' 'requests>=2.31,<3' 'exchange-calendars>=4.10' 'yfinance>=0.2.65' tabulate
+      - name: Normalize metadata date serialization (no strategy changes)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/audit_tcar_skill_20260906.py')
+          s=p.read_text()
+          s=s.replace('from datetime import datetime\n','from datetime import date, datetime\n')
+          s=s.replace('isinstance(obj,(pd.Timestamp,datetime))','isinstance(obj,(pd.Timestamp,datetime,date))')
+          p.write_text(s)
+          PY
+          python -m py_compile scripts/audit_tcar_skill_20260906.py
+      - name: Fresh Tradier daily data and fixed audit - MARKET GET ONLY
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/audit_tcar_skill_20260906.py
+      - name: Package source and environment
+        if: always()
+        run: |
+          mkdir -p research/tcar_skill_audit_20260906/results
+          cp scripts/audit_tcar_skill_20260906.py research/tcar_skill_audit_20260906/results/
+          cp scripts/soxl_daily_tcar_yahoo_vs_tradier_10y.py research/tcar_skill_audit_20260906/results/reference_backtest.py
+          cp research/tcar_skill_audit_20260906/spec.json research/tcar_skill_audit_20260906/results/spec.json
+          pip freeze > research/tcar_skill_audit_20260906/results/python_environment.txt
+      - name: Archive research evidence including hashed raw market-data responses
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TCAR_Backtesting_Audit_20260906
+          path: research/tcar_skill_audit_20260906/results/
+          retention-days: 30
+      - name: Save report and derived results (not raw market data or credentials)
+        if: success()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/audit_tcar_skill_20260906.py
+          p=research/tcar_skill_audit_20260906/results
+          git add "$p/summary.json" "$p/metrics.csv" "$p/REPORT.md" "$p/validation_checks.csv" "$p/hashes.json" "$p/is_only_neighborhood.csv" "$p/one_year_robustness.csv" "$p/annual_returns.csv"
+          git add "$p/"*trades.csv
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record frozen TCAR daily audit results; reused OOS; no orders or deployment changes'
+          git push
