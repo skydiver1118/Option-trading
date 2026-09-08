@@ -1,5 +1,5 @@
 # Greek-aware monthly expiration engine: standard monthly only, 19-50 DTE
-# Recovery trigger: 2026-09-04 morning refresh
+# Recovery trigger: 2026-09-08 midday refresh
 name: Refresh option dashboard
 
 on:
