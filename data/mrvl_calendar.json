@@ -1,11 +1,11 @@
 {
-  "updated_et": "2026-09-09 02:50:33 PM ET",
+  "updated_et": "2026-09-09 03:16:54 PM ET",
   "source": "Tradier production API",
   "symbol": "MRVL",
   "underlying": {
-    "last": 235.58,
-    "bid": 235.47,
-    "ask": 235.63,
+    "last": 235.29,
+    "bid": 235.26,
+    "ask": 235.32,
     "close": null
   },
   "front_expiration": "2026-08-28",
