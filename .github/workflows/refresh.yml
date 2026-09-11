@@ -1,5 +1,4 @@
-# Greek-aware monthly expiration engine: standard monthly only, 19-50 DTE
-# Recovery trigger: 2026-09-08 midday refresh
+# Option dashboard refresh — robust UTC schedules; no runtime DST gate
 name: Refresh option dashboard
 
 on:
@@ -16,18 +15,14 @@ on:
       - 'index.html'
       - 'styles.css'
   schedule:
-    - cron: '45 13 * * 1-5'
-    - cron: '15 14 * * 1-5'
-    - cron: '45 15 * * 1-5'
-    - cron: '15 16 * * 1-5'
-    - cron: '45 17 * * 1-5'
-    - cron: '15 18 * * 1-5'
-    - cron: '45 14 * * 1-5'
-    - cron: '15 15 * * 1-5'
-    - cron: '45 16 * * 1-5'
-    - cron: '15 17 * * 1-5'
-    - cron: '45 18 * * 1-5'
-    - cron: '15 19 * * 1-5'
+    # Redundant UTC slots cover 10:00, 12:00, 14:00 ET in both EDT and EST.
+    # Scheduled jobs always run on NYSE trading days; duplicate DST-side slots are harmless.
+    - cron: '0 14 * * 1-5'
+    - cron: '0 15 * * 1-5'
+    - cron: '0 16 * * 1-5'
+    - cron: '0 17 * * 1-5'
+    - cron: '0 18 * * 1-5'
+    - cron: '0 19 * * 1-5'
 
 permissions:
   contents: write
@@ -52,46 +47,56 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install -r requirements.txt
-      - name: Validate Python and ownership-gate tests
+
+      - name: Validate code
         run: |
           python -m py_compile scripts/update_dashboard.py scripts/update_dashboard_dynamic.py
           python -m unittest tests/test_update_dashboard.py
-      - name: Validate intended ET schedule and NYSE trading day
+
+      - name: Check NYSE trading day
         id: gate
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
-          EVENT_SCHEDULE: ${{ github.event.schedule }}
         run: |
           python - <<'PY' >> "$GITHUB_OUTPUT"
           import os
           from datetime import datetime
           from zoneinfo import ZoneInfo
           import pandas_market_calendars as mcal
-          et=ZoneInfo('America/New_York'); now=datetime.now(et); event=os.getenv('EVENT_NAME',''); cron=os.getenv('EVENT_SCHEDULE','').strip()
-          edt={'45 13 * * 1-5','15 14 * * 1-5','45 15 * * 1-5','15 16 * * 1-5','45 17 * * 1-5','15 18 * * 1-5'}
-          est={'45 14 * * 1-5','15 15 * * 1-5','45 16 * * 1-5','15 17 * * 1-5','45 18 * * 1-5','15 19 * * 1-5'}
-          manual=event in ('workflow_dispatch','push'); matching=cron in (edt if now.utcoffset().total_seconds()/3600==-4 else est)
-          trading=not mcal.get_calendar('NYSE').schedule(start_date=now.date(),end_date=now.date()).empty
-          print(f'run={str(manual or (event=="schedule" and matching and trading)).lower()}')
+          event=os.getenv('EVENT_NAME','')
+          today=datetime.now(ZoneInfo('America/New_York')).date()
+          trading=not mcal.get_calendar('NYSE').schedule(start_date=today,end_date=today).empty
+          run=event in ('workflow_dispatch','push') or (event=='schedule' and trading)
+          print(f'run={str(run).lower()}')
           PY
+
       - name: Update dashboard data — Greek-aware monthly expiration
         if: steps.gate.outputs.run == 'true'
         env:
           GITHUB_EVENT_NAME: workflow_dispatch
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/update_dashboard_dynamic.py
+
       - name: Update MRVL calendar snapshot
         if: steps.gate.outputs.run == 'true'
         env:
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
         run: python scripts/mrvl_calendar_snapshot.py
-      - name: Verify dashboard policy
+
+      - name: Verify fresh dashboard and policy
         if: steps.gate.outputs.run == 'true'
         run: |
           python - <<'PY'
           import json
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
           d=json.load(open('data/dashboard.json'))
+          now=datetime.now(ZoneInfo('America/New_York'))
+          stamp=datetime.strptime(d['updated_et'],'%Y-%m-%d %I:%M %p ET').replace(tzinfo=ZoneInfo('America/New_York'))
+          age=(now-stamp).total_seconds()/60
+          if age > 20: raise SystemExit(f'STALE dashboard generated: age={age:.1f} min')
+          if d.get('option_data_source') != 'Tradier real-time': raise SystemExit(f'Unexpected option source: {d.get("option_data_source")}')
           bad=[x['ticker'] for x in d.get('analysis',[]) if x.get('decision')=='SELL' and x.get('long_term_rating') not in {'BUY','STRONG BUY'}]
           if bad: raise SystemExit(f'INVALID SELL without long-term BUY gate: {bad}')
           for x in d.get('analysis',[]):
@@ -100,8 +105,9 @@ jobs:
           scores=[float(x.get('score') or 0) for x in d.get('ranking',[])]
           if scores != sorted(scores, reverse=True): raise SystemExit('Ranking is not sorted by option score descending')
           if 'Greek-weighted' not in d.get('expiration_policy',''): raise SystemExit('Greek-weighted expiration policy missing')
-          print('Dynamic expiration policy validated.')
+          print(f'Fresh dashboard validated: {d["updated_et"]}; age={age:.1f} min')
           PY
+
       - name: Configure GitHub Pages
         if: steps.gate.outputs.run == 'true'
         uses: actions/configure-pages@v5
@@ -120,13 +126,17 @@ jobs:
         if: steps.gate.outputs.run == 'true' && steps.deploy1.outcome == 'failure'
         continue-on-error: true
         uses: actions/deploy-pages@v4
+
       - name: Commit refreshed data
         if: steps.gate.outputs.run == 'true'
-        continue-on-error: true
         run: |
           git config user.name "option-dashboard-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/dashboard.json data/mrvl_calendar.json
           git commit -m "Refresh Greek-aware option dashboard data" || exit 0
-          git pull --rebase origin main || true
-          git push origin HEAD:main || true
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((i*10))
+          done
+          echo 'ERROR: dashboard generated/deployed but repository commit push failed.' >&2
+          exit 1
