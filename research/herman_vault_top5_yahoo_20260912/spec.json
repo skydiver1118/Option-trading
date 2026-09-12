@@ -1,0 +1,31 @@
+{
+  "data": "Yahoo Finance via yfinance",
+  "download_end_exclusive": "2026-09-05",
+  "study_end": "2026-09-04",
+  "partitions": {
+    "IS": [
+      "2016-09-06",
+      "2022-09-02"
+    ],
+    "VALIDATION": [
+      "2022-09-06",
+      "2024-09-03"
+    ],
+    "OOS_REUSED": [
+      "2024-09-04",
+      "2026-09-04"
+    ]
+  },
+  "primary_cost_bps_per_side": 10,
+  "cost_sensitivity": [
+    0,
+    5,
+    10,
+    25,
+    50
+  ],
+  "oos_integrity": "COMPROMISED/REUSED",
+  "execution": "close signal, next observed session open; Donchian TP1 standing limit",
+  "sizing": "100% cash, fractional long/cash; partition reset",
+  "initial_cash": 100000.0
+}
