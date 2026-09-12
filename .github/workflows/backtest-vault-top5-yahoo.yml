@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'scripts/backtest_vault_top5_yahoo_20260912.py'
+      - 'scripts/vault_top5_benchmark_yahoo_20260912.py'
       - '.github/workflows/backtest-vault-top5-yahoo.yml'
   workflow_dispatch:
 jobs:
@@ -17,6 +18,7 @@ jobs:
           python-version: '3.12'
       - run: pip install pandas numpy yfinance
       - run: python scripts/backtest_vault_top5_yahoo_20260912.py
+      - run: python scripts/vault_top5_benchmark_yahoo_20260912.py
       - run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
