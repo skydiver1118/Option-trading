@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'scripts/backtest_vault_top5_yahoo_20260912.py'
+      - '.github/workflows/backtest-vault-top5-yahoo.yml'
   workflow_dispatch:
 jobs:
   backtest:
