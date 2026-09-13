@@ -1,0 +1,55 @@
+{
+  "IS_performance_configurations_tested": 0,
+  "OOS_evaluations": 0,
+  "OOS_history_previously_used_by_ancestor": true,
+  "pairs": [
+    {
+      "execution_asset": "SPY",
+      "signal_asset": "SPY",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    },
+    {
+      "execution_asset": "SPMO",
+      "signal_asset": "SPMO",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    },
+    {
+      "execution_asset": "VGT",
+      "signal_asset": "VGT",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    },
+    {
+      "execution_asset": "SMH",
+      "signal_asset": "SMH",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    },
+    {
+      "execution_asset": "QQQ",
+      "signal_asset": "QQQ",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    },
+    {
+      "execution_asset": "TQQQ",
+      "signal_asset": "TQQQ",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    },
+    {
+      "execution_asset": "SOXL",
+      "signal_asset": "SMH",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    },
+    {
+      "execution_asset": "TQQQ",
+      "signal_asset": "QQQ",
+      "status": "NOT_TESTED; PREREQUISITE_GATES_FAILED"
+    }
+  ],
+  "parameters_frozen": false,
+  "reasons": [
+    "BLOCKED: unresolved Tradier OHLCV/session integrity defects; see data_issues.csv",
+    "Source-example exact visual matching has not passed"
+  ],
+  "selected_strategies": [],
+  "status": "BLOCKED_BEFORE_IS",
+  "validation_candidates_tested": 0
+}

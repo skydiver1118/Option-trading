@@ -1,0 +1,10 @@
+{
+  "registered_at": "2026-09-05T13:14:26.527535+00:00",
+  "user_instruction": "Forget data problems, go ahead to finish backtest and pick a good strategy",
+  "data_limitations_accepted": true,
+  "classification": "EXPLORATORY_UNVERIFIED_CPA_V2",
+  "original_study": "research/cpa_v2_20260904",
+  "performance_inspected_at_registration": false,
+  "visual_accepted": false,
+  "note": "Proceeding evaluates the existing experimental CPA_v2 implementation; this does not certify matching Kell annotations or waive leakage/selection controls."
+}

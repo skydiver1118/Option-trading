@@ -1,0 +1,106 @@
+[
+  {
+    "symbol": "VGT",
+    "requery": "VGT_2016-03-01_2016-04-08.json",
+    "returned": 28,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  },
+  {
+    "symbol": "SPMO",
+    "requery": "SPMO_2017-01-01_2017-12-31.json",
+    "returned": 165,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  },
+  {
+    "symbol": "SMH",
+    "requery": "SMH_2018-12-18_2018-12-21.json",
+    "returned": 4,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  },
+  {
+    "symbol": "SPY",
+    "requery": "SPY_2016-12-14_2016-12-16.json",
+    "returned": 3,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  },
+  {
+    "symbol": "QQQ",
+    "requery": "QQQ_2016-04-04_2016-04-06.json",
+    "returned": 3,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  },
+  {
+    "symbol": "SPMO",
+    "requery": "SPMO_2016-09-01_2016-09-30.json",
+    "returned": 13,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  },
+  {
+    "symbol": "SOXL",
+    "requery": "SOXL_2016-12-16_2016-12-21.json",
+    "returned": 4,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  },
+  {
+    "symbol": "TQQQ",
+    "requery": "TQQQ_2016-04-04_2016-04-06.json",
+    "returned": 3,
+    "new_dates": [],
+    "field_differences": {
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0
+    }
+  }
+]

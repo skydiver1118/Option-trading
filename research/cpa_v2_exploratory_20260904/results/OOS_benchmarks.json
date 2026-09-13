@@ -1,0 +1,261 @@
+[
+  {
+    "CAGR": 0.25117609614603476,
+    "CalendarYearReturns": {
+      "2024": 0.11403517287729481,
+      "2025": 0.20163135966199053,
+      "2026": 0.16976855333626317
+    },
+    "Calmar": 1.0976391332634747,
+    "CensoredTrades": 1,
+    "Costs": 0.0012831027528074322,
+    "Exposure": 0.9980119284294234,
+    "GrossLoss": -0.0,
+    "GrossProfit": 0.0,
+    "HACSharpe": 1.2944585368809607,
+    "Halves": [
+      {
+        "sharpe": 1.0746091610651727,
+        "total_return": 0.25530798600961324
+      },
+      {
+        "sharpe": 1.2303632794748018,
+        "total_return": 0.24744040551331326
+      }
+    ],
+    "IndependentCycles": 0,
+    "MaxDD": -0.22883303677342837,
+    "MedianTradeSessions": null,
+    "ProfitConcentration": null,
+    "ProfitFactor": 0.0,
+    "Sharpe": 1.1408160911409717,
+    "Sortino": 1.700168885278831,
+    "TotalReturn": 0.5659219031119318,
+    "Trades": 0,
+    "Turnover": 2.0012977333981303,
+    "WinRate": null,
+    "symbol": "QQQ"
+  },
+  {
+    "CAGR": 0.5974557351050982,
+    "CalendarYearReturns": {
+      "2024": 0.09114626295921946,
+      "2025": 0.4870958417640503,
+      "2026": 0.5736719934468104
+    },
+    "Calmar": 1.8301106254073494,
+    "CensoredTrades": 1,
+    "Costs": 0.0017771396499829694,
+    "Exposure": 0.9980119284294234,
+    "GrossLoss": -0.0,
+    "GrossProfit": 0.0,
+    "HACSharpe": 1.6642365002423891,
+    "Halves": [
+      {
+        "sharpe": 0.9248996159925185,
+        "total_return": 0.32143277862939
+      },
+      {
+        "sharpe": 1.8795005778030962,
+        "total_return": 0.9323734826786676
+      }
+    ],
+    "IndependentCycles": 0,
+    "MaxDD": -0.3264588089980164,
+    "MedianTradeSessions": null,
+    "ProfitConcentration": null,
+    "ProfitFactor": 0.0,
+    "Sharpe": 1.4114229232743563,
+    "Sortino": 2.074685241309926,
+    "TotalReturn": 1.5535016605658307,
+    "Trades": 0,
+    "Turnover": 2.0255769780690542,
+    "WinRate": null,
+    "symbol": "SMH"
+  },
+  {
+    "CAGR": 1.0056183315214722,
+    "CalendarYearReturns": {
+      "2024": -0.06148203361825699,
+      "2025": 0.5389967045038417,
+      "2026": 1.7875974304068483
+    },
+    "Calmar": 1.260342041532284,
+    "CensoredTrades": 1,
+    "Costs": 0.005029370354447754,
+    "Exposure": 0.9980119284294235,
+    "GrossLoss": -0.0,
+    "GrossProfit": 0.0,
+    "HACSharpe": 1.3651975072214972,
+    "Halves": [
+      {
+        "sharpe": 0.4821505963237357,
+        "total_return": -0.09103624273903077
+      },
+      {
+        "sharpe": 1.7987917791501773,
+        "total_return": 3.4295924385633176
+      }
+    ],
+    "IndependentCycles": 0,
+    "MaxDD": -0.797893189612935,
+    "MedianTradeSessions": null,
+    "ProfitConcentration": null,
+    "ProfitFactor": 0.0,
+    "Sharpe": 1.184558442784583,
+    "Sortino": 1.7456034121905235,
+    "TotalReturn": 3.026338986091308,
+    "Trades": 0,
+    "Turnover": 2.0977456120795077,
+    "WinRate": null,
+    "symbol": "SOXL"
+  },
+  {
+    "CAGR": 0.32014570432184475,
+    "CalendarYearReturns": {
+      "2024": 0.10691827416516708,
+      "2025": 0.25586780338911663,
+      "2026": 0.254149681528663
+    },
+    "Calmar": 1.5787127711687525,
+    "CensoredTrades": 1,
+    "Costs": 0.0013719099186856043,
+    "Exposure": 0.9980119284294234,
+    "GrossLoss": -0.0,
+    "GrossProfit": 0.0,
+    "HACSharpe": 1.4818818490912655,
+    "Halves": [
+      {
+        "sharpe": 1.4533654592504903,
+        "total_return": 0.3636962845072398
+      },
+      {
+        "sharpe": 1.1330980125656935,
+        "total_return": 0.27847193507048185
+      }
+    ],
+    "IndependentCycles": 0,
+    "MaxDD": -0.2027890761185358,
+    "MedianTradeSessions": null,
+    "ProfitConcentration": null,
+    "ProfitFactor": 0.0,
+    "Sharpe": 1.2903117261364356,
+    "Sortino": 1.921903210007468,
+    "TotalReturn": 0.7434474277023979,
+    "Trades": 0,
+    "Turnover": 2.015170828533227,
+    "WinRate": null,
+    "symbol": "SPMO"
+  },
+  {
+    "CAGR": 0.18241978491439204,
+    "CalendarYearReturns": {
+      "2024": 0.06468030979057793,
+      "2025": 0.16352716352716312,
+      "2026": 0.12887861479352702
+    },
+    "Calmar": 0.9601593711256189,
+    "CensoredTrades": 1,
+    "Costs": 0.0011993185522832916,
+    "Exposure": 0.9980119284294237,
+    "GrossLoss": -0.0,
+    "GrossProfit": 0.0,
+    "HACSharpe": 1.2663823730581494,
+    "Halves": [
+      {
+        "sharpe": 0.9239532527878136,
+        "total_return": 0.17578433611256616
+      },
+      {
+        "sharpe": 1.4213526843011728,
+        "total_return": 0.1893654672146361
+      }
+    ],
+    "IndependentCycles": 0,
+    "MaxDD": -0.18998906889856915,
+    "MedianTradeSessions": null,
+    "ProfitConcentration": null,
+    "ProfitFactor": 0.0,
+    "Sharpe": 1.098037159253596,
+    "Sortino": 1.643470628766225,
+    "TotalReturn": 0.3984372862641741,
+    "Trades": 0,
+    "Turnover": 1.995645987552417,
+    "WinRate": null,
+    "symbol": "SPY"
+  },
+  {
+    "CAGR": 0.5378882684715949,
+    "CalendarYearReturns": {
+      "2024": 0.295067972656438,
+      "2025": 0.3324908378617475,
+      "2026": 0.37135110015174244
+    },
+    "Calmar": 0.9225886480182952,
+    "CensoredTrades": 1,
+    "Costs": 0.00336786411491523,
+    "Exposure": 0.9980119284294235,
+    "GrossLoss": -0.0,
+    "GrossProfit": 0.0,
+    "HACSharpe": 1.112091076142685,
+    "Halves": [
+      {
+        "sharpe": 0.9213476913693519,
+        "total_return": 0.5027567452206987
+      },
+      {
+        "sharpe": 1.0746332637853413,
+        "total_return": 0.5747686778479653
+      }
+    ],
+    "IndependentCycles": 0,
+    "MaxDD": -0.5830206881766535,
+    "MedianTradeSessions": null,
+    "ProfitConcentration": null,
+    "ProfitFactor": 0.0,
+    "Sharpe": 0.9870845362786459,
+    "Sortino": 1.4575561576457194,
+    "TotalReturn": 1.366494252798316,
+    "Trades": 0,
+    "Turnover": 2.0037212544501175,
+    "WinRate": null,
+    "symbol": "TQQQ"
+  },
+  {
+    "CAGR": 0.3354839082481149,
+    "CalendarYearReturns": {
+      "2024": 0.1441260224085299,
+      "2025": 0.21225474429076763,
+      "2026": 0.2864163549046137
+    },
+    "Calmar": 1.2240062388937563,
+    "CensoredTrades": 1,
+    "Costs": 0.001392308264130085,
+    "Exposure": 0.9980119284294234,
+    "GrossLoss": -0.0,
+    "GrossProfit": 0.0,
+    "HACSharpe": 1.3631737099490766,
+    "Halves": [
+      {
+        "sharpe": 1.0375570087007664,
+        "total_return": 0.2857893586343765
+      },
+      {
+        "sharpe": 1.449627905884611,
+        "total_return": 0.38764853532534604
+      }
+    ],
+    "IndependentCycles": 0,
+    "MaxDD": -0.2740867632760775,
+    "MedianTradeSessions": null,
+    "ProfitConcentration": null,
+    "ProfitFactor": 0.0,
+    "Sharpe": 1.2299900652086546,
+    "Sortino": 1.823156099641078,
+    "TotalReturn": 0.7842237202459152,
+    "Trades": 0,
+    "Turnover": 2.002726590047134,
+    "WinRate": null,
+    "symbol": "VGT"
+  }
+]

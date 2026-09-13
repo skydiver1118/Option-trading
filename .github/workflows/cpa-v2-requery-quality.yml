@@ -1,0 +1,27 @@
+name: CPA v2 Tradier IS data integrity requery
+on:
+  push:
+    branches: [research/cpa-v2-20260905]
+    paths: ['scripts/cpa_v2_requery_quality.py', '.github/workflows/cpa-v2-requery-quality.yml']
+permissions:
+  contents: write
+jobs:
+  requery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Requery IS source defects
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/cpa_v2_requery_quality.py
+      - name: Preserve exact requery evidence
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/cpa_v2_20260904_requery
+          git diff --cached --quiet || git commit -m 'Preserve Tradier IS data-integrity requery evidence'
+          git push origin HEAD:research/cpa-v2-20260905
