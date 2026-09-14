@@ -1,4 +1,4 @@
-# Option dashboard refresh — robust UTC schedules; workflow owns scheduling
+# Option dashboard refresh — self-healing scheduler
 name: Refresh option dashboard
 
 on:
@@ -15,14 +15,11 @@ on:
       - 'index.html'
       - 'styles.css'
   schedule:
-    # Offset from the top of the hour to reduce GitHub cron congestion.
-    # These six UTC slots cover 10:07/12:07/14:07 ET in both EDT and EST.
-    - cron: '7 14 * * 1-5'
-    - cron: '7 15 * * 1-5'
-    - cron: '7 16 * * 1-5'
-    - cron: '7 17 * * 1-5'
-    - cron: '7 18 * * 1-5'
-    - cron: '7 19 * * 1-5'
+    # GitHub cron is best-effort and has repeatedly dropped/delayed individual events.
+    # Run a lightweight watchdog every 15 minutes across the US market-day window.
+    # The gate below refreshes only once after each required ET target: 10:00, 12:00, 14:00.
+    # UTC window covers both EDT and EST.
+    - cron: '7,22,37,52 13-20 * * 1-5'
 
 permissions:
   contents: write
@@ -53,23 +50,56 @@ jobs:
           python -m py_compile scripts/update_dashboard.py scripts/update_dashboard_dynamic.py
           python -m unittest tests/test_update_dashboard.py
 
-      - name: Check NYSE trading day
+      - name: Decide whether a target refresh is missing
         id: gate
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
         run: |
           python - <<'PY' >> "$GITHUB_OUTPUT"
-          import os
+          import json, os
           from datetime import datetime
           from zoneinfo import ZoneInfo
           import pandas_market_calendars as mcal
-          event=os.getenv('EVENT_NAME','')
-          today=datetime.now(ZoneInfo('America/New_York')).date()
-          trading=not mcal.get_calendar('NYSE').schedule(start_date=today,end_date=today).empty
-          run=event in ('workflow_dispatch','push') or (event=='schedule' and trading)
+
+          et = ZoneInfo('America/New_York')
+          now = datetime.now(et)
+          event = os.getenv('EVENT_NAME','')
+          trading = not mcal.get_calendar('NYSE').schedule(start_date=now.date(), end_date=now.date()).empty
+
+          # Manual/push runs always refresh. Scheduled runs self-heal a missing target.
+          run = event in ('workflow_dispatch','push')
+          reason = event
+          target = None
+
+          if event == 'schedule' and trading:
+              targets = [now.replace(hour=h, minute=0, second=0, microsecond=0) for h in (10,12,14)]
+              passed = [t for t in targets if now >= t]
+              if passed:
+                  target = max(passed)
+                  try:
+                      d = json.load(open('data/dashboard.json'))
+                      stamp = datetime.strptime(d['updated_et'], '%Y-%m-%d %I:%M %p ET').replace(tzinfo=et)
+                  except Exception:
+                      stamp = datetime.min.replace(tzinfo=et)
+                  # Refresh exactly once for each target. Any later watchdog tick repairs a missed cron.
+                  run = stamp < target
+                  reason = f'target={target:%H:%M} latest={stamp:%Y-%m-%d %H:%M}'
+              else:
+                  reason = 'before first 10:00 ET target'
+          elif event == 'schedule' and not trading:
+              reason = 'NYSE closed'
+
           print(f'run={str(run).lower()}')
+          print(f'reason={reason}')
+          print(f'now_et={now:%Y-%m-%d %H:%M:%S %Z}')
           PY
+
+      - name: Show scheduling decision
+        run: |
+          echo "run=${{ steps.gate.outputs.run }}"
+          echo "reason=${{ steps.gate.outputs.reason }}"
+          echo "now_et=${{ steps.gate.outputs.now_et }}"
 
       - name: Update dashboard data — Greek-aware monthly expiration
         if: steps.gate.outputs.run == 'true'
@@ -80,9 +110,7 @@ jobs:
           import sys
           sys.path.insert(0, 'scripts')
           import update_dashboard_dynamic as d
-          # The workflow gate above is the single scheduling authority.
-          # Bypass the legacy in-script GitHub schedule gate, which relied on
-          # GITHUB_EVENT_SCHEDULE and caused scheduled runs to return 'Not scheduled'.
+          # Workflow is the single scheduling authority; never re-gate inside Python.
           d.base.should_run = lambda now: True
           d.main()
           PY
