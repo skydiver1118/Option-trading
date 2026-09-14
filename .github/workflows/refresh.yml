@@ -1,4 +1,4 @@
-# Option dashboard refresh — robust UTC schedules; no runtime DST gate
+# Option dashboard refresh — robust UTC schedules; workflow owns scheduling
 name: Refresh option dashboard
 
 on:
@@ -15,14 +15,14 @@ on:
       - 'index.html'
       - 'styles.css'
   schedule:
-    # Redundant UTC slots cover 10:00, 12:00, 14:00 ET in both EDT and EST.
-    # Scheduled jobs always run on NYSE trading days; duplicate DST-side slots are harmless.
-    - cron: '0 14 * * 1-5'
-    - cron: '0 15 * * 1-5'
-    - cron: '0 16 * * 1-5'
-    - cron: '0 17 * * 1-5'
-    - cron: '0 18 * * 1-5'
-    - cron: '0 19 * * 1-5'
+    # Offset from the top of the hour to reduce GitHub cron congestion.
+    # These six UTC slots cover 10:07/12:07/14:07 ET in both EDT and EST.
+    - cron: '7 14 * * 1-5'
+    - cron: '7 15 * * 1-5'
+    - cron: '7 16 * * 1-5'
+    - cron: '7 17 * * 1-5'
+    - cron: '7 18 * * 1-5'
+    - cron: '7 19 * * 1-5'
 
 permissions:
   contents: write
@@ -74,9 +74,18 @@ jobs:
       - name: Update dashboard data — Greek-aware monthly expiration
         if: steps.gate.outputs.run == 'true'
         env:
-          GITHUB_EVENT_NAME: workflow_dispatch
           TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
-        run: python scripts/update_dashboard_dynamic.py
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          import update_dashboard_dynamic as d
+          # The workflow gate above is the single scheduling authority.
+          # Bypass the legacy in-script GitHub schedule gate, which relied on
+          # GITHUB_EVENT_SCHEDULE and caused scheduled runs to return 'Not scheduled'.
+          d.base.should_run = lambda now: True
+          d.main()
+          PY
 
       - name: Update MRVL calendar snapshot
         if: steps.gate.outputs.run == 'true'
