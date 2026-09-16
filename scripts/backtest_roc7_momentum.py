@@ -2,7 +2,7 @@ import os, json, urllib.request
 import pandas as pd
 import numpy as np
 
-SYMS=['SOXL','VGT','SPMO']; START='2010-01-01'; END='2026-09-16'
+SYMS=['SOXL','VGT','SPMO','VOO']; START='2010-01-01'; END='2026-09-16'
 TOKEN=os.environ.get('TRADIER_TOKEN') or os.environ.get('TRADIER_ACCESS_TOKEN')
 if not TOKEN: raise RuntimeError('Missing TRADIER_TOKEN')
 
