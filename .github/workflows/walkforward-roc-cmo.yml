@@ -1,0 +1,21 @@
+name: Walk Forward ROC CMO
+on:
+  workflow_dispatch:
+  push:
+    paths: ['scripts/walkforward_roc_cmo.py','.github/workflows/walkforward-roc-cmo.yml']
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install pandas numpy
+      - name: Run expanding walk forward
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/walkforward_roc_cmo.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: roc-cmo-walkforward
+          path: roc_cmo_walkforward.json
