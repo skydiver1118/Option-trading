@@ -1,33 +1,37 @@
 # Option Trading Dashboard
 
-A GitHub Pages dashboard for systematic cash-secured put analysis of **SOXL, LITE, AAOI, and MRVL**, plus staged **SMH** stock entries.
+Dedicated dashboard repository for systematic cash-secured put analysis and staged SMH entries.
 
-## What it monitors
+TCAR strategy research, backtesting, deployment, reporting, and related development now live in the separate private repository `skydiver1118/TCAR-trading`.
 
-- Live/near-live underlying prices via `yfinance`
-- 45-trading-day swing high/low
-- Fibonacci retracements: 23.6%, 38.2%, 50%, 61.8%, 78.6%
-- 20-day EMA and short-term price structure
-- 28–45 DTE option chain selection
-- Put midpoint premium, effective breakeven, downside cushion and cash yield
-- Earnings/event-risk penalty when calendar data are available
-- SELL / WAIT ranking with special leverage penalty for SOXL
+## Dashboard scope
+
+- Tradier real-time option chains, bid/ask, IV, delta, theta, gamma and vega
+- Standard monthly expirations only
+- Dynamic expiration selection within 19–50 DTE using a Greek-weighted score
+- Conservative, Preferred and Aggressive put candidates
+- Premium, breakeven, distance to support, annualized return and earnings risk
+- 45-trading-day price structure, Fibonacci retracements and EMA20
+- Stock V2 ownership gate: a short-put SELL requires Long-Term BUY or STRONG BUY
+- Ranking by Option Execution Score
 - SMH staged stock-entry zones
 
-The seeded rules preserve the trading framework developed in the referenced ChatGPT discussion: sell puts into controlled pullbacks/volatility rather than chasing vertical rallies, demand premium-adjusted breakevens near major technical support, and manage event risk explicitly.
+## Refresh architecture
 
-## Automated refresh
+The primary scheduler is the isolated Windows clone:
 
-GitHub Actions checks the dashboard at **10:30 AM, 1:00 PM and 2:30 PM America/New_York** on valid NYSE trading days. The workflow includes both EST and EDT UTC schedules; the Python script gates execution to the correct local time and skips weekends/NYSE holidays.
+`C:\Users\SKYDI\Documents\Option-trading-dashboard-bot`
 
-You can also run **Refresh option dashboard → Run workflow** manually from the Actions tab.
+Windows Task Scheduler runs the dashboard at 10:00 AM, 12:00 PM and 2:00 PM Eastern on weekdays. The runner validates the NYSE calendar, downloads data, regenerates `data/dashboard.json`, commits the result and pushes it to GitHub.
+
+GitHub Actions provides a self-healing backup watchdog and GitHub Pages deployment. The dashboard automation repository must remain clean and must not be used for TCAR development.
 
 ## GitHub Pages
 
-The repository includes a Pages deployment workflow. In repository **Settings → Pages → Build and deployment**, choose **GitHub Actions** if GitHub has not enabled it automatically.
+Public dashboard:
 
-Expected public address: `https://skydiver1118.github.io/Option-trading/`
+`https://skydiver1118.github.io/Option-trading/`
 
-## Data caveat
+## Data and execution caveat
 
-Yahoo Finance data accessed through `yfinance` is suitable for research monitoring but should not be treated as an exchange-grade order-entry feed. Confirm the live NBBO in your brokerage before placing an option order.
+The dashboard is a decision-support tool. Confirm the current live NBBO, buying power, expiration, strike and order limit in the brokerage platform before placing an order.
