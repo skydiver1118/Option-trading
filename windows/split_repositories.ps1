@@ -19,6 +19,25 @@ function Invoke-Native {
     }
 }
 
+# Run a native command when a nonzero exit code is an expected test result.
+# Windows PowerShell can convert native stderr into a terminating error when
+# ErrorActionPreference is Stop, so expected misses must be isolated here.
+function Test-NativeSuccess {
+    param([string]$FilePath, [string[]]$ArgumentList)
+
+    $previousPreference = $ErrorActionPreference
+    $exitCode = 1
+    try {
+        $ErrorActionPreference = 'SilentlyContinue'
+        & $FilePath @ArgumentList *> $null
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
+    return ($exitCode -eq 0)
+}
+
 function Get-GhPath {
     $command = Get-Command gh -ErrorAction SilentlyContinue
     if ($command) { return $command.Source }
@@ -47,13 +66,19 @@ function Get-GhPath {
 
 function Ensure-GhAuthentication {
     param([string]$Gh)
-    & $Gh auth status --hostname github.com
-    if ($LASTEXITCODE -ne 0) {
+
+    $authenticated = Test-NativeSuccess -FilePath $Gh -ArgumentList @(
+        'auth','status','--hostname','github.com'
+    )
+    if (-not $authenticated) {
         Write-Host 'GitHub authentication is required. A browser window will open.'
         Invoke-Native $Gh @(
             'auth','login','--hostname','github.com',
             '--git-protocol','https','--web'
         ) 'GitHub authentication'
+    }
+    else {
+        Write-Host 'GitHub CLI authentication verified.'
     }
 }
 
@@ -195,8 +220,10 @@ function Create-DashboardCleanupPR {
         )
 
         foreach ($relative in $keep) {
-            & git -C $worktree cat-file -e "origin/main:$relative" 2>$null
-            if ($LASTEXITCODE -eq 0) {
+            $exists = Test-NativeSuccess -FilePath 'git' -ArgumentList @(
+                '-C',$worktree,'cat-file','-e',"origin/main:$relative"
+            )
+            if ($exists) {
                 Invoke-Native 'git' @('-C',$worktree,'checkout','origin/main','--',$relative) "Restore $relative"
             }
         }
@@ -227,7 +254,9 @@ This PR leaves `Option-trading` as the dashboard-only repository so:
         Write-Host "Dashboard cleanup PR: $prUrl"
     }
     finally {
-        & git -C $RepositoryPath worktree remove $worktree --force 2>$null
+        [void](Test-NativeSuccess -FilePath 'git' -ArgumentList @(
+            '-C',$RepositoryPath,'worktree','remove',$worktree,'--force'
+        ))
     }
 }
 
@@ -244,8 +273,10 @@ if (Test-Path $TcarFolder) {
 $gh = Get-GhPath
 Ensure-GhAuthentication -Gh $gh
 
-& $gh repo view $TcarRepository --json name 2>$null
-if ($LASTEXITCODE -eq 0) {
+$repositoryExists = Test-NativeSuccess -FilePath $gh -ArgumentList @(
+    'repo','view',$TcarRepository,'--json','name'
+)
+if ($repositoryExists) {
     throw "GitHub repository already exists: $TcarRepository"
 }
 
