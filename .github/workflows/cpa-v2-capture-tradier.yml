@@ -1,0 +1,34 @@
+name: CPA v2 Tradier source capture only
+on:
+  push:
+    branches: [research/cpa-v2-20260905]
+    paths: ['scripts/cpa_v2_capture_tradier.py', '.github/workflows/cpa-v2-capture-tradier.yml']
+permissions:
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download official Tradier daily OHLCV only
+        env:
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}
+        run: python scripts/cpa_v2_capture_tradier.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpa-v2-tradier-source-20260904
+          path: artifacts/cpa_v2_tradier_capture/
+          retention-days: 90
+      - name: Preserve source snapshot on the research branch
+        run: |
+          mkdir -p data/cpa_v2_20260904_source
+          cp artifacts/cpa_v2_tradier_capture/* data/cpa_v2_20260904_source/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/cpa_v2_20260904_source
+          git diff --cached --quiet || git commit -m 'Preserve Tradier CPA daily source snapshot without performance evaluation'
+          git push origin HEAD:research/cpa-v2-20260905
