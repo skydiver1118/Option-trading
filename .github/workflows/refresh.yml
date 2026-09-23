@@ -15,9 +15,7 @@ on:
       - 'index.html'
       - 'styles.css'
   schedule:
-    # GitHub cron is best-effort and has repeatedly dropped/delayed individual events.
-    # Run a lightweight watchdog every 15 minutes across the US market-day window.
-    # The gate below refreshes only once after each required ET target: 10:00, 12:00, 14:00.
+    # Best-effort watchdog for the required 10:00, 12:00, 14:00 ET targets.
     # UTC window covers both EDT and EST.
     - cron: '7,22,37,52 13-20 * * 1-5'
 
@@ -39,6 +37,11 @@ jobs:
       url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This is a data-refresh job, not a historical-commit build. A queued
+          # run must include data already committed by the preceding refresh.
+          ref: main
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -49,6 +52,30 @@ jobs:
         run: |
           python -m py_compile scripts/update_dashboard.py scripts/update_dashboard_dynamic.py
           python -m unittest tests/test_update_dashboard.py
+          node --check app.js
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          from update_dashboard_dynamic import format_put_contract
+          for strike, label in [(42.5, '42.5'), (45, '45'), (39.25, '39.25')]:
+              assert format_put_contract('2030-01-18', strike) == f'2030-01-18 ${label}P'
+          print('Python fractional-strike checks passed.')
+          PY
+          node - <<'JS'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const assert = require('node:assert/strict');
+          // No network or DOM is needed to test the candidate renderer.
+          const context = {fetch: () => new Promise(() => {}), assert};
+          vm.runInNewContext(fs.readFileSync('app.js', 'utf8') + `
+            assert.equal(strikeFmt(42.5), '$42.5P');
+            assert.equal(strikeFmt(45), '$45P');
+            assert.equal(strikeFmt(39.25), '$39.25P');
+            const html = candidateTable({candidates: [{profile: 'Preferred', strike: 42.5}]});
+            assert.ok(html.includes('<td>$42.5P</td>'));
+          `, context);
+          console.log('JavaScript fractional-strike checks passed.');
+          JS
 
       - name: Decide whether a target refresh is missing
         id: gate
@@ -66,8 +93,6 @@ jobs:
           now = datetime.now(et)
           event = os.getenv('EVENT_NAME','')
           trading = not mcal.get_calendar('NYSE').schedule(start_date=now.date(), end_date=now.date()).empty
-
-          # Manual/push runs always refresh. Scheduled runs self-heal a missing target.
           run = event in ('workflow_dispatch','push')
           reason = event
           target = None
@@ -82,7 +107,6 @@ jobs:
                       stamp = datetime.strptime(d['updated_et'], '%Y-%m-%d %I:%M %p ET').replace(tzinfo=et)
                   except Exception:
                       stamp = datetime.min.replace(tzinfo=et)
-                  # Refresh exactly once for each target. Any later watchdog tick repairs a missed cron.
                   run = stamp < target
                   reason = f'target={target:%H:%M} latest={stamp:%Y-%m-%d %H:%M}'
               else:
@@ -125,20 +149,32 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: |
           python - <<'PY'
-          import json
+          import json, sys
           from datetime import datetime
           from zoneinfo import ZoneInfo
+          sys.path.insert(0, 'scripts')
+          import update_dashboard as base
+          from update_dashboard_dynamic import format_put_contract
           d=json.load(open('data/dashboard.json'))
           now=datetime.now(ZoneInfo('America/New_York'))
           stamp=datetime.strptime(d['updated_et'],'%Y-%m-%d %I:%M %p ET').replace(tzinfo=ZoneInfo('America/New_York'))
           age=(now-stamp).total_seconds()/60
           if age > 20: raise SystemExit(f'STALE dashboard generated: age={age:.1f} min')
           if d.get('option_data_source') != 'Tradier real-time': raise SystemExit(f'Unexpected option source: {d.get("option_data_source")}')
+          if {x['ticker'] for x in d.get('tickers', [])} != set(base.TICKERS): raise SystemExit('Price universe is incomplete or outdated')
+          for section in ('analysis', 'ranking'):
+              if {x['ticker'] for x in d.get(section, [])} != set(base.PUT_NAMES): raise SystemExit(f'{section} universe is incomplete or outdated')
           bad=[x['ticker'] for x in d.get('analysis',[]) if x.get('decision')=='SELL' and x.get('long_term_rating') not in {'BUY','STRONG BUY'}]
           if bad: raise SystemExit(f'INVALID SELL without long-term BUY gate: {bad}')
           for x in d.get('analysis',[]):
-              dte=(x.get('expiration_selection') or {}).get('dte')
+              meta=x.get('expiration_selection') or {}
+              dte=meta.get('dte')
               if dte is not None and not 19 <= int(dte) <= 50: raise SystemExit(f'{x["ticker"]} DTE outside 19-50: {dte}')
+              cands=x.get('candidates') or []
+              pref=next((c for c in cands if c.get('profile')=='Preferred'), cands[0] if cands else None)
+              if pref and meta.get('expiration'):
+                  expected=format_put_contract(meta['expiration'], pref['strike'])
+                  if x.get('contract') != expected: raise SystemExit(f'{x["ticker"]}: incorrect contract label')
           scores=[float(x.get('score') or 0) for x in d.get('ranking',[])]
           if scores != sorted(scores, reverse=True): raise SystemExit('Ranking is not sorted by option score descending')
           if 'Greek-weighted' not in d.get('expiration_policy',''): raise SystemExit('Greek-weighted expiration policy missing')
