@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import unittest
+from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
@@ -14,11 +15,32 @@ UPDATE_DASHBOARD = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(UPDATE_DASHBOARD)
 
 
+class DashboardUniverseTests(unittest.TestCase):
+    def test_iren_replaces_qtum_without_changing_other_symbols(self) -> None:
+        expected = ["SOXL", "LITE", "AAOI", "MRVL", "MU", "AVGO", "IREN", "DRAM", "SMH"]
+        self.assertEqual(UPDATE_DASHBOARD.TICKERS, expected)
+        self.assertEqual(UPDATE_DASHBOARD.PUT_NAMES, expected[:-1])
+        self.assertNotIn("QTUM", UPDATE_DASHBOARD.TICKERS)
+        self.assertNotIn("QTUM", UPDATE_DASHBOARD.PUT_NAMES)
+
+    def test_iren_is_not_classified_as_an_etf(self) -> None:
+        self.assertEqual(UPDATE_DASHBOARD.ETF_TICKERS, {"SOXL", "DRAM", "SMH"})
+        self.assertNotIn("IREN", UPDATE_DASHBOARD.ETF_TICKERS)
+
+
 class EarningsDateTests(unittest.TestCase):
     def test_soxl_does_not_request_a_corporate_earnings_calendar(self) -> None:
         with patch.object(UPDATE_DASHBOARD.yf, "Ticker") as ticker:
             self.assertIsNone(UPDATE_DASHBOARD.earnings_date("SOXL"))
             ticker.assert_not_called()
+
+    def test_iren_requests_a_corporate_earnings_calendar(self) -> None:
+        # Synthetic calendar response: not an actual IREN earnings forecast.
+        expected = date(2030, 1, 23)
+        with patch.object(UPDATE_DASHBOARD.yf, "Ticker") as ticker:
+            ticker.return_value.calendar = {"Earnings Date": [expected]}
+            self.assertEqual(UPDATE_DASHBOARD.earnings_date("IREN"), expected)
+            ticker.assert_called_once_with("IREN")
 
 
 class ShortPutGateTests(unittest.TestCase):
@@ -42,6 +64,11 @@ class ShortPutGateTests(unittest.TestCase):
     def test_strong_buy_can_sell_only_after_option_gates_pass(self) -> None:
         decision, _ = UPDATE_DASHBOARD.decision_from_setup("STRONG BUY", self.good_put, 82, True, False, False)
         self.assertEqual(decision, "SELL")
+
+    def test_corporate_earnings_before_expiration_blocks_a_sale(self) -> None:
+        decision, reason = UPDATE_DASHBOARD.decision_from_setup("STRONG BUY", self.good_put, 90, True, False, True)
+        self.assertEqual(decision, "WAIT")
+        self.assertIn("earnings", reason.lower())
 
     def test_component_score_contains_all_execution_dimensions(self) -> None:
         components = UPDATE_DASHBOARD.component_scores(self.good_put, True, True, False, False)
