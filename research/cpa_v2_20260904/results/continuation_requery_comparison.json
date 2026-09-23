@@ -1,0 +1,72 @@
+{
+  "capture_directory": "data/cpa_v2_20260904_requery/20260905T125959947238Z",
+  "requests": [
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/QQQ_2016-04-04_2016-04-06.json",
+      "sha256": "3e6792e4bcf0ab016cd6262aa78b7f5914b4afa8b992dd989bd9c13cd03aca11",
+      "identical_to_prior_response": true
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/SMH_2018-12-18_2018-12-21.json",
+      "sha256": "bd2ae886e6a73c366b102bcd46410b1b86f44f4c8fa23d03d2e02b712e331cd1",
+      "identical_to_prior_response": true
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/SOXL_2016-12-16_2016-12-21.json",
+      "sha256": "a9548db8ae6b418fc2a2e65d2e3bf7dde48cdff4a5929f31fbbd4ecad42bd6d6",
+      "identical_to_prior_response": true
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/SPMO_2016-09-01_2016-09-30.json",
+      "sha256": "fb0d5a5d71243ae02f9da41c2ac6342210297e2318e209160d56205f520df885",
+      "identical_to_prior_response": true
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/SPMO_2016-09-06_2016-09-06.json",
+      "sha256": "dc5ecb673f3af91f69ca9c514d08e577916e177ffaf59a9a7530354d8d68d893",
+      "identical_to_prior_response": null
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/SPMO_2017-01-01_2017-12-31.json",
+      "sha256": "19c67f56b94a201323782e29266fe9dad8d4f163f2aacd3b4e583efacaa70291",
+      "identical_to_prior_response": true
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/SPY_2016-12-14_2016-12-16.json",
+      "sha256": "8186962ec7999411da35ddf0d1e0ab999d39dfd2ae1d0a3a73d374b10a68b6fa",
+      "identical_to_prior_response": true
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/SPY_2016-12-15_2016-12-15.json",
+      "sha256": "5cb41284ec45dc8fa279fb964c754ac0ec75d17202e30df11662d4cadafdf9d2",
+      "identical_to_prior_response": null
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/TQQQ_2016-04-04_2016-04-06.json",
+      "sha256": "047acc064201f19f7eb1fdd8cd4c0a49b7e4fbdad1e418c6637f2c5a11650e61",
+      "identical_to_prior_response": true
+    },
+    {
+      "file": "data/cpa_v2_20260904_requery/20260905T125959947238Z/VGT_2016-03-01_2016-04-08.json",
+      "sha256": "0a74196f6455d1813610795c1d1b25496c54cc3312462945eed550c4de41239e",
+      "identical_to_prior_response": true
+    }
+  ],
+  "repeat_windows": 8,
+  "identical_repeat_windows": 8,
+  "single_day_cases": {
+    "SPY_2016-12-15": "Close 225.48 below low 225.8904 persists",
+    "SPMO_2016-09-06": "Open/high/low NaN; close 27.2178; volume 0 persists"
+  },
+  "independent_repository_capture": {
+    "path": "data/williams_r/SPY_tradier_daily.csv",
+    "SPY_2016-12-15": "Same five numeric fields as current capture; no replacement justified"
+  },
+  "performance_evaluations": {
+    "IS": 0,
+    "Validation": 0,
+    "OOS": 0
+  },
+  "tests_passed": 17,
+  "note": "The OOS completion line in unittest stdout is from a temporary synthetic empty-candidate governance test, not this study."
+}
