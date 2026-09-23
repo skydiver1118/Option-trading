@@ -14,9 +14,9 @@ import pandas_market_calendars as mcal
 import yfinance as yf
 
 ET = ZoneInfo("America/New_York")
-TICKERS = ["SOXL", "LITE", "AAOI", "MRVL", "MU", "AVGO", "QTUM", "DRAM", "SMH"]
-PUT_NAMES = ["SOXL", "LITE", "AAOI", "MRVL", "MU", "AVGO", "QTUM", "DRAM"]
-ETF_TICKERS = {"SOXL", "QTUM", "DRAM", "SMH"}
+TICKERS = ["SOXL", "LITE", "AAOI", "MRVL", "MU", "AVGO", "IREN", "DRAM", "SMH"]
+PUT_NAMES = ["SOXL", "LITE", "AAOI", "MRVL", "MU", "AVGO", "IREN", "DRAM"]
+ETF_TICKERS = {"SOXL", "DRAM", "SMH"}
 SHORT_PUT_ELIGIBLE_RATINGS = {"BUY", "STRONG BUY"}
 RISK_FREE = 0.04
 TRADIER_BASE = "https://api.tradier.com/v1"
@@ -264,13 +264,13 @@ def main():
         x=raw[sym]; stock=stock_layer.get(sym) or {}; rating=str(stock.get("long_term_rating") or "UNRATED"); lt_score=stock.get("long_term_score"); es=stock.get("entry_score"); quality=str(stock.get("entry_quality") or "UNRATED"); technical=stock.get("technical") or {}; canonical_support=(stock.get("support") or {}).get("key_support"); support=float(canonical_support) if canonical_support is not None else x["key_support"]; support_source="Stock V2 canonical" if canonical_support is not None else "local 45-day Fibonacci fallback"
         expiry,_=choose_expiry(sym); cands,source=candidate_puts(sym,x["price"],support,expiry); sources.add(source); pref=next((c for c in cands if c["profile"]=="Preferred"),cands[0] if cands else None); near=abs(x["price"]-support)/x["price"]<=.04 if support else False; vertical=x["change_pct"]>=6; falling=x["change_pct"]<=-5 or x["return_3d_pct"]<=-8; stabilizing=not vertical and not falling and (x["change_pct"]>=-3 or x["price"]>=x["ema20"]*.98); event=bool(pref and pref["earnings_risk"]); components=component_scores(pref,near,stabilizing,vertical,event); oscore=option_setup_score(components); decision,decision_reason=decision_from_setup(rating,pref,oscore,stabilizing,vertical,event)
         clean=[{**c,"strike":f(c["strike"]),"bid":f(c["bid"]),"ask":f(c["ask"]),"spread_pct":f(c["spread_pct"]),"premium":f(c["premium"]),"breakeven":f(c["breakeven"]),"iv_pct":f(c["iv_pct"]),"delta":f(c["delta"]),"annualized_return_pct":f(c["annualized_return_pct"]),"distance_to_support_pct":f(c["distance_to_support_pct"])} for c in cands]
-        risk="3x daily leverage and volatility drag." if sym=="SOXL" else ("ETF thematic/concentration risk." if sym in {"QTUM","DRAM"} else ("Earnings falls before expiration." if event else "Gap risk and volatility expansion."))
+        risk="3x daily leverage and volatility drag." if sym=="SOXL" else ("ETF thematic/concentration risk." if sym in ETF_TICKERS else ("Earnings falls before expiration." if event else "Gap risk and volatility expansion."))
         analyses.append({"ticker":sym,"price":f(x["price"]),"change_pct":f(x["change_pct"]),"decision":decision,"decision_reason":decision_reason,"score":oscore,"long_term_score":f(lt_score),"long_term_rating":rating,"entry_score":f(es),"entry_quality":quality,"underlying_eligible":short_put_eligible(rating),"stock_layer_as_of":stock.get("as_of") or stock_layer_as_of,"canonical_trend":technical.get("trend") or "—","canonical_rsi14":f(technical.get("rsi14")),"canonical_sentiment":(stock.get("diagnostic_sentiment") or {}).get("label") or "—","contract":f"{expiry} ${pref['strike']:.0f}P" if pref else None,"premium":f(pref["premium"]) if pref else None,"breakeven":f(pref["breakeven"]) if pref else None,"key_support":f(support),"support_source":support_source,"fib":{k:f(v) for k,v in x["fib"].items()},"candidates":clean,"option_source":source,"expiration_type":"Standard monthly (third Friday)","option_components":components,"stabilizing":stabilizing,"return_3d_pct":f(x["return_3d_pct"]),"reconciliation":reconciliation_text(sym,rating,quality,decision,decision_reason),"trigger":f"Nearest support ${support:.2f}; require stable/reclaiming tape before entry." if support else "Support unavailable; WAIT.","risk":risk,"note":f"Adjusted 45-day swing ${x['low45']:.2f} → ${x['high45']:.2f}; EMA20 ${x['ema20']:.2f}"})
     decision_order={"SELL":0,"WAIT":1,"NO TRADE":2}; ranking=sorted(analyses,key=lambda z:(decision_order.get(z["decision"],3),-z["score"])); smh=raw.get("SMH",{}); entries=[]
     if smh:
         price=smh["price"]; levels=sorted([v for v in smh["fib"].values() if v<=price],reverse=True); entries=[{"zone":f"${price*.995:.0f}–${price*1.005:.0f}","allocation":20,"label":"starter only"}]
         for i,(label,alloc) in enumerate([("first support",30),("strong support",30),("major accumulation",20)]):
-            if i<len(levels): entries.append({"zone":f"${levels[i]-3:.0f}–${levels[i]+3:.0f}","allocation":alloc,"label":label})
+            if i<len(levels): entries.append({'zone':f"${levels[i]-3:.0f}–${levels[i]+3:.0f}","allocation":alloc,"label":label})
     source_label="Tradier real-time" if sources=={"Tradier"} else ("yfinance fallback" if sources=={"yfinance"} else "Tradier + yfinance fallback")
     payload={"updated_et":now.strftime("%Y-%m-%d %I:%M %p ET"),"market_state":"OPEN" if market_open_now(now) else "CLOSED","option_data_source":source_label,"stock_v2_source":stock_layer_source,"stock_v2_as_of":stock_layer_as_of,"policy":"Short-put SELL requires Stock V2 Long-Term BUY or STRONG BUY. Eligible names still must pass option execution gates.","expiration_policy":"Standard monthly options only (third Friday); no weeklies","tickers":[{"ticker":k,"price":f(v["price"]),"change_pct":f(v["change_pct"])} for k,v in raw.items()],"ranking":ranking,"analysis":analyses,"reconciliation":[{"ticker":x["ticker"],"text":x["reconciliation"],"decision":x["decision"]} for x in analyses],"smh":{"price":f(smh.get("price")),"entries":entries}}
     os.makedirs("data",exist_ok=True)
