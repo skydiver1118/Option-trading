@@ -13,6 +13,11 @@ TARGET_DELTA = 0.20
 _SELECTION = {}
 
 
+def format_put_contract(expiry, strike):
+    """Display the actual strike; a $42.50 put must not be labelled $42/$43."""
+    return f"{expiry} ${float(strike):g}P"
+
+
 def _as_float(x):
     try:
         return float(x) if x is not None else None
@@ -222,11 +227,12 @@ def main():
     for x in data.get("analysis", []):
         meta = _SELECTION.get(x.get("ticker"), {})
         x["expiration_selection"] = meta
-        for c in x.get("candidates", []):
-            # base.main rounds known fields only; preserve Greek values from our candidate function.
-            pass
+        candidates = x.get("candidates") or []
+        pref = next((c for c in candidates if c.get("profile") == "Preferred"), candidates[0] if candidates else None)
+        if pref is not None and meta.get("expiration"):
+            x["contract"] = format_put_contract(meta["expiration"], pref["strike"])
 
-    # Re-run candidate enrichment into serialized records because base.clean kept unknown keys via **c.
+    # The same enriched records feed the ranking and ticker cards.
     data["ranking"] = sorted(data.get("analysis", []), key=lambda x: float(x.get("score") or 0), reverse=True)
     data["ranking_basis"] = "Option execution score descending"
     expiries = sorted({m.get("expiration") for m in _SELECTION.values() if m.get("expiration")})
