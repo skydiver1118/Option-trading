@@ -1,5 +1,5 @@
 {
-  "updated_et": "2026-09-30 12:00 PM ET",
+  "updated_et": "2026-09-30 02:00 PM ET",
   "market_state": "OPEN",
   "option_data_source": "Tradier + yfinance fallback",
   "stock_v2_source": "Stock V2 canonical",
@@ -9,55 +9,55 @@
   "tickers": [
     {
       "ticker": "SOXL",
-      "price": 146.48,
-      "change_pct": -0.35
+      "price": 147.32,
+      "change_pct": 0.21
     },
     {
       "ticker": "LITE",
-      "price": 947.95,
-      "change_pct": -2.62
+      "price": 965.23,
+      "change_pct": -0.85
     },
     {
       "ticker": "AAOI",
-      "price": 97.47,
-      "change_pct": -3.17
+      "price": 99.18,
+      "change_pct": -1.48
     },
     {
       "ticker": "MRVL",
-      "price": 260.37,
-      "change_pct": -1.1
+      "price": 262.1,
+      "change_pct": -0.45
     },
     {
       "ticker": "MU",
-      "price": 1074.24,
-      "change_pct": 0.86
+      "price": 1069.58,
+      "change_pct": 0.42
     },
     {
       "ticker": "AVGO",
-      "price": 353.44,
-      "change_pct": -0.47
+      "price": 353.52,
+      "change_pct": -0.45
     },
     {
       "ticker": "IREN",
-      "price": 41.22,
-      "change_pct": -0.4
+      "price": 40.93,
+      "change_pct": -1.09
     },
     {
       "ticker": "DRAM",
-      "price": 60.64,
-      "change_pct": -1.06
+      "price": 60.27,
+      "change_pct": -1.66
     },
     {
       "ticker": "SMH",
-      "price": 608.88,
-      "change_pct": 0.33
+      "price": 609.36,
+      "change_pct": 0.41
     }
   ],
   "ranking": [
     {
       "ticker": "SOXL",
-      "price": 146.48,
-      "change_pct": -0.35,
+      "price": 147.32,
+      "change_pct": 0.21,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -97,17 +97,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -3.28,
+      "return_3d_pct": -2.73,
       "reconciliation": "SOXL: Long-Term BUY / Entry FAIR \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $141.60; require stable/reclaiming tape before entry.",
       "risk": "3x daily leverage and volatility drag.",
-      "note": "Adjusted 45-day swing $91.44 \u2192 $156.82; EMA20 $133.33",
+      "note": "Adjusted 45-day swing $91.44 \u2192 $156.82; EMA20 $133.41",
       "expiration_selection": {}
     },
     {
       "ticker": "LITE",
-      "price": 947.95,
-      "change_pct": -2.62,
+      "price": 965.23,
+      "change_pct": -0.85,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -147,17 +147,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": 0.67,
+      "return_3d_pct": 2.5,
       "reconciliation": "LITE: Long-Term BUY / Entry GOOD \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $969.84; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $594.84 \u2192 $1026.76; EMA20 $922.03",
+      "note": "Adjusted 45-day swing $594.84 \u2192 $1026.76; EMA20 $923.68",
       "expiration_selection": {}
     },
     {
       "ticker": "AAOI",
-      "price": 97.47,
-      "change_pct": -3.17,
+      "price": 99.18,
+      "change_pct": -1.48,
       "decision": "NO TRADE",
       "decision_reason": "Underlying Long-Term Rating is HOLD; short-put SELL requires BUY or STRONG BUY.",
       "score": 0,
@@ -176,11 +176,11 @@
       "key_support": 96.96,
       "support_source": "Stock V2 canonical",
       "fib": {
-        "23.6%": 135.13,
-        "38.2%": 123.83,
-        "50%": 114.7,
-        "61.8%": 105.57,
-        "78.6%": 92.57
+        "23.6%": 140.93,
+        "38.2%": 128.53,
+        "50%": 118.5,
+        "61.8%": 108.47,
+        "78.6%": 94.2
       },
       "candidates": [],
       "option_source": "none",
@@ -196,18 +196,18 @@
         "stabilization": 0,
         "event": 0
       },
-      "stabilizing": false,
-      "return_3d_pct": -3.87,
+      "stabilizing": true,
+      "return_3d_pct": -2.19,
       "reconciliation": "AAOI: Long-Term HOLD / Entry WAIT \u2192 Put NO TRADE. Underlying Long-Term Rating is HOLD; short-put SELL requires BUY or STRONG BUY.",
       "trigger": "Nearest support $96.96; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $76.01 \u2192 $153.39; EMA20 $103.48",
+      "note": "Adjusted 45-day swing $76.01 \u2192 $160.99; EMA20 $103.64",
       "expiration_selection": {}
     },
     {
       "ticker": "MRVL",
-      "price": 260.37,
-      "change_pct": -1.1,
+      "price": 262.1,
+      "change_pct": -0.45,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -247,17 +247,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -0.6,
+      "return_3d_pct": 0.06,
       "reconciliation": "MRVL: Long-Term BUY / Entry GOOD \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $248.14; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $162.90 \u2192 $267.48; EMA20 $245.26",
+      "note": "Adjusted 45-day swing $162.90 \u2192 $267.48; EMA20 $245.42",
       "expiration_selection": {}
     },
     {
       "ticker": "MU",
-      "price": 1074.24,
-      "change_pct": 0.86,
+      "price": 1069.58,
+      "change_pct": 0.42,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -297,17 +297,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -0.74,
+      "return_3d_pct": -1.17,
       "reconciliation": "MU: Long-Term STRONG BUY / Entry GOOD \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $1032.17; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $737.88 \u2192 $1108.72; EMA20 $1021.30",
+      "note": "Adjusted 45-day swing $737.88 \u2192 $1108.72; EMA20 $1020.86",
       "expiration_selection": {}
     },
     {
       "ticker": "AVGO",
-      "price": 353.44,
-      "change_pct": -0.47,
+      "price": 353.52,
+      "change_pct": -0.45,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -347,17 +347,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": 0.18,
+      "return_3d_pct": 0.2,
       "reconciliation": "AVGO: Long-Term BUY / Entry WAIT \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $349.42; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $335.20 \u2192 $431.94; EMA20 $357.17",
+      "note": "Adjusted 45-day swing $335.20 \u2192 $431.94; EMA20 $357.18",
       "expiration_selection": {}
     },
     {
       "ticker": "IREN",
-      "price": 41.22,
-      "change_pct": -0.4,
+      "price": 40.93,
+      "change_pct": -1.09,
       "decision": "NO TRADE",
       "decision_reason": "Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "score": 0,
@@ -397,17 +397,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -6.59,
+      "return_3d_pct": -7.24,
       "reconciliation": "IREN: Long-Term AVOID / Entry WAIT \u2192 Put NO TRADE. Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "trigger": "Nearest support $41.39; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $28.93 \u2192 $49.37; EMA20 $43.41",
+      "note": "Adjusted 45-day swing $28.93 \u2192 $49.37; EMA20 $43.39",
       "expiration_selection": {}
     },
     {
       "ticker": "DRAM",
-      "price": 60.64,
-      "change_pct": -1.06,
+      "price": 60.27,
+      "change_pct": -1.66,
       "decision": "NO TRADE",
       "decision_reason": "Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "score": 0,
@@ -447,19 +447,19 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -2.05,
+      "return_3d_pct": -2.65,
       "reconciliation": "DRAM: Long-Term AVOID / Entry WAIT \u2192 Put NO TRADE. Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "trigger": "Nearest support $60.25; require stable/reclaiming tape before entry.",
       "risk": "ETF thematic/concentration risk.",
-      "note": "Adjusted 45-day swing $44.40 \u2192 $63.82; EMA20 $59.43",
+      "note": "Adjusted 45-day swing $44.40 \u2192 $63.82; EMA20 $59.40",
       "expiration_selection": {}
     }
   ],
   "analysis": [
     {
       "ticker": "SOXL",
-      "price": 146.48,
-      "change_pct": -0.35,
+      "price": 147.32,
+      "change_pct": 0.21,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -499,17 +499,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -3.28,
+      "return_3d_pct": -2.73,
       "reconciliation": "SOXL: Long-Term BUY / Entry FAIR \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $141.60; require stable/reclaiming tape before entry.",
       "risk": "3x daily leverage and volatility drag.",
-      "note": "Adjusted 45-day swing $91.44 \u2192 $156.82; EMA20 $133.33",
+      "note": "Adjusted 45-day swing $91.44 \u2192 $156.82; EMA20 $133.41",
       "expiration_selection": {}
     },
     {
       "ticker": "LITE",
-      "price": 947.95,
-      "change_pct": -2.62,
+      "price": 965.23,
+      "change_pct": -0.85,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -549,17 +549,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": 0.67,
+      "return_3d_pct": 2.5,
       "reconciliation": "LITE: Long-Term BUY / Entry GOOD \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $969.84; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $594.84 \u2192 $1026.76; EMA20 $922.03",
+      "note": "Adjusted 45-day swing $594.84 \u2192 $1026.76; EMA20 $923.68",
       "expiration_selection": {}
     },
     {
       "ticker": "AAOI",
-      "price": 97.47,
-      "change_pct": -3.17,
+      "price": 99.18,
+      "change_pct": -1.48,
       "decision": "NO TRADE",
       "decision_reason": "Underlying Long-Term Rating is HOLD; short-put SELL requires BUY or STRONG BUY.",
       "score": 0,
@@ -578,11 +578,11 @@
       "key_support": 96.96,
       "support_source": "Stock V2 canonical",
       "fib": {
-        "23.6%": 135.13,
-        "38.2%": 123.83,
-        "50%": 114.7,
-        "61.8%": 105.57,
-        "78.6%": 92.57
+        "23.6%": 140.93,
+        "38.2%": 128.53,
+        "50%": 118.5,
+        "61.8%": 108.47,
+        "78.6%": 94.2
       },
       "candidates": [],
       "option_source": "none",
@@ -598,18 +598,18 @@
         "stabilization": 0,
         "event": 0
       },
-      "stabilizing": false,
-      "return_3d_pct": -3.87,
+      "stabilizing": true,
+      "return_3d_pct": -2.19,
       "reconciliation": "AAOI: Long-Term HOLD / Entry WAIT \u2192 Put NO TRADE. Underlying Long-Term Rating is HOLD; short-put SELL requires BUY or STRONG BUY.",
       "trigger": "Nearest support $96.96; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $76.01 \u2192 $153.39; EMA20 $103.48",
+      "note": "Adjusted 45-day swing $76.01 \u2192 $160.99; EMA20 $103.64",
       "expiration_selection": {}
     },
     {
       "ticker": "MRVL",
-      "price": 260.37,
-      "change_pct": -1.1,
+      "price": 262.1,
+      "change_pct": -0.45,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -649,17 +649,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -0.6,
+      "return_3d_pct": 0.06,
       "reconciliation": "MRVL: Long-Term BUY / Entry GOOD \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $248.14; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $162.90 \u2192 $267.48; EMA20 $245.26",
+      "note": "Adjusted 45-day swing $162.90 \u2192 $267.48; EMA20 $245.42",
       "expiration_selection": {}
     },
     {
       "ticker": "MU",
-      "price": 1074.24,
-      "change_pct": 0.86,
+      "price": 1069.58,
+      "change_pct": 0.42,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -699,17 +699,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -0.74,
+      "return_3d_pct": -1.17,
       "reconciliation": "MU: Long-Term STRONG BUY / Entry GOOD \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $1032.17; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $737.88 \u2192 $1108.72; EMA20 $1021.30",
+      "note": "Adjusted 45-day swing $737.88 \u2192 $1108.72; EMA20 $1020.86",
       "expiration_selection": {}
     },
     {
       "ticker": "AVGO",
-      "price": 353.44,
-      "change_pct": -0.47,
+      "price": 353.52,
+      "change_pct": -0.45,
       "decision": "WAIT",
       "decision_reason": "Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "score": 0,
@@ -749,17 +749,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": 0.18,
+      "return_3d_pct": 0.2,
       "reconciliation": "AVGO: Long-Term BUY / Entry WAIT \u2192 Put WAIT. Long-term ownership gate passes, but no suitable monthly put quote is available.",
       "trigger": "Nearest support $349.42; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $335.20 \u2192 $431.94; EMA20 $357.17",
+      "note": "Adjusted 45-day swing $335.20 \u2192 $431.94; EMA20 $357.18",
       "expiration_selection": {}
     },
     {
       "ticker": "IREN",
-      "price": 41.22,
-      "change_pct": -0.4,
+      "price": 40.93,
+      "change_pct": -1.09,
       "decision": "NO TRADE",
       "decision_reason": "Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "score": 0,
@@ -799,17 +799,17 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -6.59,
+      "return_3d_pct": -7.24,
       "reconciliation": "IREN: Long-Term AVOID / Entry WAIT \u2192 Put NO TRADE. Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "trigger": "Nearest support $41.39; require stable/reclaiming tape before entry.",
       "risk": "Gap risk and volatility expansion.",
-      "note": "Adjusted 45-day swing $28.93 \u2192 $49.37; EMA20 $43.41",
+      "note": "Adjusted 45-day swing $28.93 \u2192 $49.37; EMA20 $43.39",
       "expiration_selection": {}
     },
     {
       "ticker": "DRAM",
-      "price": 60.64,
-      "change_pct": -1.06,
+      "price": 60.27,
+      "change_pct": -1.66,
       "decision": "NO TRADE",
       "decision_reason": "Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "score": 0,
@@ -849,11 +849,11 @@
         "event": 0
       },
       "stabilizing": true,
-      "return_3d_pct": -2.05,
+      "return_3d_pct": -2.65,
       "reconciliation": "DRAM: Long-Term AVOID / Entry WAIT \u2192 Put NO TRADE. Underlying Long-Term Rating is AVOID; short-put SELL requires BUY or STRONG BUY.",
       "trigger": "Nearest support $60.25; require stable/reclaiming tape before entry.",
       "risk": "ETF thematic/concentration risk.",
-      "note": "Adjusted 45-day swing $44.40 \u2192 $63.82; EMA20 $59.43",
+      "note": "Adjusted 45-day swing $44.40 \u2192 $63.82; EMA20 $59.40",
       "expiration_selection": {}
     }
   ],
@@ -900,7 +900,7 @@
     }
   ],
   "smh": {
-    "price": 608.88,
+    "price": 609.36,
     "entries": [
       {
         "zone": "$606\u2013$612",
