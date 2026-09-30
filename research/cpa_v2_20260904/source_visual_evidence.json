@@ -1,0 +1,38 @@
+{
+  "TSLA_2020": {
+    "Tradier_bars": 253,
+    "captions_reviewed": true,
+    "exact_visual_match_accepted": false,
+    "inconsistent_or_missing_OHLC_bars": 0,
+    "source_frames_verified": false,
+    "source_url": "https://www.youtube.com/watch?v=VNvb0_zkYqw"
+  },
+  "full_transcript_republished": false,
+  "images": [
+    {
+      "full_image_republished": false,
+      "kind": "schematic",
+      "sha256": "f6356d55753abf8daa54424665b1ef58fd3d3157137c02726a17c3fb455990a2",
+      "url": "https://traderlionmedia.s3.us-east-2.amazonaws.com/wp-content/uploads/2024/09/11021014/VIST-EMA-Crossback.png",
+      "used_for_quantitative_calibration": false,
+      "visually_inspected": true
+    },
+    {
+      "full_image_republished": false,
+      "kind": "schematic",
+      "sha256": "241065bdc795e1df438d260f2919a713d419406b0ef2ea24397e2d2e5964b72b",
+      "url": "https://traderlionmedia.s3.us-east-2.amazonaws.com/wp-content/uploads/2024/09/11030830/VIST-Base-n-Break.png",
+      "used_for_quantitative_calibration": false,
+      "visually_inspected": true
+    },
+    {
+      "full_image_republished": false,
+      "kind": "annotated chart, IS correspondence unverified",
+      "sha256": "6373d0aa1c495ca820e3a00f646d8d87bb8ee513ea2c622896b30f4dacebdd04",
+      "url": "https://traderlionmedia.s3.us-east-2.amazonaws.com/wp-content/uploads/2024/09/11014922/Cycle-Of-Price-Action_8.png",
+      "used_for_quantitative_calibration": false,
+      "visually_inspected": true
+    }
+  ],
+  "reviewed_at_utc": "2026-09-05T12:30:20.307100+00:00"
+}
