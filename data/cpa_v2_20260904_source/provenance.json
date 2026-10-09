@@ -1,0 +1,134 @@
+[
+  {
+    "symbol": "SPY",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=daily&start=2015-01-01&end=2026-09-04",
+    "retrieved_at": "2026-09-05T11:44:52.890960+00:00",
+    "first": "2015-01-02",
+    "last": "2026-09-04",
+    "rows": 2936,
+    "response_sha256": "315e80b08a481547621fae40566957f38481cbe41275c4da3c4ea5bd9e5d07e6",
+    "purpose": "study"
+  },
+  {
+    "symbol": "SPMO",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SPMO&interval=daily&start=2015-01-01&end=2026-09-04",
+    "retrieved_at": "2026-09-05T11:44:53.276261+00:00",
+    "first": "2015-10-12",
+    "last": "2026-09-04",
+    "rows": 2572,
+    "response_sha256": "51976198853186edb322258a4511cf27c3016a8c37549655a33f6d538cc4f30d",
+    "purpose": "study"
+  },
+  {
+    "symbol": "VGT",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=VGT&interval=daily&start=2015-01-01&end=2026-09-04",
+    "retrieved_at": "2026-09-05T11:44:53.590229+00:00",
+    "first": "2015-01-02",
+    "last": "2026-09-04",
+    "rows": 2936,
+    "response_sha256": "97ee499aad022cf90a58dd6e340f808cae4de70fb09572958da770cbb72e41c6",
+    "purpose": "study"
+  },
+  {
+    "symbol": "SMH",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SMH&interval=daily&start=2015-01-01&end=2026-09-04",
+    "retrieved_at": "2026-09-05T11:44:53.982453+00:00",
+    "first": "2015-01-02",
+    "last": "2026-09-04",
+    "rows": 2936,
+    "response_sha256": "0537e682daaeef067e71b582fa2cd26de886f8c76b2b997b52bf822bd3e49a8f",
+    "purpose": "study"
+  },
+  {
+    "symbol": "QQQ",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=QQQ&interval=daily&start=2015-01-01&end=2026-09-04",
+    "retrieved_at": "2026-09-05T11:44:54.340192+00:00",
+    "first": "2015-01-02",
+    "last": "2026-09-04",
+    "rows": 2936,
+    "response_sha256": "abb3d62a50fda2e41dd72c1ee8cbd8b6d2e6282584f0a712f32884e14ead792b",
+    "purpose": "study"
+  },
+  {
+    "symbol": "TQQQ",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=TQQQ&interval=daily&start=2015-01-01&end=2026-09-04",
+    "retrieved_at": "2026-09-05T11:44:54.815888+00:00",
+    "first": "2015-01-02",
+    "last": "2026-09-04",
+    "rows": 2936,
+    "response_sha256": "5f140c2227206099b0698f65a6a5a99a31ff2ce658ebbd2ab89b14837e7866ab",
+    "purpose": "study"
+  },
+  {
+    "symbol": "SOXL",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=SOXL&interval=daily&start=2015-01-01&end=2026-09-04",
+    "retrieved_at": "2026-09-05T11:44:55.106855+00:00",
+    "first": "2015-01-02",
+    "last": "2026-09-04",
+    "rows": 2936,
+    "response_sha256": "6d4ec49c7ac17b73c2388e6bc961d871de0e18c4c3f4bf6f992d446b9a8c4a7c",
+    "purpose": "study"
+  },
+  {
+    "symbol": "TSLA",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=TSLA&interval=daily&start=2018-01-01&end=2021-12-31",
+    "retrieved_at": "2026-09-05T11:44:55.418646+00:00",
+    "first": "2018-01-02",
+    "last": "2021-12-31",
+    "rows": 1008,
+    "response_sha256": "47c03f7c4b2e2f3ecb8ded8b193c224032e9f248554c73712e91717d350db2f3",
+    "purpose": "IS-era morphology only"
+  },
+  {
+    "symbol": "NOW",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=NOW&interval=daily&start=2018-01-01&end=2021-12-31",
+    "retrieved_at": "2026-09-05T11:44:55.673872+00:00",
+    "first": "2018-01-02",
+    "last": "2021-12-31",
+    "rows": 1008,
+    "response_sha256": "e04864a761be109ddcadfade47fba984326323fc6c5a55f492d1c27e2eabf56e",
+    "purpose": "IS-era morphology only"
+  },
+  {
+    "symbol": "LLY",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=LLY&interval=daily&start=2018-01-01&end=2021-12-31",
+    "retrieved_at": "2026-09-05T11:44:55.954409+00:00",
+    "first": "2018-01-02",
+    "last": "2021-12-31",
+    "rows": 1008,
+    "response_sha256": "c2136cab6dece5b3ebbc84f0ae2078c33cfa01a44d2e58f95e4dfe0752350af5",
+    "purpose": "IS-era morphology only"
+  },
+  {
+    "symbol": "NIO",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=NIO&interval=daily&start=2018-01-01&end=2021-12-31",
+    "retrieved_at": "2026-09-05T11:44:56.249772+00:00",
+    "first": "2018-09-12",
+    "last": "2021-12-31",
+    "rows": 833,
+    "response_sha256": "ed58d9d2c8c3fa6e4afff6dcb4df54ccf56683620e578a3f35c3e95c0217247a",
+    "purpose": "IS-era morphology only"
+  },
+  {
+    "symbol": "NET",
+    "provider": "Tradier",
+    "endpoint": "https://api.tradier.com/v1/markets/history?symbol=NET&interval=daily&start=2018-01-01&end=2021-12-31",
+    "retrieved_at": "2026-09-05T11:44:56.486138+00:00",
+    "first": "2019-09-13",
+    "last": "2021-12-31",
+    "rows": 581,
+    "response_sha256": "c0ae1584e3e1d5f3c7b7aa725bb2e3b4a4e25219cfcec4b4cde02a43be1f9c2f",
+    "purpose": "IS-era morphology only"
+  }
+]
