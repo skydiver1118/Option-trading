@@ -1,0 +1,16 @@
+{
+  "classification": "EXPLORATORY_UNVERIFIED_CPA_V2",
+  "report": "FINAL_REPORT.md",
+  "status": "FINAL_STATUS.json",
+  "IS_comparison": "IS_COMPARISON.csv",
+  "OOS_benchmarks": "OOS_BUY_HOLD_COMPARISON.csv",
+  "full_results_archive": {
+    "filename": "CPA_v2_exploratory_full_results.tar.gz",
+    "bytes": 272557100,
+    "sha256": "227ac552c398b91020f33213449776af85f18196556ea39ce7f30b73c68f8d87",
+    "contents": "All 2048 trials with equity/trades/fills/events, raw result metrics, price prefixes, all stage locks and manifests, benchmarks, output hashes"
+  },
+  "source_data": "../../data/cpa_v2_20260904_source",
+  "prior_source_review": "../cpa_v2_20260904",
+  "no_strategy_selected": true
+}
