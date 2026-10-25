@@ -1,0 +1,17 @@
+{
+  "command": "python -m unittest discover -s tests -p 'test_cpa_v2_*.py' -v",
+  "empty_OOS_lock_test": "Temporary synthetic directory only, not the actual study",
+  "errors": 0,
+  "failures": 0,
+  "passed": true,
+  "python": "3.12.13",
+  "scope": "Synthetic accounting/causality/governance and a fixed IS-era TSLA state-order check; no study portfolio returns.",
+  "tested_file_sha256": {
+    "scripts/cpa_v2_engine.py": "192ab963b131689eb332bf83c348b8aedefe8cfc011f92320e2c20957b6048a0",
+    "scripts/cpa_v2_study.py": "c71facf8704cfd5901e8978282e012ff6443344d005dde5795d0d2f249dcaae2",
+    "tests/test_cpa_v2_governance.py": "0b168d6cd2271b45fdb3c637a8e0483db68df2097c49edaab5ba2463eb22d8d7",
+    "tests/test_cpa_v2_research.py": "a46d92bfc558b67c8334ecc300b1c0df892db8e46e88403b400b86885085e832"
+  },
+  "tests": 17,
+  "verified_at_utc": "2026-09-05T12:30:20.307511+00:00"
+}
