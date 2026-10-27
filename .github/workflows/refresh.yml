@@ -213,3 +213,17 @@ jobs:
           done
           echo 'ERROR: dashboard generated/deployed but repository commit push failed.' >&2
           exit 1
+
+      - name: Verify GitHub Pages publication
+        if: steps.gate.outputs.run == 'true'
+        env:
+          PRIMARY_DEPLOY_OUTCOME: ${{ steps.deploy1.outcome }}
+          RETRY_DEPLOY_OUTCOME: ${{ steps.deploy2.outcome }}
+        run: |
+          python - <<'PY'
+          import os
+          outcomes = [os.getenv('PRIMARY_DEPLOY_OUTCOME'), os.getenv('RETRY_DEPLOY_OUTCOME')]
+          if 'success' not in outcomes:
+              raise SystemExit(f'GitHub Pages publication failed: primary={outcomes[0]}, retry={outcomes[1]}')
+          print('GitHub Pages publication succeeded.')
+          PY

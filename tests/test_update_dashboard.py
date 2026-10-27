@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import importlib.util
+import contextlib
+import io
+import os
+import re
+import textwrap
 import unittest
 from datetime import date
 from pathlib import Path
@@ -76,6 +81,43 @@ class ShortPutGateTests(unittest.TestCase):
         self.assertEqual(set(components), expected)
         self.assertGreaterEqual(UPDATE_DASHBOARD.option_setup_score(components), 0)
         self.assertLessEqual(UPDATE_DASHBOARD.option_setup_score(components), 100)
+
+
+class PagesPublicationTests(unittest.TestCase):
+    def publication_check(self):
+        workflow = (ROOT / '.github' / 'workflows' / 'refresh.yml').read_text(encoding='utf-8')
+        step = re.search(
+            r'      - name: Verify GitHub Pages publication\n(.*?)(?=\n      - |\Z)',
+            workflow,
+            re.S,
+        )
+        self.assertIsNotNone(step, 'A failed primary and retry deployment must fail the refresh job')
+        self.assertIn("if: steps.gate.outputs.run == 'true'", step.group(1))
+        self.assertIn('PRIMARY_DEPLOY_OUTCOME: ${{ steps.deploy1.outcome }}', step.group(1))
+        self.assertIn('RETRY_DEPLOY_OUTCOME: ${{ steps.deploy2.outcome }}', step.group(1))
+        script = re.search(r"          python - <<'PY'\n(.*?)\n          PY", step.group(1), re.S)
+        self.assertIsNotNone(script)
+        return textwrap.dedent(script.group(1))
+
+    def run_check(self, primary, retry):
+        script = self.publication_check()
+        with patch.dict(os.environ, {'PRIMARY_DEPLOY_OUTCOME': primary, 'RETRY_DEPLOY_OUTCOME': retry}):
+            with contextlib.redirect_stdout(io.StringIO()):
+                exec(compile(script, 'refresh.yml:Verify GitHub Pages publication', 'exec'), {})
+
+    def test_both_failed_deployments_fail_the_refresh_job(self):
+        with self.assertRaisesRegex(SystemExit, 'GitHub Pages publication failed'):
+            self.run_check('failure', 'failure')
+
+    def test_primary_success_accepts_skipped_retry(self):
+        self.run_check('success', 'skipped')
+
+    def test_successful_retry_recovers_primary_failure(self):
+        self.run_check('failure', 'success')
+
+    def test_missing_successful_deployment_is_not_reported_as_success(self):
+        with self.assertRaisesRegex(SystemExit, 'GitHub Pages publication failed'):
+            self.run_check('failure', 'skipped')
 
 
 if __name__ == "__main__":
